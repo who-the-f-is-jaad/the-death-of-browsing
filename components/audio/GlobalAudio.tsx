@@ -1,0 +1,82 @@
+'use client';
+
+import { useRef, useEffect, useState, useCallback } from 'react';
+
+const STORAGE_KEY = 'tdb:audio-enabled';
+const AUDIO_SRC = '/audio/enigma-theme.mp3';
+const VOLUME = 0.22;
+
+export default function GlobalAudio() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const autoResumeRef = useRef<(() => void) | null>(null);
+  const [enabled, setEnabled] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const pref = localStorage.getItem(STORAGE_KEY) === 'true';
+
+    const audio = new Audio(AUDIO_SRC);
+    audio.loop = true;
+    audio.volume = VOLUME;
+    audioRef.current = audio;
+
+    setEnabled(pref);
+    setReady(true);
+
+    if (pref) {
+      const tryResume = () => {
+        audio.play().catch(() => {});
+        autoResumeRef.current = null;
+      };
+      autoResumeRef.current = tryResume;
+      document.addEventListener('click', tryResume, { once: true });
+      document.addEventListener('touchstart', tryResume, { once: true });
+    }
+
+    return () => {
+      if (autoResumeRef.current) {
+        document.removeEventListener('click', autoResumeRef.current);
+        document.removeEventListener('touchstart', autoResumeRef.current);
+      }
+      audio.pause();
+      audio.src = '';
+      audioRef.current = null;
+    };
+  }, []);
+
+  const toggle = useCallback(() => {
+    // Cancel pending auto-resume so it doesn't race with the toggle intent
+    if (autoResumeRef.current) {
+      document.removeEventListener('click', autoResumeRef.current);
+      document.removeEventListener('touchstart', autoResumeRef.current);
+      autoResumeRef.current = null;
+    }
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setEnabled(prev => {
+      const next = !prev;
+      localStorage.setItem(STORAGE_KEY, String(next));
+      if (next) {
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
+      return next;
+    });
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <button
+      onClick={toggle}
+      className="audio-toggle"
+      data-active={String(enabled)}
+      aria-label={enabled ? 'Silence the room' : 'Sound the room'}
+    >
+      {enabled ? 'silence the room' : 'sound the room'}
+    </button>
+  );
+}

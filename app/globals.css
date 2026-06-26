@@ -1,0 +1,585 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Local fonts ────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('/fonts/IM_Fell_English/IMFellEnglish-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('/fonts/IM_Fell_English/IMFellEnglish-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Unifraktur';
+  src: url('/fonts/UnifrakturCook/UnifrakturCook-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Design tokens ──────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #050505;
+  --surface:     #0d0d0d;
+
+  --border:      #1a1a1a;
+  --border-mid:  #262626;
+  --border-hi:   #333333;
+
+  --text:        #e2e2e2;
+  --text-mid:    #787878;
+  --text-dim:    #404040;
+
+  --crimson:     #7a1212;
+  --crimson-hi:  #9e1c1c;
+
+  /* Legacy aliases */
+  --gold:          #e2e2e2;
+  --text-primary:  #e2e2e2;
+  --text-secondary: #787878;
+}
+
+/* ── Base reset ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--bg);
+  background-image: url('/textures/black-paper.png');
+  background-size: 480px 480px;
+  color: var(--text);
+  font-family: 'IM Fell English', Georgia, serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Xerox photocopy grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/textures/xerox-noise.png');
+  background-size: 320px 320px;
+  opacity: 0.045;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Subtle edge fade */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 85% 85% at 50% 42%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+main {
+  position: relative;
+  z-index: 3;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 2px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-mid); }
+
+/* ── Typography utilities ───────────────────────────────────────────────────── */
+
+/* All labels, headings, UI text — IM Fell English */
+.font-heading {
+  font-family: 'IM Fell English', Georgia, serif;
+}
+
+/* Wordmark only — UnifrakturCook blackletter */
+.font-brand {
+  font-family: 'Unifraktur', Georgia, serif;
+}
+
+/* ── Page shell ─────────────────────────────────────────────────────────────── */
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 26rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+/* ── Catalog header ─────────────────────────────────────────────────────────── */
+.cat-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1.25rem 0 0.75rem;
+  border-bottom: 1px solid var(--border-mid);
+  margin-bottom: 1.75rem;
+}
+
+/* Wordmark — UnifrakturCook blackletter */
+.cat-brand {
+  font-family: 'Unifraktur', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--text);
+  line-height: 1;
+}
+
+/* Entry number — IM Fell English, small and quiet */
+.cat-entry {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── Rules ──────────────────────────────────────────────────────────────────── */
+.rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--border-mid);
+}
+
+.rule-short {
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: var(--border-mid);
+  margin: 0 auto;
+}
+
+/* ── Photo frame ─────────────────────────────────────────────────────────────── */
+.photo-frame {
+  border: 1px solid var(--border-mid);
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: grayscale(18%) contrast(1.08);
+  opacity: 0.92;
+}
+
+/* Cover fallback */
+.photo-fallback {
+  aspect-ratio: 1 / 1;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.photo-fallback-title {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.photo-fallback-ref {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--border-hi);
+  margin-top: 0.4rem;
+}
+
+/* ── Inscription block ───────────────────────────────────────────────────────── */
+.inscription {
+  border: 1px solid var(--border-mid);
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* ── Input ───────────────────────────────────────────────────────────────────── */
+.ritual-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-mid);
+  color: var(--text);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  outline: none;
+  letter-spacing: 0.02em;
+  transition: border-color 0.2s;
+}
+
+.ritual-input::placeholder {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.ritual-input:focus {
+  border-bottom-color: var(--text-mid);
+}
+
+/* ── Attempt marks ───────────────────────────────────────────────────────────── */
+.marks {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mark {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--border-mid);
+}
+
+.mark--live  { background: var(--text-mid); }
+.mark--last  { background: var(--text); }
+.mark--dead  { background: var(--crimson); opacity: 0.55; }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────────── */
+/* Primary CTA — crimson stamp (Deezer) */
+.btn-primary {
+  display: block;
+  width: 100%;
+  background: var(--crimson);
+  color: var(--text);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.9rem 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s;
+  text-decoration: none;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: var(--crimson-hi);
+}
+
+.btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Ghost — quiet thin border */
+.btn-ghost {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  color: var(--text-mid);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Text action — inline link */
+.btn-text {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+  transition: color 0.15s;
+  font-style: italic;
+}
+
+.btn-text:hover { color: var(--text-mid); }
+
+/* ── DSP links ───────────────────────────────────────────────────────────────── */
+/* Primary: Deezer — crimson stamp */
+.dsp-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--crimson);
+  color: var(--text);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.18s;
+}
+
+.dsp-primary:hover {
+  background: var(--crimson-hi);
+}
+
+/* Secondary DSPs — dim text links */
+.dsp-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.4rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  flex: 1;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.dsp-secondary:hover {
+  color: var(--text-mid);
+  border-color: var(--border-mid);
+}
+
+/* ── Countdown ───────────────────────────────────────────────────────────────── */
+.countdown {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--text-mid);
+}
+
+/* ── Catalog metadata ────────────────────────────────────────────────────────── */
+.meta-table {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0.4rem 0.75rem;
+  align-items: baseline;
+}
+
+.meta-key {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.meta-val {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.875rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── Editorial note ──────────────────────────────────────────────────────────── */
+.editorial {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--text-mid);
+  border-left: 1px solid var(--border-mid);
+  padding-left: 1rem;
+}
+
+/* ── Listening chamber ───────────────────────────────────────────────────────── */
+.chamber {
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.chamber-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border: none;
+  color: var(--text-dim);
+  transition: background 0.15s;
+}
+
+.chamber-trigger:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chamber-icon {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.chamber-label {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.chamber-meta {
+  flex: 1;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.chamber-body {
+  border-top: 1px solid var(--border);
+}
+
+.chamber-iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+}
+
+/* ── Audio toggle ────────────────────────────────────────────────────────────── */
+.audio-toggle {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.5rem;
+  z-index: 100;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+  padding: 0.75rem 0 0.75rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.audio-toggle::before {
+  content: '○';
+  font-style: normal;
+  font-size: 0.45rem;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.audio-toggle[data-active='true']::before {
+  content: '●';
+}
+
+.audio-toggle:hover,
+.audio-toggle:focus-visible {
+  color: var(--text-mid);
+  outline: none;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────────── */
+@keyframes ink-appear {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-dim {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+.animate-fadein {
+  animation: ink-appear 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-gold {
+  animation: pulse-dim 2.5s ease-in-out infinite;
+}
+
+/* ── Compat stubs ────────────────────────────────────────────────────────────── */
+.rf      { border: 1px solid var(--border-mid); position: relative; }
+.rf-body { position: relative; }
+.ab      { cursor: pointer; font-family: 'IM Fell English', Georgia, serif; }
