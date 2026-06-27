@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getCurrentDayKey } from '@/lib/resetTime';
 import { getMockEntryForDate } from '@/lib/mockEntries';
-import { loadOrInitProgress, saveProgress, loadStreak, saveStreak } from '@/lib/localState';
+import { loadOrInitProgress, saveProgress, loadStreak, saveStreak, removeProgress, initProgress } from '@/lib/localState';
 import { checkAnswer, normalizeAnswer } from '@/lib/answerNormalization';
 import {
   getEffectiveState,
@@ -93,6 +93,12 @@ export default function HomePage() {
     persist(applyRetryAfterSoftLock(progress));
   }, [progress, persist]);
 
+  const handleReset = useCallback(() => {
+    if (!dayKey) return;
+    removeProgress(dayKey);
+    setProgress(initProgress(dayKey));
+  }, [dayKey]);
+
   // ── Loading ───────────────────────────────────────────────────────────────
   if (!mounted) {
     return (
@@ -178,6 +184,13 @@ export default function HomePage() {
 
       {/* ── Footer nav ───────────────────────────────────────────────────── */}
       <footer>
+        {effectiveState === 'unlocked' && (
+          <div className="flex justify-center pb-2 pt-4">
+            <button onClick={handleReset} className="btn-text">
+              begin again
+            </button>
+          </div>
+        )}
         <nav
           className="flex justify-center gap-8 py-4"
           style={{ borderTop: '1px solid var(--border-mid)' }}

@@ -48,6 +48,13 @@ export function loadOrInitProgress(entryDate: string): DailyProgress {
   return loadProgress(entryDate) ?? initProgress(entryDate);
 }
 
+export function removeProgress(entryDate: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(progressKey(entryDate));
+  } catch {}
+}
+
 // ── Streak ───────────────────────────────────────────────────────────────────
 
 const EMPTY_STREAK: StreakData = { current: 0, longest: 0, lastSolvedDate: null };
