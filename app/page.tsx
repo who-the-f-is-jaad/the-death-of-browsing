@@ -117,9 +117,8 @@ export default function HomePage() {
 
     // Start audio inside the click handler to satisfy mobile autoplay policy.
     if (url && isFirstPlay) {
-      document.dispatchEvent(new CustomEvent('omen-audio-start'));
       const audio = new Audio(url);
-      audio.play().catch(() => {});
+      audio.play().catch(() => {}); // errors are caught via omenAudio singleton
       setPendingOmenAudio(audio);
     }
 

@@ -88,10 +88,7 @@ export async function enrichFromDeezer(
     album = await fetchDeezerAlbum(track.album.id);
   }
 
-  const rawPreview = track.preview ?? '';
-  const audioUrl = rawPreview
-    ? `/api/deezer/preview?url=${encodeURIComponent(rawPreview)}`
-    : '';
+  const audioUrl = track.preview ?? '';
   const coverImageUrl = album?.cover_xl ?? album?.cover_big ?? track.album?.cover_xl ?? track.album?.cover_big ?? '';
   const albumTitle = album?.title ?? track.album?.title ?? 'Unknown Album';
   const artist = album?.artist?.name ?? track.artist?.name ?? 'Unknown Artist';

@@ -44,14 +44,19 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
     const pending = consumePendingOmenAudio();
     if (pending) {
-      audioRef.current = pending;
-      setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
-      pending.addEventListener('ended', () => {
-        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
-      });
-      pending.addEventListener('error', () => {
+      const { audio, alreadyFailed } = pending;
+      audioRef.current = audio;
+      if (alreadyFailed) {
         setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
-      });
+      } else {
+        audio.addEventListener('ended', () => {
+          setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
+        });
+        audio.addEventListener('error', () => {
+          setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+        });
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
+      }
     }
 
     return () => {

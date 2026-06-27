@@ -114,6 +114,17 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
         {COPY.listenOnDeezer}
       </a>
 
+      {/* Spotify CTA */}
+      <a
+        href="https://en.wikipedia.org/wiki/Criticism_of_Spotify"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn-ghost font-heading"
+        style={{ textAlign: 'center' }}
+      >
+        Listen on Spotify
+      </a>
+
       {/* Scars — wrong guesses */}
       {omenState.guesses.filter(g => !g.correct).length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
