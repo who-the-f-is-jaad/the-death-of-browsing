@@ -29,16 +29,16 @@
 }
 
 @font-face {
-  font-family: 'Pixel3';
-  src: url('/fonts/pixel_3/pixel.ttf') format('truetype');
+  font-family: 'CSNorvile';
+  src: url('/fonts/cs-norvile-drawn-demo/CSNorvileDrawn-Regular_demo.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Pixel3';
-  src: url('/fonts/pixel_3/pixel.ttf') format('truetype');
+  font-family: 'CSNorvile';
+  src: url('/fonts/cs-norvile-drawn-demo/CSNorvileDrawn-Regular_demo.otf') format('opentype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -88,7 +88,7 @@ body {
   background-image: url('/textures/black-paper.png');
   background-size: 480px 480px;
   color: var(--text);
-  font-family: 'Pixel3', monospace;
+  font-family: 'CSNorvile', serif;
   position: relative;
   overflow-x: hidden;
 }
@@ -133,7 +133,7 @@ main {
 
 /* All labels, headings, UI text — Pixel3 */
 .font-heading {
-  font-family: 'Pixel3', monospace;
+  font-family: 'CSNorvile', serif;
 }
 
 /* Wordmark only — UnifrakturCook blackletter */
