@@ -2,7 +2,8 @@ import 'server-only';
 import { kv } from '@vercel/kv';
 import type { Room, Player, RoundGuess } from './roomTypes';
 
-const ROOM_TTL = 86400; // 24 hours
+const ROOM_TTL = 86400;    // 24 hours
+const PREVIEW_TTL = 3300;  // 55 minutes
 
 const rk  = (id: string)                   => `tdb:room:${id}`;
 const pk  = (id: string, token: string)    => `tdb:room:${id}:player:${token}`;
@@ -63,6 +64,14 @@ export async function addGuessToPlayer(
   player.guesses = [...player.guesses.filter(g => g.roundIndex !== guess.roundIndex), guess];
   await setPlayer(roomId, player);
   return player;
+}
+
+export async function getCachedPreview(trackId: string): Promise<string | null> {
+  return kv.get<string>(`tdb:preview:${trackId}`);
+}
+
+export async function setCachedPreview(trackId: string, url: string): Promise<void> {
+  await kv.set(`tdb:preview:${trackId}`, url, { ex: PREVIEW_TTL });
 }
 
 export function generateRoomId(): string {

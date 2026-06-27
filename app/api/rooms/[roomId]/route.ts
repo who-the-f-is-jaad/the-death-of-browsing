@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getRoom, getAllPlayers } from '@/lib/roomStorage';
+import { getRoom, getAllPlayers, getCachedPreview, setCachedPreview } from '@/lib/roomStorage';
+import { fetchDeezerPreview } from '@/lib/omenDeezer';
 
 export async function GET(
   _req: Request,
@@ -17,13 +18,17 @@ export async function GET(
     hasGuessedCurrentRound: p.guesses.some(g => g.roundIndex === room.currentRound),
   }));
 
-  // Current round entry: audio URL only, no album info or answerYear
-  const currentEntry = room.status === 'active' && room.currentRound < room.roundEntries.length
-    ? {
-        roundIndex: room.currentRound,
-        audioUrl: room.roundEntries[room.currentRound].audioUrl,
-      }
-    : null;
+  // Current round entry: fetch preview URL fresh (KV-cached 55 min), no album info or answerYear
+  let currentEntry: { roundIndex: number; audioUrl: string } | null = null;
+  if (room.status === 'active' && room.currentRound < room.roundEntries.length) {
+    const { trackId } = room.roundEntries[room.currentRound];
+    let audioUrl = (await getCachedPreview(trackId)) ?? '';
+    if (!audioUrl) {
+      audioUrl = await fetchDeezerPreview(trackId);
+      if (audioUrl) await setCachedPreview(trackId, audioUrl);
+    }
+    currentEntry = { roundIndex: room.currentRound, audioUrl };
+  }
 
   // Completed rounds: full album info revealed
   const revealedEntries = room.roundEntries

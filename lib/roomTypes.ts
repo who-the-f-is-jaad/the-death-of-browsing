@@ -8,7 +8,6 @@ export type RoundEntry = {
   trackId: string;
   deezerTrackUrl: string;
   answerYear: number;
-  audioUrl: string;
   albumTitle: string;
   artist: string;
   coverImageUrl: string;

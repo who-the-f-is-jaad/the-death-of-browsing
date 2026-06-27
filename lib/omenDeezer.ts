@@ -44,6 +44,11 @@ interface DeezerAlbum {
   artist?: { name?: string };
 }
 
+export async function fetchDeezerPreview(trackId: string): Promise<string> {
+  const track = await fetchDeezerTrack(trackId);
+  return track?.preview ?? '';
+}
+
 async function fetchDeezerTrack(trackId: string): Promise<DeezerTrack | null> {
   try {
     const res = await fetch(`https://api.deezer.com/track/${trackId}`);

@@ -40,7 +40,6 @@ export async function POST(req: Request) {
         trackId,
         deezerTrackUrl: raw.deezerTrackUrl,
         answerYear: raw.answerYear,
-        audioUrl: entry.audioOmen.audioUrl,
         albumTitle: entry.album.title,
         artist: entry.album.artist,
         coverImageUrl: entry.album.coverImageUrl ?? '',
