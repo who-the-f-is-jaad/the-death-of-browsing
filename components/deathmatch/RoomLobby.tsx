@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { playAmbient } from '@/lib/ambientAudio';
 
 type RoomState = {
   id: string;
@@ -23,6 +24,10 @@ interface Props {
 export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onStart }: Props) {
   const [nickname, setNickname] = useState('');
   const [joining, setJoining] = useState(false);
+
+  useEffect(() => {
+    playAmbient().catch(() => {});
+  }, []);
   const [starting, setStarting] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
 

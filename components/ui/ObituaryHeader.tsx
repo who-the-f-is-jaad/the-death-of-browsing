@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import speakerSrc from './speaker.png';
+import { toggleAmbient, isAmbientPlaying } from '@/lib/ambientAudio';
 
 interface Props {
   entryNumber: number;
@@ -14,21 +15,17 @@ interface Props {
 
 export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLogoClick }: Props) {
   const [playing, setPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const toggleAmbient = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio('/audio/pest.mp3');
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.28;
-    }
-    if (playing) {
-      audioRef.current.pause();
-      setPlaying(false);
-    } else {
-      audioRef.current.play().catch(() => {});
-      setPlaying(true);
-    }
+  // Sync with actual audio state (another component may have started it)
+  useEffect(() => {
+    setPlaying(isAmbientPlaying());
+  }, []);
+
+  const handleToggle = () => {
+    toggleAmbient()?.catch(() => {});
+    setPlaying(isAmbientPlaying());
+    // Small delay to let the play() promise resolve before reading state
+    setTimeout(() => setPlaying(isAmbientPlaying()), 100);
   };
 
   return (
@@ -44,26 +41,16 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLo
         </Link>
         <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
-            onClick={toggleAmbient}
+            onClick={handleToggle}
             aria-label={playing ? 'Stop ambient audio' : 'Play ambient audio'}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '2px',
-              lineHeight: 0,
-            }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', lineHeight: 0 }}
           >
             <Image
               src={speakerSrc}
               alt=""
               width={16}
               height={16}
-              style={{
-                filter: 'brightness(0) invert(1)',
-                opacity: playing ? 0.9 : 0.4,
-                transition: 'opacity 0.2s',
-              }}
+              style={{ filter: 'brightness(0) invert(1)', opacity: playing ? 0.9 : 0.4, transition: 'opacity 0.2s' }}
               aria-hidden="true"
             />
           </button>
