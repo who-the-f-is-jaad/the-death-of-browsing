@@ -37,7 +37,13 @@ export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
 
       {/* Sheep image — smaller, centered */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div className="photo-frame" style={{ width: '68%' }}>
+        <div
+          className="photo-frame"
+          style={{ width: '68%', cursor: 'pointer' }}
+          onClick={() => { new Audio('/audio/sheep.wav').play().catch(() => {}); }}
+          role="button"
+          aria-label="Baa"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/assets/sheep-card.jpg"
