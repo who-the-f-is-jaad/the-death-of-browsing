@@ -30,15 +30,18 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
   const attemptsSpent = omenState.attemptsSpent;
   const marksRemaining = MAX_ATTEMPTS - attemptsSpent;
   const canHear = !attempt.hasSpentMark && marksRemaining > 0;
-  // Input available as soon as the mark is spent — user can type during playback
   const inputActive = attempt.hasSpentMark;
 
   useEffect(() => {
+    // Stop background music as soon as the omen screen appears
+    document.dispatchEvent(new CustomEvent('omen-audio-start'));
+
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = '';
       }
+      // Resume background music when leaving the omen screen
       document.dispatchEvent(new CustomEvent('omen-audio-stop'));
     };
   }, []);
@@ -75,7 +78,6 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
     audio.play().catch(() => {
       setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
     });
-    // Mark spent + input unlocked immediately; audio starts in background
     setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
   }, [canHear, entry, omenState, onMarkSpent]);
 
@@ -85,18 +87,16 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
     const year = parseInt(trimmed, 10);
 
     if (!trimmed || trimmed.length !== 4 || isNaN(year) || year < 1900 || year > CURRENT_YEAR) {
-      setYearError('A YEAR HAS FOUR DIGITS.');
+      setYearError('Enter a valid year.');
       return;
     }
     setYearError(null);
 
-    // Stop audio if still playing
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
       audioRef.current = null;
     }
-    document.dispatchEvent(new CustomEvent('omen-audio-stop'));
 
     const feedback = getOmenFeedback(year, entry.audioOmen.answerYear);
     const guess: OmenGuess = {
@@ -130,106 +130,54 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.58rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          The Omen
-        </p>
-        <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          The year must be named exactly.
-        </p>
-      </div>
-
-      {/* Marks */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div className="marks" role="img" aria-label={`${marksRemaining} marks remaining`}>
-          {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
-            const isSpent = i < attemptsSpent;
-            const isCurrent = i === attemptsSpent && attempt.hasSpentMark;
-            return (
-              <span
-                key={i}
-                className={`mark ${isSpent || isCurrent ? 'mark--dead' : 'mark--live'}`}
-                aria-hidden="true"
-              />
-            );
-          })}
-        </div>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          {marksRemaining} {marksRemaining === 1 ? 'mark' : 'marks'} remaining
-        </p>
+      {/* Death mark symbols */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }} role="img" aria-label={`${marksRemaining} attempts remaining`}>
+        {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
+          const isDead = i < attemptsSpent || (i === attemptsSpent && attempt.hasSpentMark);
+          return (
+            <span
+              key={i}
+              aria-hidden="true"
+              style={{
+                fontSize: '1.3rem',
+                lineHeight: 1,
+                color: isDead ? 'var(--crimson)' : 'var(--text)',
+                transition: 'color 0.25s',
+                userSelect: 'none',
+                fontFamily: "'IM Fell English', Georgia, serif",
+              }}
+            >
+              †
+            </span>
+          );
+        })}
+        <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          {marksRemaining} {marksRemaining === 1 ? 'attempt' : 'attempts'} left
+        </span>
       </div>
 
       {/* Hear button */}
       {canHear && (
-        <button
-          onClick={handleHearOmen}
-          className="btn-ghost"
-        >
+        <button onClick={handleHearOmen} className="btn-ghost">
           Hear the Omen
         </button>
       )}
 
-      {/* Playing indicator — subtle, doesn't block input */}
+      {/* Playing indicator */}
       {attempt.audioStatus === 'playing' && (
-        <p
-          className="font-heading animate-pulse-gold"
-          style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
-        >
-          The omen sounds...
+        <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          Playing...
         </p>
       )}
 
       {/* Audio error */}
       {attempt.audioStatus === 'error' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
-            The Omen Failed to Sound.
-          </p>
-          <p style={{ fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--text-mid)' }}>
-            The mark is spent. Name the year anyway.
-          </p>
-        </div>
+        <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--text-mid)' }}>
+          Audio unavailable. The attempt is spent — name the year anyway.
+        </p>
       )}
 
-      {/* Year form — available as soon as mark is spent */}
-      {inputActive && (
-        <form onSubmit={handleYearSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <label
-              htmlFor="omen-year"
-              className="font-heading"
-              style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
-            >
-              Name the Year
-            </label>
-            <input
-              ref={(el) => { if (el && inputActive) setTimeout(() => el.focus(), 60); }}
-              id="omen-year"
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={4}
-              autoComplete="off"
-              value={yearValue}
-              onChange={e => { setYearValue(e.target.value); setYearError(null); }}
-              placeholder="1979"
-              className="ritual-input"
-              style={{ fontSize: '1.4rem', letterSpacing: '0.1em' }}
-            />
-            {yearError && (
-              <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
-                {yearError}
-              </p>
-            )}
-          </div>
-          <button type="submit" disabled={!yearValue.trim()} className="btn-ghost">
-            Name the Year
-          </button>
-        </form>
-      )}
-
-      {/* Distance feedback — large and prominent */}
+      {/* Distance feedback — above the input */}
       {lastFeedback && !lastFeedback.correct && lastFeedback.band && lastFeedback.direction && (() => {
         const copy = getOmenFeedbackCopy(lastFeedback.band, lastFeedback.direction);
         return (
@@ -271,7 +219,48 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
         );
       })()}
 
-      {/* Scars */}
+      {/* Year input — centered 4-digit box */}
+      {inputActive && (
+        <form onSubmit={handleYearSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <input
+              ref={(el) => { if (el) setTimeout(() => el.focus(), 60); }}
+              id="omen-year"
+              aria-label="Year"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={4}
+              autoComplete="off"
+              value={yearValue}
+              onChange={e => {
+                const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                setYearValue(val);
+                setYearError(null);
+              }}
+              placeholder="1979"
+              className="ritual-input"
+              style={{
+                width: '8rem',
+                textAlign: 'center',
+                fontSize: '2.2rem',
+                letterSpacing: '0.15em',
+                padding: '0.4rem 0',
+              }}
+            />
+          </div>
+          {yearError && (
+            <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--crimson-hi)', textAlign: 'center' }}>
+              {yearError}
+            </p>
+          )}
+          <button type="submit" disabled={yearValue.length < 4} className="btn-ghost">
+            Confirm
+          </button>
+        </form>
+      )}
+
+      {/* Scars — previous guesses */}
       {omenState.guesses.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
@@ -283,11 +272,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
                 ? `${g.band} — ${g.direction === 'UNBORN' ? 'too early' : 'too late'}`
                 : g.correct ? 'named' : '—';
               return (
-                <p
-                  key={i}
-                  className="font-heading"
-                  style={{ fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
-                >
+                <p key={i} className="font-heading" style={{ fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                   {g.year} — {bandDirection}
                 </p>
               );
