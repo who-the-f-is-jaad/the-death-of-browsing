@@ -10,6 +10,18 @@ const SHEET_CSV_URL =
   process.env.NEXT_PUBLIC_OMEN_SHEET_CSV_URL ||
   'https://docs.google.com/spreadsheets/d/1Wc95lbFEv9Z9M8_rETut4dto-D7ff8N-eJAMJw6xdjk/export?format=csv';
 
+function normalizeDate(raw: string): string {
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  // DD/MM/YYYY (Google Sheets French/European locale)
+  const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+  // MM/DD/YYYY (US locale)
+  const mdy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (mdy) return `${mdy[3]}-${mdy[1].padStart(2, '0')}-${mdy[2].padStart(2, '0')}`;
+  return raw;
+}
+
 export async function fetchOmenSheet(): Promise<OmenContentRow[]> {
   const res = await fetch(SHEET_CSV_URL, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
@@ -22,12 +34,13 @@ export async function fetchOmenSheet(): Promise<OmenContentRow[]> {
 
   const rows: OmenContentRow[] = [];
   for (const row of result.data) {
-    const date = row.date?.trim();
+    const rawDate = row.date?.trim();
     const deezerTrackUrl = row.deezerTrackUrl?.trim();
     const answerYearRaw = row.answerYear?.trim();
-    if (!date || !deezerTrackUrl || !answerYearRaw) continue;
+    if (!rawDate || !deezerTrackUrl || !answerYearRaw) continue;
     const answerYear = parseInt(answerYearRaw, 10);
     if (isNaN(answerYear)) continue;
+    const date = normalizeDate(rawDate);
     rows.push({ date, deezerTrackUrl, answerYear });
   }
   return rows;

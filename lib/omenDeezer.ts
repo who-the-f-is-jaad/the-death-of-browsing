@@ -8,6 +8,21 @@ export function extractDeezerTrackId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function isShortLink(url: string): boolean {
+  return url.includes('link.deezer.com') || url.includes('deezer.page.link');
+}
+
+async function resolveShortLink(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/deezer/resolve?url=${encodeURIComponent(url)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.resolvedUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface DeezerTrack {
   id?: number;
   title?: string;
@@ -57,7 +72,12 @@ export async function enrichFromDeezer(
   answerYear: number,
   date: string,
 ): Promise<AudioOmenEntry | null> {
-  const trackId = extractDeezerTrackId(deezerTrackUrl);
+  let resolvedUrl = deezerTrackUrl;
+  if (isShortLink(deezerTrackUrl)) {
+    resolvedUrl = (await resolveShortLink(deezerTrackUrl)) ?? deezerTrackUrl;
+  }
+
+  const trackId = extractDeezerTrackId(resolvedUrl);
   if (!trackId) return null;
 
   const track = await fetchDeezerTrack(trackId);
