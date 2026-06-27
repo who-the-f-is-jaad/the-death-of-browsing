@@ -14,6 +14,12 @@ export function setPendingOmenAudio(audio: HTMLAudioElement): void {
   audio.addEventListener('error', () => { _pendingError = true; }, { once: true });
 }
 
+// Call this when audio.play() promise rejects (e.g. NotAllowedError).
+// The 'error' event on the element only covers media-loading failures, not play() rejections.
+export function markPendingOmenAudioFailed(): void {
+  _pendingError = true;
+}
+
 export function consumePendingOmenAudio(): { audio: HTMLAudioElement; alreadyFailed: boolean } | null {
   if (!_pending) return null;
   const audio = _pending;

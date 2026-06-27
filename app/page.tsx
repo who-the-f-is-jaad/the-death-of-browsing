@@ -6,7 +6,7 @@ import { getCurrentDayKey, getNextResetTimestamp } from '@/lib/resetTime';
 import { loadOmenState, saveOmenState, initOmenState } from '@/lib/omenStorage';
 import { loadStreak, saveStreak } from '@/lib/localState';
 import { updateStreakOnSolve, isStreakAlive } from '@/lib/streaks';
-import { setPendingOmenAudio } from '@/lib/omenAudio';
+import { setPendingOmenAudio, markPendingOmenAudioFailed } from '@/lib/omenAudio';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import type { StreakData } from '@/lib/types';
 
@@ -112,8 +112,10 @@ export default function HomePage() {
     // Start audio inside the click handler to satisfy mobile autoplay policy.
     if (url && isFirstPlay) {
       const audio = new Audio(url);
-      audio.play().catch(() => {}); // errors are caught via omenAudio singleton
+      // Register BEFORE play() so the error listener is attached first.
       setPendingOmenAudio(audio);
+      // Capture play() rejections (e.g. NotAllowedError) separately from media 'error' events.
+      audio.play().catch(() => { markPendingOmenAudioFailed(); });
     }
 
     // Count the first play of the day (deduplicated via localStorage)

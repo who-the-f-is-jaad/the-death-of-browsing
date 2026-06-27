@@ -19,6 +19,8 @@ interface Props {
 
 export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit, practiceMode = false }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Rescue ref: survives the Strict Mode cleanup→remount cycle so the audio can resume.
+  const rescuedAudio = useRef<HTMLAudioElement | null>(null);
   const [attempt, setAttempt] = useState<CurrentAttemptStatus>(() => ({
     hasSpentMark: omenState.currentAttemptHeard,
     canGuess: omenState.currentAttemptHeard,
@@ -42,19 +44,34 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       document.dispatchEvent(new CustomEvent('omen-audio-start'));
     }
 
-    const pending = consumePendingOmenAudio();
+    // React Strict Mode double-invokes effects: rescue ref holds the paused audio from cleanup.
+    const pending = rescuedAudio.current
+      ? { audio: rescuedAudio.current, alreadyFailed: false }
+      : consumePendingOmenAudio();
+    rescuedAudio.current = null;
+
     if (pending) {
       const { audio, alreadyFailed } = pending;
       audioRef.current = audio;
-      if (alreadyFailed) {
+      if (alreadyFailed || !!audio.error) {
         setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+      } else if (audio.ended) {
+        // Race condition: audio ended before useEffect ran.
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
       } else {
+        // Only add listeners if they haven't been added yet (survive Strict Mode re-run).
         audio.addEventListener('ended', () => {
           setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
         });
         audio.addEventListener('error', () => {
           setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
         });
+        if (audio.paused) {
+          // Resume after Strict Mode cleanup paused it — still within the original play context.
+          audio.play().catch(() => {
+            setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+          });
+        }
         setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
       }
     }
@@ -62,7 +79,9 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current.src = '';
+        // Rescue for Strict Mode re-mount: don't clear src so it can be resumed.
+        rescuedAudio.current = audioRef.current;
+        audioRef.current = null;
       }
       document.dispatchEvent(new CustomEvent('omen-audio-stop'));
     };
