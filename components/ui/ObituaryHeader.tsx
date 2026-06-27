@@ -37,7 +37,6 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode }: Pr
           The Death of Browsing
         </Link>
         <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {streakNode}
           <button
             onClick={toggleAmbient}
             aria-label={playing ? 'Stop ambient audio' : 'Play ambient audio'}
