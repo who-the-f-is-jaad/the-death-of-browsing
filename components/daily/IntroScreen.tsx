@@ -30,6 +30,17 @@ export default function IntroScreen({ onComplete }: Props) {
         zIndex: 200,
       }}
     >
+      <p style={{
+        fontFamily: "'CSNorvile', serif",
+        fontSize: '1rem',
+        color: 'var(--text-mid)',
+        lineHeight: 1.55,
+        textAlign: 'center',
+        maxWidth: '16rem',
+      }}>
+        This is a music discovery game based on listening.
+      </p>
+
       <Image
         src={speakerSrc}
         alt=""
@@ -53,14 +64,6 @@ export default function IntroScreen({ onComplete }: Props) {
           lineHeight: 1.4,
         }}>
           Sound on.
-        </p>
-        <p style={{
-          fontFamily: "'CSNorvile', serif",
-          fontSize: '0.9rem',
-          color: 'var(--text-mid)',
-          lineHeight: 1.65,
-        }}>
-          This is a game that forces you to listen.
         </p>
         <p style={{
           fontFamily: "'CSNorvile', serif",
