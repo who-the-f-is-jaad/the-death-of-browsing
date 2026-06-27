@@ -165,8 +165,23 @@ export default function HomePage() {
         }
       }
       track('game_solved', { attempts: updated.guesses.length });
+      // Record result for logged-in users (server ignores if not authed)
+      if (dayKey) {
+        fetch('/api/user/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: dayKey, solved: true, attempts: updated.guesses.length }),
+        }).catch(() => {});
+      }
     } else if (updated.guesses.length >= 3 && updated.lockedUntil) {
       track('game_failed');
+      if (dayKey) {
+        fetch('/api/user/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: dayKey, solved: false, attempts: updated.guesses.length }),
+        }).catch(() => {});
+      }
     }
   }, [persistOmen, streak, dayKey]);
 
@@ -321,6 +336,7 @@ export default function HomePage() {
           {[
             { label: 'Archive', href: '/archive' },
             { label: 'Practice', href: '/practice' },
+            { label: 'Profile', href: '/profile' },
             { label: 'About', href: '/about' },
           ].map(({ label, href }) => (
             <a

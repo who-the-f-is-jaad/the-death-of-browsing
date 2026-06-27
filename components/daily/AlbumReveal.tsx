@@ -9,6 +9,7 @@ import { generateShareText, shareOrCopy } from '@/lib/share';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import ArtifactCover from '@/components/ui/ArtifactCover';
 import Countdown from './Countdown';
+import EmailCapture from './EmailCapture';
 
 interface Props {
   entry: AudioOmenEntry;
@@ -152,6 +153,9 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
       >
         {copied ? 'Copied!' : 'Share result'}
       </button>
+
+      {/* Email capture / auth status — not shown in practice mode */}
+      {!practiceMode && <EmailCapture />}
 
       {/* Countdown — not shown in practice mode */}
       {!practiceMode && (

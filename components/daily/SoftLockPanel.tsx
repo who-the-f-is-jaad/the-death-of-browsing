@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Countdown from './Countdown';
 import { generateHelpShareText, shareOrCopy } from '@/lib/share';
 import type { OmenGuess } from '@/lib/omenTypes';
+import EmailCapture from './EmailCapture';
 
 interface Props {
   expiresAt: number;
@@ -74,6 +75,8 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
           })}
         </div>
       )}
+
+      <EmailCapture />
 
       {/* Ask a friend to help */}
       <button onClick={handleAskFriend} className="btn-ghost">
