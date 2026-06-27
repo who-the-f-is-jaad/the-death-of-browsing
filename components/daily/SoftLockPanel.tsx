@@ -29,11 +29,20 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-        <p className="font-heading" style={{ fontSize: '0.62rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '0.75rem' }}>
-          The Rite is Broken
+      <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem' }}>
+        <p
+          className="font-brand"
+          style={{
+            fontSize: '5.5rem',
+            fontWeight: 700,
+            color: '#c41a1a',
+            lineHeight: 0.9,
+            letterSpacing: '0.02em',
+          }}
+        >
+          Failure
         </p>
-        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.7, maxWidth: '28ch', margin: '0 auto' }}>
+        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.7, maxWidth: '28ch', margin: '1.5rem auto 0' }}>
           Three years were cast. None were true. The omen withdraws for one hour.
         </p>
 
