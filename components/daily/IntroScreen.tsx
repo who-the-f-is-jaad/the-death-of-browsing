@@ -29,6 +29,8 @@ export default function IntroScreen({ onComplete }: Props) {
         position: 'fixed',
         inset: 0,
         backgroundColor: 'var(--bg)',
+        backgroundImage: "url('/textures/black-paper.png')",
+        backgroundSize: '480px 480px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
