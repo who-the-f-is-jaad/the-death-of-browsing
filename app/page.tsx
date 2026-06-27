@@ -289,13 +289,14 @@ export default function HomePage() {
       />
 
       <div className="flex-1 flex flex-col gap-6 pb-8">
-        {!isOpen && !isSolved && (
+        {!isOpen && (
           <SealedEntry
             onOpenRiddle={handleOpen}
             plays={dailyStats?.plays}
             solves={dailyStats?.solves}
             hasFailed={omenState.guesses.length >= 3 && !isSolved}
             hasNotPlayed={omenState.guesses.length === 0}
+            hasSolved={isSolved}
           />
         )}
 
@@ -308,7 +309,7 @@ export default function HomePage() {
           />
         )}
 
-        {isLocked && omenState.lockedUntil && (
+        {isOpen && isLocked && omenState.lockedUntil && (
           <SoftLockPanel
             expiresAt={new Date(omenState.lockedUntil).getTime()}
             onRetry={handleRetry}
@@ -319,7 +320,7 @@ export default function HomePage() {
 
         {unlocking && <UnlockSequence onComplete={handleUnlockComplete} />}
 
-        {isSolved && !unlocking && (
+        {isOpen && isSolved && !unlocking && (
           <AlbumReveal entry={entry} omenState={omenState} />
         )}
       </div>

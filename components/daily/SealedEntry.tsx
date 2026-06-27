@@ -9,9 +9,10 @@ interface Props {
   solves?: number;
   hasFailed?: boolean;
   hasNotPlayed?: boolean;
+  hasSolved?: boolean;
 }
 
-export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed }: Props) {
+export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed, hasSolved }: Props) {
   const showStats = typeof plays === 'number' && plays > 0;
   const solveRate = showStats && typeof solves === 'number' && solves > 0
     ? Math.round((solves / plays!) * 100)
@@ -48,7 +49,7 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={hasFailed ? '/assets/sheep-fail.png' : '/assets/sheep-card.jpg'}
+            src={hasSolved ? '/assets/sheep-success.png' : hasFailed ? '/assets/sheep-fail.png' : '/assets/sheep-card.jpg'}
             alt="One record remains"
             style={{ width: '100%', display: 'block', filter: 'grayscale(20%) contrast(1.1)', opacity: 0.9 }}
           />
