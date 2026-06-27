@@ -30,6 +30,19 @@ export default function IntroScreen({ onComplete }: Props) {
         zIndex: 200,
       }}
     >
+      <p
+        className="font-brand"
+        style={{
+          fontSize: '2.4rem',
+          fontWeight: 700,
+          color: 'var(--text)',
+          lineHeight: 1.1,
+          textAlign: 'center',
+        }}
+      >
+        The Death of Browsing
+      </p>
+
       <p style={{
         fontFamily: "'CSNorvile', serif",
         fontSize: '1rem',
@@ -50,37 +63,22 @@ export default function IntroScreen({ onComplete }: Props) {
         aria-hidden="true"
       />
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.85rem',
+      <p style={{
+        fontFamily: "'CSNorvile', serif",
+        fontSize: '1.4rem',
+        color: 'var(--text)',
+        lineHeight: 1.4,
         textAlign: 'center',
-        maxWidth: '17rem',
       }}>
-        <p style={{
-          fontFamily: "'CSNorvile', serif",
-          fontSize: '1.4rem',
-          color: 'var(--text)',
-          lineHeight: 1.4,
-        }}>
-          Sound on.
-        </p>
-        <p style={{
-          fontFamily: "'CSNorvile', serif",
-          fontSize: '0.85rem',
-          color: 'var(--text-dim)',
-          lineHeight: 1.65,
-        }}>
-          Turn up your volume before you start.
-        </p>
-      </div>
+        Turn volume up.
+      </p>
 
       <button
         onClick={handleOk}
         className="btn-ghost"
         style={{ maxWidth: '11rem' }}
       >
-        Start
+        Enter
       </button>
     </div>
   );
