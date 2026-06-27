@@ -8,9 +8,10 @@ interface Props {
   plays?: number;
   solves?: number;
   hasFailed?: boolean;
+  hasNotPlayed?: boolean;
 }
 
-export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed }: Props) {
+export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed }: Props) {
   const showStats = typeof plays === 'number' && plays > 0;
   const solveRate = showStats && typeof solves === 'number' && solves > 0
     ? Math.round((solves / plays!) * 100)
@@ -72,7 +73,11 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed }: 
             borderBottom: '1px solid var(--border)',
           }}
         >
-          Daily game
+          Daily game{hasNotPlayed && (
+            <span style={{ fontSize: '0.65rem', letterSpacing: '0.06em', textTransform: 'none', color: 'var(--text-mid)', marginLeft: '0.5rem', fontStyle: 'italic' }}>
+              (new today)
+            </span>
+          )}
         </button>
 
         <Link

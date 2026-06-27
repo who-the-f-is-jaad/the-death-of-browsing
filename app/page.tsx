@@ -295,6 +295,7 @@ export default function HomePage() {
             plays={dailyStats?.plays}
             solves={dailyStats?.solves}
             hasFailed={omenState.guesses.length >= 3 && !isSolved}
+            hasNotPlayed={omenState.guesses.length === 0}
           />
         )}
 
