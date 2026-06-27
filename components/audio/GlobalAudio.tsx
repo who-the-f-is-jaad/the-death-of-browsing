@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'tdb:audio-enabled';
 const AUDIO_SRC = '/audio/pest.mp3';
-const VOLUME = 0.22;
+const VOLUME = 0.11;
 
 export default function GlobalAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);

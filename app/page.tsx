@@ -257,6 +257,7 @@ export default function HomePage() {
             expiresAt={new Date(omenState.lockedUntil).getTime()}
             onRetry={handleRetry}
             scars={omenState.guesses}
+            date={entry.dateUtc}
           />
         )}
 
@@ -286,6 +287,7 @@ export default function HomePage() {
         >
           {[
             { label: 'Archive', href: '/archive' },
+            { label: 'Practice', href: '/practice' },
             { label: 'About', href: '/about' },
           ].map(({ label, href }) => (
             <a

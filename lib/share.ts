@@ -1,34 +1,64 @@
-import type { Attempt } from './types';
+import type { OmenLocalState } from './omenTypes';
 
-const MAX_ICONS = 10;
+function formatDate(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${d} ${months[m - 1]} ${y}`;
+}
 
-/**
- * Generates the share text for a completed (or failed) daily entry.
- * Does not reveal the album name or the answer.
- */
-export function generateShareText(
-  entryNumber: number,
-  attempts: Attempt[],
-  solved: boolean,
-  url: string,
-): string {
-  const icons = attempts
-    .slice(0, MAX_ICONS)
-    .map((a) => (a.correct ? '✅' : '❌'))
-    .join(' ');
+/** Spoiler-free share text: shows guessed years + direction, never album/artist/correct year. */
+export function generateShareText(omenState: OmenLocalState, date: string): string {
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'thedeathofbrowsing.com';
 
-  const count = attempts.length;
-  const resultLine = solved
-    ? `I broke the scroll in ${count} tr${count === 1 ? 'y' : 'ies'}.`
-    : 'The seal held.';
+  const scarsLines = omenState.guesses.map(g => {
+    if (g.correct) return `✓ ${g.year}`;
+    const dir = g.direction === 'UNBORN' ? 'too early' : 'too late';
+    return `† ${g.year} — ${dir}`;
+  }).join('\n');
+
+  const failed = !omenState.solved;
+
+  const parts: string[] = [
+    `THE DEATH OF BROWSING — ${formatDate(date)}`,
+    scarsLines,
+    ...(failed ? ["Couldn't name this one. Help me out?"] : []),
+    siteUrl,
+  ];
+
+  return parts.join('\n\n');
+}
+
+/** Share text variant for the soft-lock failure state (takes raw guesses, no full state needed). */
+export function generateHelpShareText(guesses: OmenLocalState['guesses'], date: string): string {
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'thedeathofbrowsing.com';
+
+  const scarsLines = guesses.map(g => {
+    const dir = g.direction === 'UNBORN' ? 'too early' : 'too late';
+    return `† ${g.year} — ${dir}`;
+  }).join('\n');
 
   return [
-    `THE DEATH OF BROWSING #${String(entryNumber).padStart(3, '0')}`,
-    `🕯️ ${icons}`,
-    resultLine,
-    'One record remains.',
-    url,
-  ].join('\n');
+    `THE DEATH OF BROWSING — ${formatDate(date)}`,
+    `3 tries. Nothing.\n${scarsLines}`,
+    'Can you name it?',
+    siteUrl,
+  ].join('\n\n');
+}
+
+/** Try navigator.share, fall back to clipboard copy. */
+export async function shareOrCopy(text: string): Promise<'shared' | 'copied' | 'failed'> {
+  if (typeof navigator === 'undefined') return 'failed';
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ text });
+      return 'shared';
+    } catch {
+      // User cancelled or unsupported — fall through
+    }
+  }
+
+  return (await copyToClipboard(text)) ? 'copied' : 'failed';
 }
 
 /** Copies text to clipboard; returns true on success. */

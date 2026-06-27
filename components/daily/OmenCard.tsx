@@ -13,9 +13,10 @@ interface Props {
   omenState: OmenLocalState;
   onMarkSpent: (updated: OmenLocalState) => void;
   onGuessSubmit: (year: number, updated: OmenLocalState, correct: boolean) => void;
+  practiceMode?: boolean;
 }
 
-export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit }: Props) {
+export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit, practiceMode = false }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [attempt, setAttempt] = useState<CurrentAttemptStatus>(() => ({
     hasSpentMark: omenState.currentAttemptHeard,
@@ -35,8 +36,10 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
   const inputActive = attempt.hasSpentMark;
 
   useEffect(() => {
-    // Stop background music; pick up any audio started by the "Play" button.
-    document.dispatchEvent(new CustomEvent('omen-audio-start'));
+    // In practice mode, don't pause background music on mount — only when the user clicks Listen.
+    if (!practiceMode) {
+      document.dispatchEvent(new CustomEvent('omen-audio-start'));
+    }
 
     const pending = consumePendingOmenAudio();
     if (pending) {
@@ -203,7 +206,6 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
               justifyContent: 'center',
             }}
           >
-            {/* Vinyl label ring */}
             <div style={{
               width: '26%',
               aspectRatio: '1',
@@ -260,10 +262,10 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
         </p>
       )}
 
-      {/* Listen again — shown for attempts 2 and 3 */}
+      {/* Listen button — "Listen" on first attempt, "Listen again" on retries */}
       {canHear && (
         <button onClick={handleHearOmen} className="btn-ghost">
-          Listen again
+          {attemptsSpent === 0 ? 'Listen' : 'Listen again'}
         </button>
       )}
 
