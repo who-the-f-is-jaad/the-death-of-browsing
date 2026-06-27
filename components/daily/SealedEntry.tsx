@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { getNextResetTimestamp } from '@/lib/resetTime';
 import { playClick } from '@/lib/clickSound';
 import Countdown from './Countdown';
@@ -36,20 +37,93 @@ export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
         </div>
       )}
 
-      <div className="photo-frame">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/assets/sheep-card.jpg"
-          alt="One record remains"
-          style={{ width: '100%', display: 'block', filter: 'grayscale(20%) contrast(1.1)', opacity: 0.9 }}
-        />
+      {/* Sheep image — smaller, centered */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="photo-frame" style={{ width: '68%' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/sheep-card.jpg"
+            alt="One record remains"
+            style={{ width: '100%', display: 'block', filter: 'grayscale(20%) contrast(1.1)', opacity: 0.9 }}
+          />
+        </div>
       </div>
 
-      <button onClick={() => { playClick(); onOpenRiddle(); }} className="btn-ghost">
-        Play
-      </button>
+      {/* Menu */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+        <button
+          onClick={() => { playClick(); onOpenRiddle(); }}
+          className="font-heading"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '1.1rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--text)',
+            textAlign: 'left',
+            padding: '0.6rem 0',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          Daily game
+        </button>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
+        <div
+          className="font-heading"
+          style={{
+            fontSize: '1.1rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--text-dim)',
+            padding: '0.6rem 0',
+            borderBottom: '1px solid var(--border)',
+            cursor: 'not-allowed',
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '0.5rem',
+          }}
+        >
+          Multiplayer
+          <span style={{ fontSize: '0.48rem', letterSpacing: '0.18em', color: 'var(--text-dim)' }}>soon</span>
+        </div>
+
+        <Link
+          href="/profile"
+          className="font-heading"
+          style={{
+            fontSize: '1.1rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--text-mid)',
+            textDecoration: 'none',
+            padding: '0.6rem 0',
+            borderBottom: '1px solid var(--border)',
+            display: 'block',
+          }}
+        >
+          Profile
+        </Link>
+
+        <Link
+          href="/archive"
+          className="font-heading"
+          style={{
+            fontSize: '1.1rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--text-mid)',
+            textDecoration: 'none',
+            padding: '0.6rem 0',
+            display: 'block',
+          }}
+        >
+          Archive
+        </Link>
+      </nav>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.25rem' }}>
         <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
           A short audio clip plays. Guess the exact year the album came out.
         </p>

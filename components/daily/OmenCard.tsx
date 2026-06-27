@@ -360,6 +360,9 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       {/* Year input — centered 4-digit box */}
       {inputActive && (
         <form onSubmit={handleYearSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
+            Guess the year
+          </p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <input
               ref={(el) => { if (el) setTimeout(() => el.focus(), 60); }}
