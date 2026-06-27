@@ -4,7 +4,8 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { track } from '@vercel/analytics';
 import type { AudioOmenEntry, OmenLocalState, CurrentAttemptStatus, OmenGuess } from '@/lib/omenTypes';
 import { getOmenFeedback, getOmenFeedbackCopy } from '@/lib/omenFeedback';
-import { consumePendingOmenAudio } from '@/lib/omenAudio';
+import { consumePendingOmenAudio, setPendingOmenAudio, markPendingOmenAudioFailed } from '@/lib/omenAudio';
+import { playClick } from '@/lib/clickSound';
 
 const MAX_ATTEMPTS = 3;
 const CURRENT_YEAR = new Date().getFullYear();
@@ -90,6 +91,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
   const handleHearOmen = useCallback(() => {
     if (!canHear) return;
+    playClick();
 
     const next: OmenLocalState = {
       ...omenState,
@@ -133,6 +135,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       return;
     }
     setYearError(null);
+    playClick();
 
     if (audioRef.current) {
       audioRef.current.pause();
@@ -170,6 +173,12 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
     });
 
     if (feedback.correct) {
+      // Start the reveal excerpt within the gesture context so AlbumReveal can autoplay it.
+      if (entry.audioOmen.audioUrl) {
+        const revealAudio = new Audio(entry.audioOmen.audioUrl);
+        setPendingOmenAudio(revealAudio);
+        revealAudio.play().catch(() => markPendingOmenAudioFailed());
+      }
       // Flip the cover first, then hand off to parent after animation.
       setCoverRevealed(true);
       setYearValue('');
@@ -179,11 +188,18 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       return;
     }
 
+    // Practice mode: reveal on last wrong guess — start audio in gesture context.
+    if (practiceMode && isLastAttempt && entry.audioOmen.audioUrl) {
+      const revealAudio = new Audio(entry.audioOmen.audioUrl);
+      setPendingOmenAudio(revealAudio);
+      revealAudio.play().catch(() => markPendingOmenAudioFailed());
+    }
+
     onGuessSubmit(year, next, false);
     setLastFeedback(guess);
     setYearValue('');
     setAttempt({ hasSpentMark: false, canGuess: false, audioStatus: 'idle' });
-  }, [yearValue, entry, omenState, attemptsSpent, onGuessSubmit]);
+  }, [yearValue, entry, omenState, attemptsSpent, onGuessSubmit, practiceMode]);
 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { track } from '@vercel/analytics';
 import { COPY } from '@/lib/copy';
 import { getNextResetTimestamp } from '@/lib/resetTime';
-import { generateShareText, shareOrCopy } from '@/lib/share';
+import { shareOrCopy } from '@/lib/share';
+import { consumePendingOmenAudio } from '@/lib/omenAudio';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import ArtifactCover from '@/components/ui/ArtifactCover';
 import Countdown from './Countdown';
@@ -19,46 +20,51 @@ interface Props {
 
 export default function AlbumReveal({ entry, omenState, practiceMode = false }: Props) {
   const [copied, setCopied] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const rescuedAudio = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Pick up the audio that OmenCard started within the user gesture context.
+    // rescuedAudio handles Strict Mode double-invoke (cleanup pauses, re-mount resumes).
+    const pending = rescuedAudio.current
+      ? { audio: rescuedAudio.current, alreadyFailed: false }
+      : consumePendingOmenAudio();
+    rescuedAudio.current = null;
+
+    if (pending && !pending.alreadyFailed && !pending.audio.error) {
+      const { audio } = pending;
+      audioRef.current = audio;
+      if (audio.paused && !audio.ended) {
+        audio.play().catch(() => {});
+      }
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        rescuedAudio.current = audioRef.current;
+        audioRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const solvedYear = omenState.guesses.find(g => g.correct)?.year;
   const failed = !omenState.solved;
   const { album, track: entryTrack, audioOmen } = entry;
 
   const handleShare = useCallback(async () => {
-    const text = generateShareText(omenState, entry.dateUtc);
-    const result = await shareOrCopy(text);
+    const url = typeof window !== 'undefined' ? window.location.origin : '';
+    const result = await shareOrCopy(url);
     if (result !== 'failed') {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       track('result_shared', { outcome: failed ? 'failure' : 'success', method: result });
     }
-  }, [omenState, entry.dateUtc, failed]);
+  }, [failed]);
 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-
-      {/* Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        {failed ? (
-          <>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text)' }}>
-              The Record Is Revealed
-            </p>
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.65 }}>
-              Three tries. No name. The omen shows itself.
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text)' }}>
-              {practiceMode ? 'Named It.' : 'The Omen Was Placed'}
-            </p>
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.65 }}>
-              {practiceMode ? 'Practice complete.' : 'The year is named. The record accepts you.'}
-            </p>
-          </>
-        )}
-      </div>
 
       {/* Year confirmation — only on success */}
       {solvedYear !== undefined && (
@@ -151,7 +157,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
         className="btn-ghost"
         style={{ marginTop: '0.5rem' }}
       >
-        {copied ? 'Copied!' : 'Share result'}
+        {copied ? 'Copied!' : 'Share the game'}
       </button>
 
       {/* Email capture / auth status — not shown in practice mode */}

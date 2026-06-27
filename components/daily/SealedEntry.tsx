@@ -1,6 +1,7 @@
 'use client';
 
 import { getNextResetTimestamp } from '@/lib/resetTime';
+import { playClick } from '@/lib/clickSound';
 import Countdown from './Countdown';
 
 interface Props {
@@ -44,7 +45,7 @@ export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
         />
       </div>
 
-      <button onClick={onOpenRiddle} className="btn-ghost">
+      <button onClick={() => { playClick(); onOpenRiddle(); }} className="btn-ghost">
         Play
       </button>
 
