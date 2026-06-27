@@ -17,11 +17,11 @@ const config: Config = {
       },
       fontFamily: {
         // Wordmark only — UnifrakturCook blackletter
-        brand: ['"Unifraktur"', '"CSNorvile"', 'serif'],
+        brand: ['"Unifraktur"', '"IM Fell DW Pica SC"', 'serif'],
         // All headings, labels, UI — IM Fell English
-        heading: ['"CSNorvile"', 'serif'],
+        heading: ['"IM Fell DW Pica SC"', 'serif'],
         // Body — IM Fell English
-        serif: ['"CSNorvile"', 'Georgia', 'Cambria', 'serif'],
+        serif: ['"IM Fell DW Pica SC"', 'Georgia', 'Cambria', 'serif'],
         sans: [
           'system-ui',
           '-apple-system',

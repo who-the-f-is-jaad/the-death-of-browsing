@@ -217,7 +217,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
                 color: isDead ? 'var(--crimson)' : 'var(--text)',
                 transition: 'color 0.25s',
                 userSelect: 'none',
-                fontFamily: "'CSNorvile', serif",
+                fontFamily: "'IM Fell DW Pica SC', Georgia, serif",
               }}
             >
               †

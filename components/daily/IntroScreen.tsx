@@ -47,7 +47,7 @@ export default function IntroScreen({ onComplete }: Props) {
         The Death of Browsing
       </p>
 
-      <p style={{ fontFamily: "'CSNorvile', serif", fontSize: '1rem', color: 'var(--text-mid)', lineHeight: 1.55, textAlign: 'center', maxWidth: '16rem' }}>
+      <p style={{ fontFamily: "'IM Fell DW Pica SC', Georgia, serif", fontSize: '1rem', color: 'var(--text-mid)', lineHeight: 1.55, textAlign: 'center', maxWidth: '16rem' }}>
         This is a music discovery game based on listening.
       </p>
 
@@ -66,7 +66,7 @@ export default function IntroScreen({ onComplete }: Props) {
         />
       </button>
 
-      <p style={{ fontFamily: "'CSNorvile', serif", fontSize: '1.4rem', color: 'var(--text)', lineHeight: 1.4, textAlign: 'center' }}>
+      <p style={{ fontFamily: "'IM Fell DW Pica SC', Georgia, serif", fontSize: '1.4rem', color: 'var(--text)', lineHeight: 1.4, textAlign: 'center' }}>
         Turn volume up.
       </p>
 

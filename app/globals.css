@@ -5,16 +5,16 @@
 /* ── Local fonts ────────────────────────────────────────────────────────────── */
 
 @font-face {
-  font-family: 'IM Fell English';
-  src: url('/fonts/IM_Fell_English/IMFellEnglish-Regular.ttf') format('truetype');
+  font-family: 'IM Fell DW Pica SC';
+  src: url('/fonts/IM_Fell_DW_Pica_SC/IMFellDWPicaSC-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'IM Fell English';
-  src: url('/fonts/IM_Fell_English/IMFellEnglish-Italic.ttf') format('truetype');
+  font-family: 'IM Fell DW Pica SC';
+  src: url('/fonts/IM_Fell_DW_Pica_SC/IMFellDWPicaSC-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -25,22 +25,6 @@
   src: url('/fonts/UnifrakturCook/UnifrakturCook-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'CSNorvile';
-  src: url('/fonts/cs-norvile-drawn-demo/CSNorvileDrawn-Regular_demo.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'CSNorvile';
-  src: url('/fonts/cs-norvile-drawn-demo/CSNorvileDrawn-Regular_demo.otf') format('opentype');
-  font-weight: 400;
-  font-style: italic;
   font-display: swap;
 }
 
@@ -88,7 +72,7 @@ body {
   background-image: url('/textures/black-paper.png');
   background-size: 480px 480px;
   color: var(--text);
-  font-family: 'CSNorvile', serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   position: relative;
   overflow-x: hidden;
 }
@@ -131,9 +115,9 @@ main {
 
 /* ── Typography utilities ───────────────────────────────────────────────────── */
 
-/* All labels, headings, UI text — Pixel3 */
+/* All labels, headings, UI text */
 .font-heading {
-  font-family: 'CSNorvile', serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
 }
 
 /* Wordmark only — UnifrakturCook blackletter */
@@ -181,15 +165,6 @@ main {
   line-height: 1;
 }
 
-/* Entry number — IM Fell English, small and quiet */
-.cat-entry {
-  font-family: 'IM Fell English', Georgia, serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
 /* ── Rules ──────────────────────────────────────────────────────────────────── */
 .rule {
   display: block;
@@ -235,7 +210,7 @@ main {
 }
 
 .photo-fallback-title {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.65rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -244,7 +219,7 @@ main {
 }
 
 .photo-fallback-ref {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.55rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -265,7 +240,7 @@ main {
   border: none;
   border-bottom: 1px solid var(--border-mid);
   color: var(--text);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 1rem;
   padding: 0.5rem 0;
   outline: none;
@@ -301,13 +276,12 @@ main {
 .mark--dead  { background: var(--crimson); opacity: 0.55; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────────── */
-/* Primary CTA — crimson stamp (Deezer) */
 .btn-primary {
   display: block;
   width: 100%;
   background: var(--crimson);
   color: var(--text);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -329,14 +303,14 @@ main {
   cursor: not-allowed;
 }
 
-/* Ghost — main CTA, bright and readable */
+/* Ghost — main CTA */
 .btn-ghost {
   display: block;
   width: 100%;
   background: transparent;
   border: 1px solid var(--border-hi);
   color: var(--text);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -362,7 +336,7 @@ main {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   color: var(--text-dim);
@@ -376,7 +350,6 @@ main {
 .btn-text:hover { color: var(--text-mid); }
 
 /* ── DSP links ───────────────────────────────────────────────────────────────── */
-/* Primary: Deezer — crimson stamp */
 .dsp-primary {
   display: flex;
   align-items: center;
@@ -386,7 +359,7 @@ main {
   padding: 0.875rem 1rem;
   background: var(--crimson);
   color: var(--text);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -398,7 +371,6 @@ main {
   background: var(--crimson-hi);
 }
 
-/* Secondary DSPs — dim text links */
 .dsp-secondary {
   display: flex;
   align-items: center;
@@ -407,7 +379,7 @@ main {
   background: transparent;
   border: none;
   color: var(--text-mid);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -422,7 +394,7 @@ main {
 
 /* ── Countdown ───────────────────────────────────────────────────────────────── */
 .countdown {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 1.5rem;
   font-weight: 400;
   letter-spacing: 0.05em;
@@ -438,7 +410,7 @@ main {
 }
 
 .meta-key {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -446,7 +418,7 @@ main {
 }
 
 .meta-val {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.875rem;
   color: var(--text);
   line-height: 1.4;
@@ -454,7 +426,7 @@ main {
 
 /* ── Editorial note ──────────────────────────────────────────────────────────── */
 .editorial {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-style: italic;
   font-size: 0.875rem;
   line-height: 1.75;
@@ -493,7 +465,7 @@ main {
 }
 
 .chamber-label {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -503,7 +475,7 @@ main {
 
 .chamber-meta {
   flex: 1;
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-size: 0.72rem;
   font-style: italic;
   color: var(--text-mid);
@@ -533,7 +505,7 @@ main {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-style: italic;
   font-size: 0.58rem;
   letter-spacing: 0.16em;
@@ -593,4 +565,4 @@ main {
 /* ── Compat stubs ────────────────────────────────────────────────────────────── */
 .rf      { border: 1px solid var(--border-mid); position: relative; }
 .rf-body { position: relative; }
-.ab      { cursor: pointer; font-family: 'IM Fell English', Georgia, serif; }
+.ab      { cursor: pointer; font-family: 'IM Fell DW Pica SC', Georgia, serif; }
