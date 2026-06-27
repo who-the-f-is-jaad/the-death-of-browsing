@@ -4,13 +4,13 @@
 export const COPY = {
   // ── Identity ──────────────────────────────────────────────────────────────
   appName: 'THE DEATH OF BROWSING',
-  tagline: 'One record. One riddle. Every dawn.',
+  tagline: 'One sound. One year. Every dawn.',
   resetMeridian: 'Midnight on the Dead Wax Meridian',
 
   // ── Sealed state ──────────────────────────────────────────────────────────
   sealedHeadline: 'One record remains.',
   sealedBody: 'The feed is dead. One riddle stands between you and the music.',
-  sealedCTA: 'Answer the omen',
+  sealedCTA: 'Answer the Omen',
 
   // ── Riddle state ──────────────────────────────────────────────────────────
   riddleLabel: 'The Omen',
@@ -90,7 +90,7 @@ export const COPY = {
   inviteSuccess: 'The door is open.',
 
   // ── Generic ───────────────────────────────────────────────────────────────
-  loading: 'Summoning...',
+  loading: 'Summoning the Omen',
   noEntryToday: 'No record today.',
   noEntrySubtext: 'Return at dawn.',
   genericError: 'Something broke the rite. Refresh to continue.',

@@ -23,6 +23,8 @@ export interface DailyEntry {
   //       The canonical answer set must never be sent to the client.
   acceptedAnswers: string[];
   hints: string[];
+  solvedCount: number;
+  failedAttempts: number;
   youtubeEmbedUrl: string;
   deezerUrl: string;
   spotifyUrl: string;

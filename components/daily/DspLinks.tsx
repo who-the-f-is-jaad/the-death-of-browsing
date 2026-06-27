@@ -1,55 +1,47 @@
 'use client';
 
-import { COPY } from '@/lib/copy';
 import type { DailyEntry } from '@/lib/types';
 
 interface Props {
   entry: DailyEntry;
 }
 
-export default function DspLinks({ entry }: Props) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-      {/* Primary: Deezer — crimson stamped strip */}
-      <a
-        href={entry.deezerUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="dsp-primary font-heading"
-        aria-label={`${COPY.listenOnDeezer} — ${entry.album} by ${entry.artist}`}
-      >
-        {COPY.listenOnDeezer}
-      </a>
+const DSP_LABEL_STYLE: React.CSSProperties = {
+  fontSize: '0.62rem',
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase' as const,
+};
 
-      {/* Secondary DSPs — quiet row */}
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <a
-          href={entry.spotifyUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="dsp-secondary font-heading"
-          aria-label={`${COPY.listenOnSpotify} — ${entry.album}`}
-        >
-          {COPY.listenOnSpotify}
-        </a>
-        <a
-          href={entry.appleMusicUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="dsp-secondary font-heading"
-          aria-label={`${COPY.listenOnAppleMusic} — ${entry.album}`}
-        >
-          {COPY.listenOnAppleMusic}
-        </a>
-        <a
-          href={entry.youtubeMusicUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="dsp-secondary font-heading"
-          aria-label={`YouTube Music — ${entry.album}`}
-        >
-          YT Music
-        </a>
+export default function DspLinks({ entry }: Props) {
+  const links = [
+    { label: 'Spotify',      href: entry.spotifyUrl      },
+    { label: 'Deezer',       href: entry.deezerUrl       },
+    { label: 'Apple Music',  href: entry.appleMusicUrl   },
+    { label: 'YT Music',     href: entry.youtubeMusicUrl },
+  ];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <p
+        className="font-heading"
+        style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}
+      >
+        Listen
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+        {links.map(({ label, href }) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="dsp-secondary font-heading"
+            style={DSP_LABEL_STYLE}
+            aria-label={`${label} — ${entry.album} by ${entry.artist}`}
+          >
+            {label}
+          </a>
+        ))}
       </div>
     </div>
   );

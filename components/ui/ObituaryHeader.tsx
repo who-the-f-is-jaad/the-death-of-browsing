@@ -1,5 +1,4 @@
-// Minimal catalog header: brand left, entry number right.
-// Feels like a running head in a printed catalog or zine.
+import Link from 'next/link';
 
 interface Props {
   entryNumber: number;
@@ -11,7 +10,9 @@ export default function ObituaryHeader({ entryNumber, entryDate: _entryDate, str
 
   return (
     <header className="cat-header">
-      <span className="cat-brand">The Death of Browsing</span>
+      <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
+        The Death of Browsing
+      </Link>
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
         {streakNode}

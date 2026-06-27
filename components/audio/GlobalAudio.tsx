@@ -12,6 +12,11 @@ export default function GlobalAudio() {
   const [enabled, setEnabled] = useState(false);
   const [ready, setReady] = useState(false);
 
+  // Keep a ref in sync with `enabled` so the omen event handlers (registered once)
+  // always read the current value rather than a stale closure.
+  const enabledRef = useRef(enabled);
+  useEffect(() => { enabledRef.current = enabled; }, [enabled]);
+
   useEffect(() => {
     const pref = localStorage.getItem(STORAGE_KEY) === 'true';
 
@@ -33,11 +38,19 @@ export default function GlobalAudio() {
       document.addEventListener('touchstart', tryResume, { once: true });
     }
 
+    // Pause background audio while the omen sounds; resume after, if enabled.
+    const handleOmenStart = () => { audio.pause(); };
+    const handleOmenStop = () => { if (enabledRef.current) audio.play().catch(() => {}); };
+    document.addEventListener('omen-audio-start', handleOmenStart);
+    document.addEventListener('omen-audio-stop', handleOmenStop);
+
     return () => {
       if (autoResumeRef.current) {
         document.removeEventListener('click', autoResumeRef.current);
         document.removeEventListener('touchstart', autoResumeRef.current);
       }
+      document.removeEventListener('omen-audio-start', handleOmenStart);
+      document.removeEventListener('omen-audio-stop', handleOmenStop);
       audio.pause();
       audio.src = '';
       audioRef.current = null;

@@ -2,20 +2,16 @@
 
 import { COPY } from '@/lib/copy';
 import { getNextResetTimestamp } from '@/lib/resetTime';
-import type { DailyEntry } from '@/lib/types';
 import Countdown from './Countdown';
 
 interface Props {
-  entry: DailyEntry;
   onOpenRiddle: () => void;
 }
 
-export default function SealedEntry({ entry, onOpenRiddle }: Props) {
+export default function SealedEntry({ onOpenRiddle }: Props) {
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
-      {/* ── Devotional card image ─────────────────────────────────────── */}
-      {/* TODO: If the sheep image disappears, place it at /public/assets/sheep-card.jpg */}
       <div className="photo-frame">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -25,40 +21,28 @@ export default function SealedEntry({ entry, onOpenRiddle }: Props) {
         />
       </div>
 
-      {/* ── Sparse copy ─────────────────────────────────────────────────── */}
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-        <p
-          className="font-heading"
-          style={{ fontSize: '0.72rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--text)' }}
-        >
-          THE FEED IS DEAD
+        <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--text)' }}>
+          The Feed is Dead
         </p>
-        <p
-          className="font-heading"
-          style={{ fontSize: '0.6rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-mid)' }}
-        >
-          ONE RECORD REMAINS
+        <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+          One Record Remains
+        </p>
+        <p style={{ fontStyle: 'italic', fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '0.25rem', lineHeight: 1.6 }}>
+          Hear the omen. Name the year. Open the record.
         </p>
       </div>
 
-      {/* ── Countdown ────────────────────────────────────────────────────── */}
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.3rem', alignItems: 'center' }}>
-        <p
-          className="font-heading"
-          style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
-        >
+        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           {COPY.nextRecordLabel}
         </p>
         <Countdown targetTimestamp={getNextResetTimestamp()} className="countdown" />
-        <p
-          className="font-heading"
-          style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
-        >
-          {COPY.nextResetMeridian}
+        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          07:00 UTC
         </p>
       </div>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <button onClick={onOpenRiddle} className="btn-ghost">
         {COPY.sealedCTA}
       </button>

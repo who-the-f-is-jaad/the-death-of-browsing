@@ -37,9 +37,9 @@
   --border-mid:  #262626;
   --border-hi:   #333333;
 
-  --text:        #e2e2e2;
-  --text-mid:    #787878;
-  --text-dim:    #404040;
+  --text:        #ececec;
+  --text-mid:    #a0a0a0;
+  --text-dim:    #505050;
 
   --crimson:     #7a1212;
   --crimson-hi:  #9e1c1c;
@@ -193,7 +193,6 @@ main {
 
 /* ── Photo frame ─────────────────────────────────────────────────────────────── */
 .photo-frame {
-  border: 1px solid var(--border-mid);
   overflow: hidden;
   position: relative;
 }
@@ -240,8 +239,7 @@ main {
 
 /* ── Inscription block ───────────────────────────────────────────────────────── */
 .inscription {
-  border: 1px solid var(--border-mid);
-  padding: 1.5rem;
+  padding: 0;
   position: relative;
 }
 
@@ -316,27 +314,27 @@ main {
   cursor: not-allowed;
 }
 
-/* Ghost — quiet thin border */
+/* Ghost — main CTA, bright and readable */
 .btn-ghost {
   display: block;
   width: 100%;
   background: transparent;
-  border: 1px solid var(--border-mid);
-  color: var(--text-mid);
+  border: 1px solid var(--border-hi);
+  color: var(--text);
   font-family: 'IM Fell English', Georgia, serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   text-align: center;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   cursor: pointer;
-  transition: border-color 0.18s, color 0.18s;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
 }
 
 .btn-ghost:hover,
 .btn-ghost:focus-visible {
-  border-color: var(--border-hi);
-  color: var(--text);
+  border-color: var(--text-mid);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .btn-ghost:disabled {
@@ -392,20 +390,19 @@ main {
   justify-content: center;
   padding: 0.5rem 0.4rem;
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
+  border: none;
+  color: var(--text-mid);
   font-family: 'IM Fell English', Georgia, serif;
   font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   flex: 1;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s;
 }
 
 .dsp-secondary:hover {
-  color: var(--text-mid);
-  border-color: var(--border-mid);
+  color: var(--text);
 }
 
 /* ── Countdown ───────────────────────────────────────────────────────────────── */
@@ -430,7 +427,7 @@ main {
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-mid);
 }
 
 .meta-val {
@@ -453,7 +450,6 @@ main {
 
 /* ── Listening chamber ───────────────────────────────────────────────────────── */
 .chamber {
-  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -467,7 +463,7 @@ main {
   cursor: pointer;
   text-align: left;
   border: none;
-  color: var(--text-dim);
+  color: var(--text-mid);
   transition: background 0.15s;
 }
 
@@ -477,7 +473,7 @@ main {
 
 .chamber-icon {
   font-size: 0.55rem;
-  color: var(--text-dim);
+  color: var(--text-mid);
   flex-shrink: 0;
 }
 
@@ -486,7 +482,7 @@ main {
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-mid);
   flex-shrink: 0;
 }
 
@@ -495,7 +491,7 @@ main {
   font-family: 'IM Fell English', Georgia, serif;
   font-size: 0.72rem;
   font-style: italic;
-  color: var(--text-dim);
+  color: var(--text-mid);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
