@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import GlobalAudio from '@/components/audio/GlobalAudio';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'THE DEATH OF BROWSING',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <GlobalAudio />
+        <Analytics />
       </body>
     </html>
   );

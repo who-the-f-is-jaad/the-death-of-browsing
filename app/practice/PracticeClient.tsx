@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { track } from '@vercel/analytics';
 import { getCurrentDayKey, getPreviousDayKey } from '@/lib/resetTime';
 import { fetchOmenSheet, selectOmenRow } from '@/lib/omenSheet';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
@@ -51,6 +52,7 @@ export default function PracticeClient() {
         setEntry(enriched);
         setPracticeState(initPracticeState(enriched.id));
         setLoadState('ready');
+        track('practice_started');
       } catch {
         setLoadState('error');
       }
@@ -72,6 +74,7 @@ export default function PracticeClient() {
     setPracticeState(noLock);
     if (correct || noLock.guesses.length >= 3) {
       setRevealed(true);
+      track(correct ? 'practice_solved' : 'practice_failed', { attempts: noLock.guesses.length });
     }
   }, []);
 

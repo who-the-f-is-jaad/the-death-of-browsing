@@ -5,22 +5,35 @@ import Countdown from './Countdown';
 
 interface Props {
   onOpenRiddle: () => void;
+  plays?: number;
+  solves?: number;
 }
 
-export default function SealedEntry({ onOpenRiddle }: Props) {
+export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
+  const showStats = typeof plays === 'number' && plays > 0;
+  const solveRate = showStats && typeof solves === 'number' && solves > 0
+    ? Math.round((solves / plays!) * 100)
+    : null;
+
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-      {/* Daily stats — placeholder until server-side analytics are wired */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
-        <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
-          312 plays today
-        </span>
-        <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
-        <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
-          67% solved
-        </span>
-      </div>
+      {/* Daily stats */}
+      {showStats && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+            {plays} {plays === 1 ? 'play' : 'plays'} today
+          </span>
+          {solveRate !== null && (
+            <>
+              <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
+              <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+                {solveRate}% solved
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="photo-frame">
         {/* eslint-disable-next-line @next/next/no-img-element */}

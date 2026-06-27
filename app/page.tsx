@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { track } from '@vercel/analytics';
 import { getCurrentDayKey, getNextResetTimestamp } from '@/lib/resetTime';
 import { fetchOmenSheet, selectOmenRow } from '@/lib/omenSheet';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
@@ -33,6 +34,7 @@ export default function HomePage() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [mounted, setMounted] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+  const [dailyStats, setDailyStats] = useState<{ plays: number; solves: number } | null>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem('tdb:intro-seen') === '1') {
@@ -87,6 +89,12 @@ export default function HomePage() {
         setEntry(enriched);
         setStreak(loadStreak());
         setLoadState('ready');
+
+        // Load today's stats (non-critical — failures are silent)
+        fetch(`/api/stats?date=${key}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (data) setDailyStats(data); })
+          .catch(() => {});
       } catch {
         setLoadState('error');
       }
@@ -115,6 +123,16 @@ export default function HomePage() {
       setPendingOmenAudio(audio);
     }
 
+    // Count the first play of the day (deduplicated via localStorage)
+    if (isFirstPlay && dayKey) {
+      const countedKey = `tdb:counted-play:${dayKey}`;
+      if (!localStorage.getItem(countedKey)) {
+        localStorage.setItem(countedKey, '1');
+        fetch('/api/stats/play', { method: 'POST' }).catch(() => {});
+      }
+      track('play_started');
+    }
+
     persistOmen({
       ...omenState,
       opened: true,
@@ -138,6 +156,18 @@ export default function HomePage() {
       const updatedStreak = updateStreakOnSolve(base, dayKey!);
       setStreak(updatedStreak);
       saveStreak(updatedStreak);
+
+      // Count the solve (deduplicated via localStorage)
+      if (dayKey) {
+        const countedKey = `tdb:counted-solve:${dayKey}`;
+        if (!localStorage.getItem(countedKey)) {
+          localStorage.setItem(countedKey, '1');
+          fetch('/api/stats/solve', { method: 'POST' }).catch(() => {});
+        }
+      }
+      track('game_solved', { attempts: updated.guesses.length });
+    } else if (updated.guesses.length >= 3 && updated.lockedUntil) {
+      track('game_failed');
     }
   }, [persistOmen, streak, dayKey]);
 
@@ -240,7 +270,11 @@ export default function HomePage() {
 
       <div className="flex-1 flex flex-col gap-6 pb-8">
         {!isOpen && !isSolved && (
-          <SealedEntry onOpenRiddle={handleOpen} />
+          <SealedEntry
+            onOpenRiddle={handleOpen}
+            plays={dailyStats?.plays}
+            solves={dailyStats?.solves}
+          />
         )}
 
         {isOpen && !isSolved && !isLocked && !unlocking && (

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
+import { track } from '@vercel/analytics';
 import { COPY } from '@/lib/copy';
 import { getNextResetTimestamp } from '@/lib/resetTime';
 import { generateShareText, shareOrCopy } from '@/lib/share';
@@ -20,7 +21,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
 
   const solvedYear = omenState.guesses.find(g => g.correct)?.year;
   const failed = !omenState.solved;
-  const { album, track, audioOmen } = entry;
+  const { album, track: entryTrack, audioOmen } = entry;
 
   const handleShare = useCallback(async () => {
     const text = generateShareText(omenState, entry.dateUtc);
@@ -28,8 +29,9 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
     if (result !== 'failed') {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      track('result_shared', { outcome: failed ? 'failure' : 'success', method: result });
     }
-  }, [omenState, entry.dateUtc]);
+  }, [omenState, entry.dateUtc, failed]);
 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -93,10 +95,10 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
         <span className="meta-key font-heading">Year</span>
         <span className="meta-val">{audioOmen.answerYear}</span>
 
-        {track?.title && (
+        {entryTrack?.title && (
           <>
             <span className="meta-key font-heading">Track</span>
-            <span className="meta-val">{track.title}</span>
+            <span className="meta-val">{entryTrack.title}</span>
           </>
         )}
       </div>
@@ -107,6 +109,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
         target="_blank"
         rel="noopener noreferrer"
         className="btn-primary font-heading"
+        aria-label={COPY.listenOnDeezer}
       >
         {COPY.listenOnDeezer}
       </a>

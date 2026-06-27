@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { track } from '@vercel/analytics';
 import type { AudioOmenEntry, OmenLocalState, CurrentAttemptStatus, OmenGuess } from '@/lib/omenTypes';
 import { getOmenFeedback, getOmenFeedbackCopy } from '@/lib/omenFeedback';
 import { consumePendingOmenAudio } from '@/lib/omenAudio';
@@ -137,6 +138,12 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       currentAttemptHeard: false,
       lockedUntil,
     };
+
+    track(feedback.correct ? 'guess_correct' : 'guess_wrong', {
+      band: guess.band ?? 'none',
+      direction: guess.direction ?? 'none',
+      attempt: attemptsSpent,
+    });
 
     if (feedback.correct) {
       // Flip the cover first, then hand off to parent after animation.
