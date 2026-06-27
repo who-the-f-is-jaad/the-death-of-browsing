@@ -7,10 +7,10 @@ const BASE_URL =
 
 const spreadsheetId = BASE_URL.match(/spreadsheets\/d\/([^/&?]+)/)?.[1] ?? '';
 
-// /gviz/tq?tqx=out:csv&sheet=MULTI works for named tabs on public sheets
+// /gviz/tq?tqx=out:csv&sheet=Multiplayer targets the "Multiplayer" named tab
 const MULTI_URL =
   process.env.MULTI_SHEET_CSV_URL ||
-  `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=MULTI`;
+  `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=Multiplayer`;
 
 export type PoolRow = {
   deezerTrackUrl: string;
@@ -29,9 +29,13 @@ export async function fetchMultiPool(): Promise<PoolRow[]> {
 
   const rows: PoolRow[] = [];
   for (const row of result.data) {
-    // Tolerate minor column name variations
-    const url = (row['deezerTrackUrl'] ?? row['Deezer Track URL'] ?? '').trim();
-    const yearRaw = (row['answerYear'] ?? row['Answer Year'] ?? row['year'] ?? '').trim();
+    // New format: track_id + year  (Multiplayer tab)
+    // Old format: deezerTrackUrl + answerYear  (legacy MULTI tab)
+    const trackId = (row['track_id'] ?? '').trim();
+    const url = trackId
+      ? `https://www.deezer.com/track/${trackId}`
+      : (row['deezerTrackUrl'] ?? row['Deezer Track URL'] ?? '').trim();
+    const yearRaw = (row['year'] ?? row['answerYear'] ?? row['Answer Year'] ?? '').trim();
     if (!url || !yearRaw) continue;
     const answerYear = parseInt(yearRaw, 10);
     if (isNaN(answerYear)) continue;
