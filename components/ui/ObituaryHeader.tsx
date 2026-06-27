@@ -9,9 +9,10 @@ interface Props {
   entryNumber: number;
   entryDate: string;
   streakNode?: React.ReactNode;
+  onLogoClick?: () => void;
 }
 
-export default function ObituaryHeader({ entryDate: _entryDate, streakNode }: Props) {
+export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLogoClick }: Props) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -33,7 +34,12 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode }: Pr
   return (
     <header className="cat-header">
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
+        <Link
+          href="/"
+          className="cat-brand"
+          style={{ textDecoration: 'none' }}
+          onClick={onLogoClick ? (e) => { e.preventDefault(); onLogoClick(); } : undefined}
+        >
           The Death of Browsing
         </Link>
         <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

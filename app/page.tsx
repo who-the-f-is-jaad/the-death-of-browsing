@@ -276,6 +276,9 @@ export default function HomePage() {
         entryNumber={entryNumber}
         entryDate={entry.dateUtc}
         streakNode={streakNode}
+        onLogoClick={isOpen && !isSolved && !isLocked
+          ? () => persistOmen({ ...omenState, opened: false })
+          : undefined}
       />
 
       <div className="flex-1 flex flex-col gap-6 pb-8">
