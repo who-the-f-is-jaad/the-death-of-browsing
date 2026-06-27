@@ -148,9 +148,8 @@ main {
 /* ── Catalog header ─────────────────────────────────────────────────────────── */
 .cat-header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 1.25rem 0 0.75rem;
+  flex-direction: column;
+  padding: 1.25rem 0 0.9rem;
   border-bottom: 1px solid var(--border-mid);
   margin-bottom: 1.75rem;
 }
