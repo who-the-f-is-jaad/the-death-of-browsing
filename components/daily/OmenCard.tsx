@@ -139,7 +139,6 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.src = '';
       audioRef.current = null;
     }
 
