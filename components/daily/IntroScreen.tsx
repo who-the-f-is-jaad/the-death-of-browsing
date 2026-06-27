@@ -47,7 +47,7 @@ export default function IntroScreen({ onComplete }: Props) {
         maxWidth: '17rem',
       }}>
         <p style={{
-          fontFamily: "'IM Fell English', Georgia, serif",
+          fontFamily: "'Pixel3', monospace",
           fontSize: '1.4rem',
           color: 'var(--text)',
           lineHeight: 1.4,
@@ -55,9 +55,17 @@ export default function IntroScreen({ onComplete }: Props) {
           Sound on.
         </p>
         <p style={{
-          fontFamily: "'IM Fell English', Georgia, serif",
-          fontSize: '1rem',
+          fontFamily: "'Pixel3', monospace",
+          fontSize: '0.9rem',
           color: 'var(--text-mid)',
+          lineHeight: 1.65,
+        }}>
+          This is a game that forces you to listen.
+        </p>
+        <p style={{
+          fontFamily: "'Pixel3', monospace",
+          fontSize: '0.85rem',
+          color: 'var(--text-dim)',
           lineHeight: 1.65,
         }}>
           Turn up your volume before you start.

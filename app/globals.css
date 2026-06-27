@@ -28,6 +28,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Pixel3';
+  src: url('/fonts/pixel_3/pixel.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pixel3';
+  src: url('/fonts/pixel_3/pixel.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* ── Design tokens ──────────────────────────────────────────────────────────── */
 :root {
   --bg:          #050505;
@@ -72,7 +88,7 @@ body {
   background-image: url('/textures/black-paper.png');
   background-size: 480px 480px;
   color: var(--text);
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'Pixel3', monospace;
   position: relative;
   overflow-x: hidden;
 }
@@ -115,9 +131,9 @@ main {
 
 /* ── Typography utilities ───────────────────────────────────────────────────── */
 
-/* All labels, headings, UI text — IM Fell English */
+/* All labels, headings, UI text — Pixel3 */
 .font-heading {
-  font-family: 'IM Fell English', Georgia, serif;
+  font-family: 'Pixel3', monospace;
 }
 
 /* Wordmark only — UnifrakturCook blackletter */
