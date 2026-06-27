@@ -16,12 +16,18 @@ export async function POST(req: Request) {
   if (process.env.RESEND_API_KEY) {
     const from = process.env.EMAIL_FROM ?? 'onboarding@resend.dev';
     const resend = new Resend(process.env.RESEND_API_KEY);
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: `The Death of Browsing <${from}>`,
       to: [raw],
       subject: 'Your sign-in link',
       html: buildEmail(verifyUrl),
     });
+    if (error) {
+      console.error('[auth/request] Resend error:', error);
+      return Response.json({ error: 'Failed to send email. Try again.' }, { status: 502 });
+    }
+  } else {
+    console.warn('[auth/request] RESEND_API_KEY not set — email not sent');
   }
 
   // Return the link in dev or when Resend is not configured
