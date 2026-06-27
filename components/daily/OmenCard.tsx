@@ -203,30 +203,28 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-      {/* Death mark symbols */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }} role="img" aria-label={`${marksRemaining} attempts remaining`}>
+      {/* Lives — one sheep per attempt, goes dead on wrong guess */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }} role="img" aria-label={`${MAX_ATTEMPTS - omenState.guesses.length} lives remaining`}>
         {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
-          const isDead = i < attemptsSpent || (i === attemptsSpent && attempt.hasSpentMark);
+          const isDead = i < omenState.guesses.length;
           return (
-            <span
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               key={i}
+              src={isDead ? '/assets/sheep-life-dead.png' : '/assets/sheep-head.jpg'}
+              alt=""
               aria-hidden="true"
               style={{
-                fontSize: '1.3rem',
-                lineHeight: 1,
-                color: isDead ? 'var(--crimson)' : 'var(--text)',
-                transition: 'color 0.25s',
-                userSelect: 'none',
-                fontFamily: "'IM Fell DW Pica SC', Georgia, serif",
+                width: '32px',
+                height: '32px',
+                objectFit: 'cover',
+                opacity: isDead ? 0.45 : 1,
+                transition: 'opacity 0.3s',
+                filter: isDead ? 'grayscale(1)' : 'none',
               }}
-            >
-              †
-            </span>
+            />
           );
         })}
-        <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          {marksRemaining} {marksRemaining === 1 ? 'attempt' : 'attempts'} left
-        </span>
       </div>
 
       {/* Mystery sleeve — flips to reveal album cover on correct answer */}
