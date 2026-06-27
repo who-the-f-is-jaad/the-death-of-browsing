@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { track } from '@vercel/analytics';
 import { getCurrentDayKey, getNextResetTimestamp } from '@/lib/resetTime';
-import { fetchOmenSheet, selectOmenRow } from '@/lib/omenSheet';
-import { enrichFromDeezer } from '@/lib/omenDeezer';
 import { loadOmenState, saveOmenState, initOmenState } from '@/lib/omenStorage';
 import { loadStreak, saveStreak } from '@/lib/localState';
 import { updateStreakOnSolve, isStreakAlive } from '@/lib/streaks';
@@ -48,28 +46,24 @@ export default function HomePage() {
 
     async function load() {
       try {
-        const rows = await fetchOmenSheet();
-        const row = selectOmenRow(rows, key);
-        if (!row) {
+        const res = await fetch('/api/daily');
+        if (!res.ok) throw new Error('daily fetch failed');
+        const data: { entry: AudioOmenEntry | null; reason?: string } = await res.json();
+
+        if (!data.entry) {
           setLoadState('no_entry');
           setMounted(true);
           return;
         }
 
-        const enriched = await enrichFromDeezer(row.deezerTrackUrl, row.answerYear, key);
-        if (!enriched) {
-          setLoadState('no_entry');
-          setMounted(true);
-          return;
-        }
-
-        if (!enriched.audioOmen.audioUrl) {
+        if (data.reason === 'no_preview') {
           setLoadState('no_preview');
-          setEntry(enriched);
+          setEntry(data.entry);
           setMounted(true);
           return;
         }
 
+        const enriched = data.entry;
         const saved = loadOmenState(enriched.id);
 
         // Expire soft lock if past time

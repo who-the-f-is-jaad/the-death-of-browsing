@@ -2,9 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { track } from '@vercel/analytics';
-import { getCurrentDayKey, getPreviousDayKey } from '@/lib/resetTime';
-import { fetchOmenSheet, selectOmenRow } from '@/lib/omenSheet';
-import { enrichFromDeezer } from '@/lib/omenDeezer';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 
 import Link from 'next/link';
@@ -32,25 +29,19 @@ export default function PracticeClient() {
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
-    const yesterdayKey = getPreviousDayKey(getCurrentDayKey());
-
     async function load() {
       try {
-        const rows = await fetchOmenSheet();
-        const row = selectOmenRow(rows, yesterdayKey);
-        if (!row) {
+        const res = await fetch('/api/practice');
+        if (!res.ok) throw new Error('practice fetch failed');
+        const data: { entry: AudioOmenEntry | null } = await res.json();
+
+        if (!data.entry) {
           setLoadState('no_entry');
           return;
         }
 
-        const enriched = await enrichFromDeezer(row.deezerTrackUrl, row.answerYear, yesterdayKey);
-        if (!enriched) {
-          setLoadState('no_entry');
-          return;
-        }
-
-        setEntry(enriched);
-        setPracticeState(initPracticeState(enriched.id));
+        setEntry(data.entry);
+        setPracticeState(initPracticeState(data.entry.id));
         setLoadState('ready');
         track('practice_started');
       } catch {

@@ -2,18 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { fetchOmenSheet } from '@/lib/omenSheet';
-import { enrichFromDeezer } from '@/lib/omenDeezer';
-import { getCurrentDayKey } from '@/lib/resetTime';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
-
-interface ArchiveItem {
-  date: string;
-  year: number;
-  albumTitle?: string;
-  artist?: string;
-  loaded: boolean;
-}
+import type { ArchiveItem } from '@/app/api/archive/route';
 
 function formatDate(isoDate: string): string {
   const [y, m, d] = isoDate.split('-').map(Number);
@@ -30,39 +20,10 @@ export default function ArchiveClient() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
-    async function load() {
-      try {
-        const rows = await fetchOmenSheet();
-        const today = getCurrentDayKey();
-        const past = rows
-          .filter(r => r.date <= today)
-          .sort((a, b) => b.date.localeCompare(a.date));
-
-        // Show year + date immediately; album info fills in as Deezer responds
-        setItems(past.map(r => ({ date: r.date, year: r.answerYear, loaded: false })));
-        setStatus('ready');
-
-        for (const row of past) {
-          enrichFromDeezer(row.deezerTrackUrl, row.answerYear, row.date)
-            .then(entry => {
-              if (!entry) return;
-              setItems(prev => prev.map(item =>
-                item.date === row.date
-                  ? { ...item, albumTitle: entry.album.title, artist: entry.album.artist, loaded: true }
-                  : item
-              ));
-            })
-            .catch(() => {
-              setItems(prev => prev.map(item =>
-                item.date === row.date ? { ...item, loaded: true } : item
-              ));
-            });
-        }
-      } catch {
-        setStatus('error');
-      }
-    }
-    load();
+    fetch('/api/archive')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => { setItems(data.items); setStatus('ready'); })
+      .catch(() => setStatus('error'));
   }, []);
 
   return (
@@ -110,25 +71,17 @@ export default function ArchiveClient() {
                 alignItems: 'start',
               }}
             >
-              {/* Release year — the answer */}
               <p
                 className="font-heading"
-                style={{
-                  fontSize: '1.5rem',
-                  color: 'var(--text)',
-                  lineHeight: 1,
-                  paddingTop: '0.1rem',
-                }}
+                style={{ fontSize: '1.5rem', color: 'var(--text)', lineHeight: 1, paddingTop: '0.1rem' }}
               >
                 {item.year}
               </p>
-
-              {/* Album + artist + date */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                 <p style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.3 }}>
-                  {item.loaded ? (item.albumTitle ?? '—') : '—'}
+                  {item.albumTitle ?? '—'}
                 </p>
-                {item.loaded && item.artist && (
+                {item.artist && (
                   <p style={{ fontStyle: 'italic', fontSize: '0.78rem', color: 'var(--text-mid)' }}>
                     {item.artist}
                   </p>

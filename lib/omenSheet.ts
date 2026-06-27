@@ -1,13 +1,9 @@
-// Prototype only:
-// This public Google Sheet and client-side Deezer enrichment expose answer years
-// and future entries to users who inspect network requests. Production must move
-// content fetching and validation server-side before public launch.
-
+import 'server-only';
 import Papa from 'papaparse';
 import type { OmenContentRow } from './omenTypes';
 
 const SHEET_CSV_URL =
-  process.env.NEXT_PUBLIC_OMEN_SHEET_CSV_URL ||
+  process.env.OMEN_SHEET_CSV_URL ||
   'https://docs.google.com/spreadsheets/d/1Wc95lbFEv9Z9M8_rETut4dto-D7ff8N-eJAMJw6xdjk/export?format=csv';
 
 function normalizeDate(raw: string): string {
@@ -23,7 +19,7 @@ function normalizeDate(raw: string): string {
 }
 
 export async function fetchOmenSheet(): Promise<OmenContentRow[]> {
-  const res = await fetch(SHEET_CSV_URL, { cache: 'no-store' });
+  const res = await fetch(SHEET_CSV_URL, { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
   const text = await res.text();
 

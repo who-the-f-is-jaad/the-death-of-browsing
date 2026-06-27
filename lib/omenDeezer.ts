@@ -1,5 +1,4 @@
-// Prototype only: see omenSheet.ts prototype warning.
-
+import 'server-only';
 import type { AudioOmenEntry } from './omenTypes';
 
 export function extractDeezerTrackId(url: string): string | null {
@@ -14,10 +13,8 @@ function isShortLink(url: string): boolean {
 
 async function resolveShortLink(url: string): Promise<string | null> {
   try {
-    const res = await fetch(`/api/deezer/resolve?url=${encodeURIComponent(url)}`);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.resolvedUrl ?? null;
+    const res = await fetch(url, { redirect: 'follow' });
+    return res.url;
   } catch {
     return null;
   }
@@ -49,7 +46,7 @@ interface DeezerAlbum {
 
 async function fetchDeezerTrack(trackId: string): Promise<DeezerTrack | null> {
   try {
-    const res = await fetch(`/api/deezer/track/${trackId}`);
+    const res = await fetch(`https://api.deezer.com/track/${trackId}`);
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -59,7 +56,7 @@ async function fetchDeezerTrack(trackId: string): Promise<DeezerTrack | null> {
 
 async function fetchDeezerAlbum(albumId: number): Promise<DeezerAlbum | null> {
   try {
-    const res = await fetch(`/api/deezer/album/${albumId}`);
+    const res = await fetch(`https://api.deezer.com/album/${albumId}`);
     if (!res.ok) return null;
     return await res.json();
   } catch {
