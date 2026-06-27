@@ -21,15 +21,25 @@ export default function SealedEntry({ onOpenRiddle }: Props) {
         />
       </div>
 
-      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', textAlign: 'center' }}>
         <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--text)' }}>
           The Feed is Dead
         </p>
         <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
           One Record Remains
         </p>
-        <p style={{ fontStyle: 'italic', fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '0.25rem', lineHeight: 1.6 }}>
-          Hear the omen. Name the year. Open the record.
+      </div>
+
+      {/* Rules */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.25rem 0' }}>
+        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
+          Each dawn, a blind excerpt plays. A thirty-second fragment of a record that existed before you found it.
+        </p>
+        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
+          You have three marks. Each mark buys one listen. After the sound, you name the year the record was born.
+        </p>
+        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text)', lineHeight: 1.7 }}>
+          The year must be exact. Close is not enough.
         </p>
       </div>
 
