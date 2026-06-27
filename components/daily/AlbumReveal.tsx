@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { COPY } from '@/lib/copy';
 import { getNextResetTimestamp } from '@/lib/resetTime';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
@@ -110,6 +111,19 @@ export default function AlbumReveal({ entry, omenState }: Props) {
         <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           07:00 UTC
         </p>
+      </div>
+
+      {/* Archive link */}
+      <div style={{ textAlign: 'center', paddingTop: '0.5rem' }}>
+        <Link
+          href="/archive"
+          className="font-heading"
+          style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px', transition: 'color 0.15s, border-color 0.15s' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-mid)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border-hi)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-dim)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--border-mid)'; }}
+        >
+          See past omens
+        </Link>
       </div>
 
     </div>
