@@ -29,13 +29,13 @@ export default function SealedEntry({ onOpenRiddle }: Props) {
       {/* Rules — bigger, readable */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
         <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
-          Each dawn, a blind excerpt plays. Name the exact year the record was born.
+          A short audio clip plays. Guess the exact year the album came out.
         </p>
         <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
-          Three marks. Each mark buys one listen.
+          3 attempts, one listen each.
         </p>
         <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1.7 }}>
-          Exact year only. Close is not enough.
+          Exact year only. Close doesn&apos;t count.
         </p>
       </div>
 

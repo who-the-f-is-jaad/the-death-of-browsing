@@ -51,9 +51,8 @@ export default function IntroScreen({ onComplete }: Props) {
           fontSize: '1.4rem',
           color: 'var(--text)',
           lineHeight: 1.4,
-          fontStyle: 'italic',
         }}>
-          The omen speaks in sound.
+          Sound on.
         </p>
         <p style={{
           fontFamily: "'IM Fell English', Georgia, serif",
@@ -61,7 +60,7 @@ export default function IntroScreen({ onComplete }: Props) {
           color: 'var(--text-mid)',
           lineHeight: 1.65,
         }}>
-          Turn your volume on before entering.
+          Turn up your volume before you start.
         </p>
       </div>
 
@@ -70,7 +69,7 @@ export default function IntroScreen({ onComplete }: Props) {
         className="btn-ghost"
         style={{ maxWidth: '11rem' }}
       >
-        I&apos;m ready
+        Start
       </button>
     </div>
   );
