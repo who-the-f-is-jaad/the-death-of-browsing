@@ -8,7 +8,7 @@ export type OmenDistanceBand = 'NEAR' | 'FADING' | 'BURIED' | 'LOST';
 export type OmenDirection = 'UNBORN' | 'TOO_LATE';
 
 export type AudioOmenEntry = {
-  id: string;         // `${date}:${trackId}:${answerYear}`
+  id: string;         // `${date}:${trackId}`
   dateUtc: string;
   entryNumber?: number;
   audioOmen: {

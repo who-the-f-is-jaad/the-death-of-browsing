@@ -94,7 +94,7 @@ export async function enrichFromDeezer(
   const artist = album?.artist?.name ?? track.artist?.name ?? 'Unknown Artist';
   const deezerAlbumUrl = album?.link ?? track.album?.link ?? deezerTrackUrl;
 
-  const entryId = `${date}:${trackId}:${answerYear}`;
+  const entryId = `${date}:${trackId}`;
 
   return {
     id: entryId,
