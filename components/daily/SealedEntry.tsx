@@ -68,24 +68,22 @@ export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
           Daily game
         </button>
 
-        <div
+        <Link
+          href="/deathmatch"
           className="font-heading"
           style={{
             fontSize: '1.1rem',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'var(--text-dim)',
+            color: 'var(--text-mid)',
+            textDecoration: 'none',
             padding: '0.6rem 0',
             borderBottom: '1px solid var(--border)',
-            cursor: 'not-allowed',
-            display: 'flex',
-            alignItems: 'baseline',
-            gap: '0.5rem',
+            display: 'block',
           }}
         >
-          Multiplayer
-          <span style={{ fontSize: '0.48rem', letterSpacing: '0.18em', color: 'var(--text-dim)' }}>soon</span>
-        </div>
+          Deathmatch
+        </Link>
 
         <Link
           href="/profile"
