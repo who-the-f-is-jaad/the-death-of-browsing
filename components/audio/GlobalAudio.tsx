@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'tdb:audio-enabled';
-const AUDIO_SRC = '/audio/enigma-theme.mp3';
+const AUDIO_SRC = '/audio/pest.mp3';
 const VOLUME = 0.22;
 
 export default function GlobalAudio() {
@@ -44,6 +44,17 @@ export default function GlobalAudio() {
     document.addEventListener('omen-audio-start', handleOmenStart);
     document.addEventListener('omen-audio-stop', handleOmenStop);
 
+    // Start playing when the user dismisses the intro screen (guaranteed user gesture).
+    const handleIntroOk = () => {
+      if (!enabledRef.current) {
+        setEnabled(true);
+        enabledRef.current = true;
+        localStorage.setItem(STORAGE_KEY, 'true');
+      }
+      audio.play().catch(() => {});
+    };
+    document.addEventListener('intro-ok', handleIntroOk);
+
     return () => {
       if (autoResumeRef.current) {
         document.removeEventListener('click', autoResumeRef.current);
@@ -51,6 +62,7 @@ export default function GlobalAudio() {
       }
       document.removeEventListener('omen-audio-start', handleOmenStart);
       document.removeEventListener('omen-audio-stop', handleOmenStop);
+      document.removeEventListener('intro-ok', handleIntroOk);
       audio.pause();
       audio.src = '';
       audioRef.current = null;

@@ -12,6 +12,7 @@ import type { StreakData } from '@/lib/types';
 
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import ObituaryHeader from '@/components/ui/ObituaryHeader';
+import IntroScreen from '@/components/daily/IntroScreen';
 import SealedEntry from '@/components/daily/SealedEntry';
 import OmenCard from '@/components/daily/OmenCard';
 import SoftLockPanel from '@/components/daily/SoftLockPanel';
@@ -23,6 +24,7 @@ import Countdown from '@/components/daily/Countdown';
 type LoadState = 'summoning' | 'ready' | 'no_entry' | 'no_preview' | 'error';
 
 export default function HomePage() {
+  const [introComplete, setIntroComplete] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('summoning');
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [entry, setEntry] = useState<AudioOmenEntry | null>(null);
@@ -30,6 +32,12 @@ export default function HomePage() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [mounted, setMounted] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('tdb:intro-seen') === '1') {
+      setIntroComplete(true);
+    }
+  }, []);
 
   useEffect(() => {
     const key = getCurrentDayKey();
@@ -136,11 +144,15 @@ export default function HomePage() {
     persistOmen(fresh);
   }, [entry, persistOmen]);
 
+  if (!introComplete) {
+    return <IntroScreen onComplete={() => setIntroComplete(true)} />;
+  }
+
   if (!mounted) {
     return (
       <DeadBrowserShell>
         <div className="flex-1 flex items-center justify-center py-24">
-          <p className="font-heading text-xs tracking-widest uppercase animate-pulse-gold" style={{ color: 'var(--text-dim)' }}>
+          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Summoning the Omen
           </p>
         </div>
