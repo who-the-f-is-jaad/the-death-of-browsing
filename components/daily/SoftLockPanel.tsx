@@ -42,15 +42,11 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
         >
           Failure
         </p>
-        <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)', lineHeight: 1.7, maxWidth: '28ch', margin: '1.5rem auto 0' }}>
-          Three years were cast. None were true. The omen withdraws for one hour.
-        </p>
-
         <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
           {!expired ? (
             <>
               <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-                The omen resumes in
+                You can retry in
               </p>
               <Countdown
                 targetTimestamp={expiresAt}
@@ -87,9 +83,8 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
 
       <EmailCapture />
 
-      {/* Ask a friend to help */}
       <button onClick={handleAskFriend} className="btn-ghost">
-        {helpCopied ? 'Copied!' : 'Ask a friend for help'}
+        {helpCopied ? 'Copied!' : 'Share'}
       </button>
 
       {/* Practice link */}
