@@ -9,7 +9,14 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid email' }, { status: 400 });
   }
 
-  const token = await generateMagicToken(raw);
+  let token: string;
+  try {
+    token = await generateMagicToken(raw);
+  } catch (e) {
+    console.error('[auth/request] KV error generating token:', e);
+    return Response.json({ error: 'Service unavailable. Try again.' }, { status: 503 });
+  }
+
   const origin = new URL(req.url).origin;
   const verifyUrl = `${origin}/api/auth/verify?token=${token}`;
 
@@ -23,7 +30,7 @@ export async function POST(req: Request) {
       html: buildEmail(verifyUrl),
     });
     if (error) {
-      console.error('[auth/request] Resend error:', error);
+      console.error('[auth/request] Resend error:', JSON.stringify(error));
       return Response.json({ error: 'Failed to send email. Try again.' }, { status: 502 });
     }
   } else {
