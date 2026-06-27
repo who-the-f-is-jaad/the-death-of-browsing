@@ -16,27 +16,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'nickname must be 1–24 characters' }, { status: 400 });
     }
 
-    const pool = await fetchMultiPool();
+    let pool;
+    try {
+      pool = await fetchMultiPool();
+    } catch (e) {
+      console.error('[POST /api/rooms] fetchMultiPool failed:', e);
+      return NextResponse.json({ error: `Sheet fetch failed: ${e instanceof Error ? e.message : e}` }, { status: 502 });
+    }
+
     if (pool.length < rounds) {
-      return NextResponse.json({ error: 'Not enough songs in pool' }, { status: 500 });
+      return NextResponse.json({ error: `Not enough songs in pool (got ${pool.length}, need ${rounds})` }, { status: 500 });
     }
 
     const sampled = samplePool(pool, rounds);
     const roomId = generateRoomId();
 
-    // Enrich all rounds in parallel (Deezer API calls)
-    const enriched = await Promise.all(
-      sampled.map((row, i) => enrichFromDeezer(row.deezerTrackUrl, row.answerYear, `dm-${roomId}-${i}`))
-    );
+    // Enrich all rounds sequentially to avoid hammering Deezer rate limits
+    const enriched: (Awaited<ReturnType<typeof enrichFromDeezer>>)[] = [];
+    for (const row of sampled) {
+      enriched.push(await enrichFromDeezer(row.deezerTrackUrl, row.answerYear, `dm-${roomId}-${enriched.length}`));
+    }
 
     const roundEntries: RoundEntry[] = [];
     for (let i = 0; i < enriched.length; i++) {
       const entry = enriched[i];
-      if (!entry) continue; // skip failed enrichments
+      if (!entry) {
+        console.warn(`[POST /api/rooms] enrichment returned null for ${sampled[i]?.deezerTrackUrl}`);
+        continue;
+      }
       const raw = sampled[i];
       const trackId = entry.id.split(':').pop() ?? '';
       roundEntries.push({
-        roundIndex: i,
+        roundIndex: roundEntries.length,
         trackId,
         deezerTrackUrl: raw.deezerTrackUrl,
         answerYear: raw.answerYear,
@@ -49,7 +60,7 @@ export async function POST(req: Request) {
     }
 
     if (roundEntries.length < rounds) {
-      return NextResponse.json({ error: 'Failed to enrich enough songs' }, { status: 500 });
+      return NextResponse.json({ error: `Only ${roundEntries.length}/${rounds} tracks could be enriched from Deezer` }, { status: 500 });
     }
 
     const hostToken = generateToken();
