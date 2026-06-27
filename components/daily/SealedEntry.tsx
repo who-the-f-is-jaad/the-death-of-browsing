@@ -1,9 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { getNextResetTimestamp } from '@/lib/resetTime';
 import { playClick } from '@/lib/clickSound';
-import Countdown from './Countdown';
 
 interface Props {
   onOpenRiddle: () => void;
@@ -122,27 +120,6 @@ export default function SealedEntry({ onOpenRiddle, plays, solves }: Props) {
           Archive
         </Link>
       </nav>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.25rem' }}>
-        <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
-          A short audio clip plays. Guess the exact year the album came out.
-        </p>
-        <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
-          3 attempts, one listen each.
-        </p>
-        <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1.7 }}>
-          Exact year only. Close doesn&apos;t count.
-        </p>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', paddingTop: '0.25rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          Next record
-        </p>
-        <span style={{ fontFamily: 'var(--font-body, inherit)', fontSize: '0.95rem', color: 'var(--text-mid)', letterSpacing: '0.04em' }}>
-          <Countdown targetTimestamp={getNextResetTimestamp()} className="" />
-        </span>
-      </div>
 
     </div>
   );
