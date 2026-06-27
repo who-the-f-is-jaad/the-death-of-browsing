@@ -11,6 +11,7 @@ import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import type { StreakData } from '@/lib/types';
 
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
+import RulesGate from '@/components/daily/RulesGate';
 import ObituaryHeader from '@/components/ui/ObituaryHeader';
 import IntroScreen from '@/components/daily/IntroScreen';
 import SealedEntry from '@/components/daily/SealedEntry';
@@ -32,6 +33,7 @@ export default function HomePage() {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [mounted, setMounted] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+  const [showingRules, setShowingRules] = useState(false);
   const [dailyStats, setDailyStats] = useState<{ plays: number; solves: number } | null>(null);
 
   useEffect(() => {
@@ -289,15 +291,21 @@ export default function HomePage() {
       />
 
       <div className="flex-1 flex flex-col gap-6 pb-8">
-        {!isOpen && (
+        {!isOpen && !showingRules && (
           <SealedEntry
-            onOpenRiddle={handleOpen}
+            onOpenRiddle={omenState.guesses.length === 0
+              ? () => setShowingRules(true)
+              : handleOpen}
             plays={dailyStats?.plays}
             solves={dailyStats?.solves}
             hasFailed={omenState.guesses.length >= 3 && !isSolved}
             hasNotPlayed={omenState.guesses.length === 0}
             hasSolved={isSolved}
           />
+        )}
+
+        {!isOpen && showingRules && (
+          <RulesGate onBegin={() => { setShowingRules(false); handleOpen(); }} />
         )}
 
         {isOpen && !isSolved && !isLocked && !unlocking && (
