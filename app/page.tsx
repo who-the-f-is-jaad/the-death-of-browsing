@@ -7,6 +7,7 @@ import { enrichFromDeezer } from '@/lib/omenDeezer';
 import { loadOmenState, saveOmenState, initOmenState } from '@/lib/omenStorage';
 import { loadStreak, saveStreak } from '@/lib/localState';
 import { updateStreakOnSolve, isStreakAlive } from '@/lib/streaks';
+import { setPendingOmenAudio } from '@/lib/omenAudio';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import type { StreakData } from '@/lib/types';
 
@@ -101,9 +102,25 @@ export default function HomePage() {
   }, []);
 
   const handleOpen = useCallback(() => {
-    if (!omenState) return;
-    persistOmen({ ...omenState, opened: true });
-  }, [omenState, persistOmen]);
+    if (!omenState || !entry) return;
+
+    const url = entry.audioOmen.audioUrl;
+    const isFirstPlay = omenState.attemptsSpent === 0;
+
+    // Start audio inside the click handler to satisfy mobile autoplay policy.
+    if (url && isFirstPlay) {
+      document.dispatchEvent(new CustomEvent('omen-audio-start'));
+      const audio = new Audio(url);
+      audio.play().catch(() => {});
+      setPendingOmenAudio(audio);
+    }
+
+    persistOmen({
+      ...omenState,
+      opened: true,
+      ...(url && isFirstPlay ? { attemptsSpent: 1, currentAttemptHeard: true } : {}),
+    });
+  }, [omenState, entry, persistOmen]);
 
   const handleMarkSpent = useCallback((updated: OmenLocalState) => {
     persistOmen(updated);
@@ -116,7 +133,7 @@ export default function HomePage() {
   ) => {
     persistOmen(updated);
     if (correct) {
-      setUnlocking(true);
+      // The cover flip in OmenCard is the reveal animation — skip UnlockSequence.
       const base = streak ?? { current: 0, longest: 0, lastSolvedDate: null };
       const updatedStreak = updateStreakOnSolve(base, dayKey!);
       setStreak(updatedStreak);

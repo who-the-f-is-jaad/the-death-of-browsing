@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { AudioOmenEntry, OmenLocalState, CurrentAttemptStatus, OmenGuess } from '@/lib/omenTypes';
 import { getOmenFeedback, getOmenFeedbackCopy } from '@/lib/omenFeedback';
+import { consumePendingOmenAudio } from '@/lib/omenAudio';
 
 const MAX_ATTEMPTS = 3;
 const CURRENT_YEAR = new Date().getFullYear();
@@ -26,6 +27,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
   const [lastFeedback, setLastFeedback] = useState<OmenGuess | null>(
     omenState.guesses.length > 0 ? omenState.guesses[omenState.guesses.length - 1] : null
   );
+  const [coverRevealed, setCoverRevealed] = useState(false);
 
   const attemptsSpent = omenState.attemptsSpent;
   const marksRemaining = MAX_ATTEMPTS - attemptsSpent;
@@ -33,17 +35,29 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
   const inputActive = attempt.hasSpentMark;
 
   useEffect(() => {
-    // Stop background music as soon as the omen screen appears
+    // Stop background music; pick up any audio started by the "Play" button.
     document.dispatchEvent(new CustomEvent('omen-audio-start'));
+
+    const pending = consumePendingOmenAudio();
+    if (pending) {
+      audioRef.current = pending;
+      setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
+      pending.addEventListener('ended', () => {
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
+      });
+      pending.addEventListener('error', () => {
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+      });
+    }
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = '';
       }
-      // Resume background music when leaving the omen screen
       document.dispatchEvent(new CustomEvent('omen-audio-stop'));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleHearOmen = useCallback(() => {
@@ -121,7 +135,17 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
       lockedUntil,
     };
 
-    onGuessSubmit(year, next, feedback.correct);
+    if (feedback.correct) {
+      // Flip the cover first, then hand off to parent after animation.
+      setCoverRevealed(true);
+      setYearValue('');
+      setAttempt({ hasSpentMark: false, canGuess: false, audioStatus: 'idle' });
+      const captured = { year, next };
+      setTimeout(() => onGuessSubmit(captured.year, captured.next, true), 950);
+      return;
+    }
+
+    onGuessSubmit(year, next, false);
     setLastFeedback(guess);
     setYearValue('');
     setAttempt({ hasSpentMark: false, canGuess: false, audioStatus: 'idle' });
@@ -156,12 +180,71 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
         </span>
       </div>
 
-      {/* Hear button */}
-      {canHear && (
-        <button onClick={handleHearOmen} className="btn-ghost">
-          Hear the Omen
-        </button>
-      )}
+      {/* Mystery sleeve — flips to reveal album cover on correct answer */}
+      <div style={{ perspective: '900px', width: '100%', aspectRatio: '1' }}>
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'relative',
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.85s cubic-bezier(0.4, 0.0, 0.2, 1)',
+            transform: coverRevealed ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          }}
+        >
+          {/* Front: black vinyl sleeve */}
+          <div
+            style={{
+              position: 'absolute', inset: 0,
+              backfaceVisibility: 'hidden',
+              backgroundColor: '#060606',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {/* Vinyl label ring */}
+            <div style={{
+              width: '26%',
+              aspectRatio: '1',
+              borderRadius: '50%',
+              border: '1px solid #1a1a1a',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                width: '22%',
+                aspectRatio: '1',
+                borderRadius: '50%',
+                backgroundColor: '#040404',
+                border: '1px solid #141414',
+              }} />
+            </div>
+          </div>
+
+          {/* Back: actual album cover */}
+          <div
+            style={{
+              position: 'absolute', inset: 0,
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+              overflow: 'hidden',
+            }}
+          >
+            {entry.album.coverImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={entry.album.coverImageUrl}
+                alt={entry.album.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              <div style={{ width: '100%', height: '100%', backgroundColor: '#1a1a1a' }} />
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Playing indicator */}
       {attempt.audioStatus === 'playing' && (
@@ -175,6 +258,13 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
         <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--text-mid)' }}>
           Audio unavailable. The attempt is spent — name the year anyway.
         </p>
+      )}
+
+      {/* Listen again — shown for attempts 2 and 3 */}
+      {canHear && (
+        <button onClick={handleHearOmen} className="btn-ghost">
+          Listen again
+        </button>
       )}
 
       {/* Distance feedback — above the input */}
@@ -260,7 +350,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit 
         </form>
       )}
 
-      {/* Scars — previous guesses */}
+      {/* Scars */}
       {omenState.guesses.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>

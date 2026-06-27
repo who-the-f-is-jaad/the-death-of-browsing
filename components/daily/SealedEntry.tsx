@@ -1,6 +1,5 @@
 'use client';
 
-import { COPY } from '@/lib/copy';
 import { getNextResetTimestamp } from '@/lib/resetTime';
 import Countdown from './Countdown';
 
@@ -12,6 +11,17 @@ export default function SealedEntry({ onOpenRiddle }: Props) {
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
+      {/* Daily stats — placeholder until server-side analytics are wired */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+        <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+          312 plays today
+        </span>
+        <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
+        <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+          67% solved
+        </span>
+      </div>
+
       <div className="photo-frame">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -21,12 +31,10 @@ export default function SealedEntry({ onOpenRiddle }: Props) {
         />
       </div>
 
-      {/* CTA immediately under the sheep */}
       <button onClick={onOpenRiddle} className="btn-ghost">
-        {COPY.sealedCTA}
+        Play
       </button>
 
-      {/* Rules — bigger, readable */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
         <p style={{ fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
           A short audio clip plays. Guess the exact year the album came out.
@@ -39,7 +47,6 @@ export default function SealedEntry({ onOpenRiddle }: Props) {
         </p>
       </div>
 
-      {/* Next record */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', paddingTop: '0.25rem' }}>
         <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Next record
