@@ -123,7 +123,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
 
       {/* Spotify CTA */}
       <a
-        href="https://en.wikipedia.org/wiki/Criticism_of_Spotify"
+        href="https://en.wikipedia.org/wiki/Controversy_over_fake_artists_on_Spotify"
         target="_blank"
         rel="noopener noreferrer"
         className="btn-ghost font-heading"

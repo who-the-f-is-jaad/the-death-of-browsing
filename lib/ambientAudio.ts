@@ -1,5 +1,5 @@
 // Module-level singleton so all components share one audio instance
-const SRC = '/audio/Quest Master - In the Abbey of Innocence.mp3';
+const SRC = '/audio/Quest%20Master%20-%20In%20the%20Abbey%20of%20Innocence.mp3';
 
 let audio: HTMLAudioElement | null = null;
 

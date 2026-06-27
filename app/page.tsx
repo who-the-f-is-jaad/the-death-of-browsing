@@ -66,6 +66,13 @@ export default function HomePage() {
         const enriched = data.entry;
         const saved = loadOmenState(enriched.id);
 
+        // Logo-click navigation from other pages sets this flag to force menu view
+        if (sessionStorage.getItem('tdb:go-menu') === '1') {
+          sessionStorage.removeItem('tdb:go-menu');
+          saved.opened = false;
+          saveOmenState(saved);
+        }
+
         // Expire soft lock if past time
         if (saved.lockedUntil && new Date(saved.lockedUntil) <= new Date()) {
           const reset: OmenLocalState = {

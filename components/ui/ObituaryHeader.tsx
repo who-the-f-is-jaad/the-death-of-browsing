@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import speakerSrc from './speaker.png';
-import { toggleAmbient, isAmbientPlaying } from '@/lib/ambientAudio';
+import { playAmbient, pauseAmbient, isAmbientPlaying } from '@/lib/ambientAudio';
 
 interface Props {
   entryNumber: number;
@@ -21,11 +21,18 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLo
     setPlaying(isAmbientPlaying());
   }, []);
 
-  const handleToggle = () => {
-    toggleAmbient()?.catch(() => {});
-    setPlaying(isAmbientPlaying());
-    // Small delay to let the play() promise resolve before reading state
-    setTimeout(() => setPlaying(isAmbientPlaying()), 100);
+  const handleToggle = async () => {
+    if (isAmbientPlaying()) {
+      pauseAmbient();
+      setPlaying(false);
+    } else {
+      try {
+        await playAmbient();
+        setPlaying(true);
+      } catch {
+        // autoplay blocked by browser — leave icon dim
+      }
+    }
   };
 
   return (
@@ -35,7 +42,10 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLo
           href="/"
           className="cat-brand"
           style={{ textDecoration: 'none' }}
-          onClick={onLogoClick ? (e) => { e.preventDefault(); onLogoClick(); } : undefined}
+          onClick={onLogoClick
+            ? (e) => { e.preventDefault(); onLogoClick(); }
+            : () => { sessionStorage.setItem('tdb:go-menu', '1'); }
+          }
         >
           The Death of Browsing
         </Link>

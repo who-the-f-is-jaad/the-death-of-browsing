@@ -86,12 +86,23 @@ export async function POST(req: Request) {
       guesses: [],
     };
 
-    await setRoom(room);
-    await addPlayerToRoom(roomId, player);
+    try {
+      await setRoom(room);
+    } catch (e) {
+      console.error('[POST /api/rooms] setRoom failed:', e);
+      return NextResponse.json({ error: `KV write failed (room): ${e instanceof Error ? e.message : e}` }, { status: 503 });
+    }
+
+    try {
+      await addPlayerToRoom(roomId, player);
+    } catch (e) {
+      console.error('[POST /api/rooms] addPlayerToRoom failed:', e);
+      return NextResponse.json({ error: `KV write failed (player): ${e instanceof Error ? e.message : e}` }, { status: 503 });
+    }
 
     return NextResponse.json({ roomId, playerToken, hostToken });
   } catch (err) {
     console.error('[POST /api/rooms]', err);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ error: `Internal error: ${err instanceof Error ? err.message : err}` }, { status: 500 });
   }
 }
