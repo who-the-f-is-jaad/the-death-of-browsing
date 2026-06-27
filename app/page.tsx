@@ -294,6 +294,7 @@ export default function HomePage() {
             onOpenRiddle={handleOpen}
             plays={dailyStats?.plays}
             solves={dailyStats?.solves}
+            hasFailed={omenState.guesses.length >= 3 && !isSolved}
           />
         )}
 
