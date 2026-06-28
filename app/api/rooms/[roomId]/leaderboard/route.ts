@@ -52,7 +52,7 @@ export async function GET(
       });
     }
 
-    return { nickname: p.nickname, totalScore, roundScores, isYou: p.token === myToken };
+    return { nickname: p.nickname, portrait: p.portrait ?? null, totalScore, roundScores, isYou: p.token === myToken };
   });
 
   scores.sort((a, b) => b.totalScore - a.totalScore);

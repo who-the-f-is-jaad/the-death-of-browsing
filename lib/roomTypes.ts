@@ -50,6 +50,7 @@ export type Room = {
 // Leaderboard row returned to client
 export type PlayerScore = {
   nickname: string;
+  portrait?: string | null;
   totalScore: number;
   roundScores: Array<{
     roundIndex: number;
