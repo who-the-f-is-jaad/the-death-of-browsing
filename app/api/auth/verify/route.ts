@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { verifyMagicToken, createSession, SESSION_COOKIE_NAME, SESSION_MAX_AGE } from '@/lib/auth';
 
 export async function GET(req: Request) {
-  const token = new URL(req.url).searchParams.get('token') ?? '';
+  const url = new URL(req.url);
+  const token = url.searchParams.get('token') ?? '';
+  const rawFrom = url.searchParams.get('from') ?? '/profile';
+  const destination = rawFrom.startsWith('/') ? rawFrom : '/profile';
 
   if (!token) {
     return NextResponse.redirect(new URL('/?auth=invalid', req.url));
@@ -17,7 +20,7 @@ export async function GET(req: Request) {
   const origin = new URL(req.url).origin;
   const secure = process.env.NODE_ENV === 'production';
 
-  const response = NextResponse.redirect(new URL('/profile', origin));
+  const response = NextResponse.redirect(new URL(destination, origin));
   response.cookies.set(SESSION_COOKIE_NAME, sessionId, {
     httpOnly: true,
     secure,

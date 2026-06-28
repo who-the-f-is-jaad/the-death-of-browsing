@@ -4,6 +4,7 @@ import { generateMagicToken } from '@/lib/auth';
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const raw = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  const from = typeof body.from === 'string' && body.from.startsWith('/') ? body.from : '/profile';
 
   if (!raw || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) {
     return Response.json({ error: 'Invalid email' }, { status: 400 });
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin;
-  const verifyUrl = `${origin}/api/auth/verify?token=${token}`;
+  const verifyUrl = `${origin}/api/auth/verify?token=${token}&from=${encodeURIComponent(from)}`;
 
   if (process.env.RESEND_API_KEY) {
     const from = process.env.EMAIL_FROM ?? 'onboarding@resend.dev';

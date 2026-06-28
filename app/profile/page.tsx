@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { getSession, getUserById } from '@/lib/auth';
 import { getUserStreak, getUserHistory } from '@/lib/db';
 import ProfileClient from './ProfileClient';
@@ -9,7 +10,7 @@ export default async function ProfilePage() {
   const session = await getSession();
 
   if (!session) {
-    return <ProfileClient loggedIn={false} />;
+    redirect('/signin?from=/profile');
   }
 
   const [streak, history, user] = await Promise.all([
@@ -20,7 +21,6 @@ export default async function ProfilePage() {
 
   return (
     <ProfileClient
-      loggedIn={true}
       email={session.email}
       streak={streak}
       history={history}
