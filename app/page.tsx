@@ -374,8 +374,8 @@ export default function HomePage() {
           ))}
         </nav>
         <div style={{ textAlign: 'center', paddingBottom: '1.5rem' }}>
-          <p style={{ fontStyle: 'italic', fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
-            knew the difference between the synth-pop of 1983 and the synth-pop of 1984.
+          <p style={{ fontStyle: 'italic', fontSize: '0.92rem', color: '#ffffff', lineHeight: 1.6 }}>
+            Browsing, the sheep, hoped that you knew the difference between the synth-pop of 1983 and the synth-pop of 1984.
           </p>
         </div>
       </footer>
