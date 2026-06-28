@@ -368,13 +368,16 @@ export default function HomePage() {
             </a>
           ))}
         </nav>
-        <div style={{ textAlign: 'center', paddingBottom: '1.5rem' }}>
+        <div style={{ textAlign: 'center', paddingBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            Next record in
+          </p>
           <Countdown
             targetTimestamp={getNextResetTimestamp()}
             className="countdown"
           />
-          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}>
-            07:00 UTC
+          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            Every day at 07:00 UTC
           </p>
         </div>
       </footer>
