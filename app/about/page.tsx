@@ -55,6 +55,16 @@ export default function AboutPage() {
           . Built because the feed needed to die.
         </p>
 
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+          Questions, suggestions, or a record recommendation —{' '}
+          <a
+            href="mailto:contact@the-death-of-browsing.com"
+            style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+          >
+            contact@the-death-of-browsing.com
+          </a>
+        </p>
+
         <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           The Story of Browsing · 2026
         </p>
