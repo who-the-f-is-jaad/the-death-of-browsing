@@ -84,24 +84,31 @@ export default function RoundReveal({ entry, score, myYear, myNickname, isHost, 
 
       {/* Your guess vs correct answer */}
       {resolvedMyYear !== null && (
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', gap: '0', justifyContent: 'space-around' }}>
-          <div style={{ textAlign: 'center' }}>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
-              You guessed
-            </p>
-            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: resolvedMyYear === entry.answerYear ? 'var(--gold)' : '#c41a1a' }}>
-              {resolvedMyYear}
-            </p>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', gap: '0', justifyContent: 'space-around' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+                You guessed
+              </p>
+              <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: resolvedMyYear === entry.answerYear ? 'var(--gold)' : '#c41a1a' }}>
+                {resolvedMyYear}
+              </p>
+            </div>
+            <div style={{ width: '1px', background: 'var(--border)' }} />
+            <div style={{ textAlign: 'center' }}>
+              <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+                Correct
+              </p>
+              <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
+                {entry.answerYear}
+              </p>
+            </div>
           </div>
-          <div style={{ width: '1px', background: 'var(--border)' }} />
-          <div style={{ textAlign: 'center' }}>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
-              Correct
+          {resolvedMyYear === entry.answerYear && (
+            <p className="font-heading animate-exact" style={{ fontSize: '0.72rem', letterSpacing: '0.38em', textTransform: 'uppercase', color: 'var(--text)', textAlign: 'center' }}>
+              — exact year —
             </p>
-            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
-              {entry.answerYear}
-            </p>
-          </div>
+          )}
         </div>
       )}
 

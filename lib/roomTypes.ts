@@ -37,6 +37,7 @@ export type Room = {
   status: RoomStatus;
   rounds: number;
   hostToken: string;
+  hostUserId?: string;
   roundEntries: RoundEntry[];
   currentRound: number;
   createdAt: string;

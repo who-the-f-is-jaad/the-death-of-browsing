@@ -513,6 +513,11 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
               <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>
                 points
               </p>
+              {lastGuess.score === 1000 && (
+                <p className="font-heading animate-exact" style={{ fontSize: '0.72rem', letterSpacing: '0.38em', textTransform: 'uppercase', color: 'var(--text)', marginTop: '0.6rem' }}>
+                  — exact year —
+                </p>
+              )}
             </div>
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
               <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.75rem' }}>

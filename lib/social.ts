@@ -199,3 +199,19 @@ export async function getOutgoingRequests(userId: string): Promise<string[]> {
   const members = await kv.zrange(frqOut(userId), 0, 99, { rev: true });
   return (members ?? []) as string[];
 }
+
+// Directly establish friendship without a request (e.g. after a multiplayer game)
+export async function addFriends(userId1: string, userId2: string): Promise<void> {
+  if (userId1 === userId2) return;
+  const already = await kv.zscore(frKey(userId1), userId2);
+  if (already !== null) return;
+  const score = Date.now();
+  await Promise.all([
+    kv.zadd(frKey(userId1), { score, member: userId2 }),
+    kv.zadd(frKey(userId2), { score, member: userId1 }),
+    kv.zrem(frqOut(userId1), userId2),
+    kv.zrem(frqIn(userId2), userId1),
+    kv.zrem(frqOut(userId2), userId1),
+    kv.zrem(frqIn(userId1), userId2),
+  ]);
+}

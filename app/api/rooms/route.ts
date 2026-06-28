@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
 import { fetchMultiPool, samplePool } from '@/lib/songPool';
 import { generateRoomId, generateToken, addPlayerToRoom, setRoom } from '@/lib/roomStorage';
+import { getSession } from '@/lib/auth';
 import type { Room, Player, RoundEntry } from '@/lib/roomTypes';
 
 export async function POST(req: Request) {
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `Only ${roundEntries.length}/${rounds} tracks could be enriched from Deezer` }, { status: 500 });
     }
 
+    const session = await getSession();
     const hostToken = generateToken();
     const playerToken = generateToken();
     const now = new Date();
@@ -73,6 +75,7 @@ export async function POST(req: Request) {
       status: 'lobby',
       rounds,
       hostToken,
+      ...(session ? { hostUserId: session.userId } : {}),
       roundEntries,
       currentRound: 0,
       createdAt: now.toISOString(),
