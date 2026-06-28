@@ -98,8 +98,8 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
               onChange={e => setNickname(e.target.value)}
               maxLength={24}
               placeholder="Shaun"
-              className="ritual-input"
-              style={{ fontSize: '1.4rem', padding: '0.5rem 0.25rem' }}
+              className="ritual-input font-brand"
+              style={{ fontSize: '3rem', padding: '0.25rem 0', background: 'none', border: 'none', borderBottom: '1px solid var(--border-mid)', outline: 'none', color: 'var(--text)', width: '100%', textTransform: 'uppercase' }}
               required
               autoFocus
             />
