@@ -4,12 +4,10 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { track } from '@vercel/analytics';
 import { COPY } from '@/lib/copy';
-import { getNextResetTimestamp } from '@/lib/resetTime';
 import { shareOrCopy } from '@/lib/share';
 import { consumePendingOmenAudio } from '@/lib/omenAudio';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import ArtifactCover from '@/components/ui/ArtifactCover';
-import Countdown from './Countdown';
 import EmailCapture from './EmailCapture';
 
 interface Props {
@@ -71,7 +69,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
       {solvedYear !== undefined && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
           <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            You Named
+            Correct Guess
           </p>
           <p style={{ fontSize: '2rem', letterSpacing: '0.08em', color: 'var(--text)', lineHeight: 1 }}>
             {solvedYear}
@@ -111,27 +109,27 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
         )}
       </div>
 
-      {/* Deezer CTA */}
-      <a
-        href={album.deezerUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn-primary font-heading"
-        aria-label={COPY.listenOnDeezer}
-      >
-        {COPY.listenOnDeezer}
-      </a>
-
-      {/* Spotify CTA */}
-      <a
-        href="https://en.wikipedia.org/wiki/Controversy_over_fake_artists_on_Spotify"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn-ghost font-heading"
-        style={{ textAlign: 'center' }}
-      >
-        Listen on Spotify
-      </a>
+      {/* DSP buttons — grouped tighter */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <a
+          href={album.deezerUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary font-heading"
+          aria-label={COPY.listenOnDeezer}
+        >
+          {COPY.listenOnDeezer}
+        </a>
+        <a
+          href="https://en.wikipedia.org/wiki/Controversy_over_fake_artists_on_Spotify"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-ghost font-heading"
+          style={{ textAlign: 'center' }}
+        >
+          Listen on Spotify
+        </a>
+      </div>
 
       {/* Scars — wrong guesses */}
       {omenState.guesses.filter(g => !g.correct).length > 0 && (
@@ -164,19 +162,6 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
       {/* Email capture / auth status — not shown in practice mode */}
       {!practiceMode && <EmailCapture />}
 
-      {/* Countdown — not shown in practice mode */}
-      {!practiceMode && (
-        <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
-          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            {COPY.nextRecordLabel}
-          </p>
-          <Countdown targetTimestamp={getNextResetTimestamp()} className="countdown" />
-          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            07:00 UTC
-          </p>
-        </div>
-      )}
-
       {/* Next song — practice mode only */}
       {onNext && (
         <button onClick={onNext} className="btn-ghost">
@@ -184,34 +169,15 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
         </button>
       )}
 
-      {/* Navigation links */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', paddingTop: practiceMode ? '1rem' : '0.5rem' }}>
-        {practiceMode ? (
-          <Link
-            href="/"
-            className="font-heading"
-            style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
-          >
-            Exit to menu
-          </Link>
-        ) : (
-          <>
-            <Link
-              href="/practice"
-              className="font-heading"
-              style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
-            >
-              Practice
-            </Link>
-            <Link
-              href="/archive"
-              className="font-heading"
-              style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
-            >
-              See past omens
-            </Link>
-          </>
-        )}
+      {/* Navigation */}
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '0.5rem' }}>
+        <Link
+          href="/"
+          className="font-heading"
+          style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+        >
+          Exit to menu
+        </Link>
       </div>
 
     </div>

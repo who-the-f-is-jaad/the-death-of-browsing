@@ -419,7 +419,7 @@ main {
 
 .meta-val {
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.875rem;
+  font-size: 1.05rem;
   color: var(--text);
   line-height: 1.4;
 }
