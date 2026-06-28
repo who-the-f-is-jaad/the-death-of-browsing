@@ -86,16 +86,25 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     setPhase('playing');
   }
 
-  // Polling while active
+  // Polling — lobby (player list + game start) and active play (round advances)
   useEffect(() => {
-    if (phase !== 'playing' && phase !== 'waiting') return;
+    if (phase !== 'lobby' && phase !== 'playing' && phase !== 'waiting') return;
 
     const interval = setInterval(async () => {
       const r = await fetchRoom();
       if (!r) return;
       setRoom(r);
 
-      // Detect round advance
+      // Lobby: detect when host starts the game
+      if (phase === 'lobby') {
+        if (r.status === 'active') {
+          prevRoundRef.current = r.currentRound;
+          setPhase('playing');
+        }
+        return;
+      }
+
+      // Playing/waiting: detect round advance
       if (r.currentRound !== prevRoundRef.current && prevRoundRef.current >= 0) {
         const justRevealed = r.revealedEntries.find(e => e.roundIndex === prevRoundRef.current);
         if (justRevealed) {

@@ -67,22 +67,20 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
       </div>
 
       {/* Invite link */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Invite link
         </p>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <code style={{ flex: 1, fontSize: '0.75rem', color: 'var(--text-mid)', wordBreak: 'break-all', fontFamily: 'monospace' }}>
-            {inviteUrl}
-          </code>
-          <button
-            onClick={handleCopyLink}
-            className="btn-ghost"
-            style={{ padding: '0.35rem 0.75rem', fontSize: '0.65rem', flexShrink: 0 }}
-          >
-            Copy
-          </button>
-        </div>
+        <code style={{ fontSize: '0.72rem', color: 'var(--text-mid)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+          {inviteUrl}
+        </code>
+        <button
+          onClick={handleCopyLink}
+          className="btn-ghost"
+          style={{ padding: '0.45rem 0.75rem', fontSize: '0.65rem' }}
+        >
+          Copy link
+        </button>
       </div>
 
       {/* Players */}
