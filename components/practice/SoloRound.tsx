@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { playClick } from '@/lib/clickSound';
 
 interface Props {
   roundIndex: number;
@@ -62,6 +63,7 @@ export default function SoloRound({ roundIndex, audioUrl, onGuess }: Props) {
         clearInterval(tick);
         startAudio();
       } else {
+        playClick();
         setCountdown(count);
       }
     }, 1000);
@@ -86,13 +88,10 @@ export default function SoloRound({ roundIndex, audioUrl, onGuess }: Props) {
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
-      {/* Round header */}
+      {/* Round counter */}
       <div style={{ paddingTop: '0.5rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Round {roundIndex + 1} / 5
-        </p>
-        <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
-          Solo Play
         </p>
       </div>
 
