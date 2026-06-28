@@ -74,26 +74,13 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
 
       {/* Menu */}
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
-        <button
-          onClick={() => { playClick(); onOpenRiddle(); }}
+        <Link
+          href="/practice"
           className="font-heading"
-          style={{
-            ...menuItemStyle,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text)',
-            textAlign: 'left',
-            width: '100%',
-            ...GLITCH_ANIMS[0],
-          }}
+          style={{ ...menuItemStyle, color: 'var(--text)', textDecoration: 'none', ...GLITCH_ANIMS[0] }}
         >
-          Daily game{hasNotPlayed && (
-            <span style={{ fontSize: '0.9rem', letterSpacing: '0.06em', textTransform: 'none', color: 'var(--text-mid)', marginLeft: '0.5rem', fontStyle: 'italic' }}>
-              (new today)
-            </span>
-          )}
-        </button>
+          Solo Play
+        </Link>
 
         <Link
           href="/deathmatch"
@@ -104,17 +91,9 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
         </Link>
 
         <Link
-          href="/practice"
-          className="font-heading"
-          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', ...GLITCH_ANIMS[2] }}
-        >
-          Practice
-        </Link>
-
-        <Link
           href="/profile"
           className="font-heading"
-          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', borderBottom: 'none', ...GLITCH_ANIMS[3] }}
+          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', borderBottom: 'none', ...GLITCH_ANIMS[2] }}
         >
           Profile
         </Link>
