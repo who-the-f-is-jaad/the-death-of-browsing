@@ -6,7 +6,12 @@ import { Analytics } from '@vercel/analytics/next';
 export const metadata: Metadata = {
   title: 'THE DEATH OF BROWSING',
   description: 'One record. One riddle. Every dawn.',
+  metadataBase: new URL('https://thedeathofbrowsing.com'),
   manifest: '/manifest.json',
+  icons: {
+    icon: '/assets/sheep-head-removebg-preview.png',
+    apple: '/assets/sheep-head-removebg-preview.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -16,6 +21,7 @@ export const metadata: Metadata = {
     title: 'THE DEATH OF BROWSING',
     description: 'One record. One riddle. Every dawn.',
     type: 'website',
+    images: [{ url: '/assets/sheep-head-removebg-preview.png', width: 512, height: 512 }],
   },
 };
 
