@@ -33,11 +33,12 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
     omenState.guesses.length > 0 ? omenState.guesses[omenState.guesses.length - 1] : null
   );
   const [coverRevealed, setCoverRevealed] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const attemptsSpent = omenState.attemptsSpent;
   const marksRemaining = MAX_ATTEMPTS - attemptsSpent;
   const canHear = !attempt.hasSpentMark && marksRemaining > 0;
-  const inputActive = attempt.hasSpentMark;
+  const inputActive = attempt.hasSpentMark && attempt.canGuess;
 
   useEffect(() => {
     // In practice mode, don't pause background music on mount — only when the user clicks Listen.
@@ -91,7 +92,8 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
   const handleHearOmen = useCallback(() => {
     if (!canHear) return;
-    playClick();
+
+    const isFirst = omenState.attemptsSpent === 0;
 
     const next: OmenLocalState = {
       ...omenState,
@@ -108,21 +110,38 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
     document.dispatchEvent(new CustomEvent('omen-audio-start'));
 
-    const audio = new Audio(entry.audioOmen.audioUrl);
-    audio.preload = 'none';
-    audioRef.current = audio;
+    // Mark the attempt as spent immediately so Listen button disappears
+    setAttempt({ hasSpentMark: true, canGuess: false, audioStatus: 'idle' });
 
-    audio.addEventListener('ended', () => {
-      setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
-    });
-    audio.addEventListener('error', () => {
-      setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
-    });
+    // Countdown: play a click tick each second, then start audio
+    const tick = () => new Audio('/audio/click.wav').play().catch(() => {});
+    tick(); // first tick is the initial click
+    setCountdown(3);
 
-    audio.play().catch(() => {
-      setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
-    });
-    setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'playing' });
+    setTimeout(() => { tick(); setCountdown(2); }, 1000);
+    setTimeout(() => { tick(); setCountdown(1); }, 2000);
+    setTimeout(() => {
+      setCountdown(null);
+
+      const audio = new Audio(entry.audioOmen.audioUrl!);
+      audio.preload = 'none';
+      audioRef.current = audio;
+
+      audio.addEventListener('ended', () => {
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'ended' });
+      });
+      audio.addEventListener('error', () => {
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+      });
+
+      audio.play().catch(() => {
+        setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
+      });
+
+      // First attempt: wait for audio to finish before showing input
+      // Subsequent attempts: show input immediately
+      setAttempt({ hasSpentMark: true, canGuess: !isFirst, audioStatus: 'playing' });
+    }, 3000);
   }, [canHear, entry, omenState, onMarkSpent]);
 
   const handleYearSubmit = useCallback((e: React.FormEvent) => {
@@ -292,8 +311,26 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
         </div>
       </div>
 
+      {/* Countdown */}
+      {countdown !== null && (
+        <p
+          key={countdown}
+          className="font-heading"
+          style={{
+            fontSize: '3rem',
+            letterSpacing: '0.1em',
+            color: 'var(--text)',
+            lineHeight: 1,
+            textAlign: 'center',
+            animation: 'ink-appear 0.18s ease forwards',
+          }}
+        >
+          {countdown}
+        </p>
+      )}
+
       {/* Playing indicator */}
-      {attempt.audioStatus === 'playing' && (
+      {attempt.audioStatus === 'playing' && countdown === null && (
         <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.84rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Playing...
         </p>
