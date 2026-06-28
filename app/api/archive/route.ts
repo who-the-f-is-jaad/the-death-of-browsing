@@ -14,7 +14,7 @@ export async function GET() {
   const rows = await fetchOmenSheet();
 
   const past = rows
-    .filter(r => r.date <= today)
+    .filter(r => r.date < today)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   const items: ArchiveItem[] = await Promise.all(
