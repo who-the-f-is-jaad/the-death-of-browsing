@@ -25,12 +25,10 @@ import Countdown from '@/components/daily/Countdown';
 type LoadState = 'summoning' | 'ready' | 'no_entry' | 'no_preview' | 'error';
 
 const LOADING_WHISPERS = [
-  'Browsing prefers the taste of mountain grass',
-  'Browsing always wakes at precisely 6:14 AM',
-  'A bad guess makes the mountain grass wither',
+  'Browsing loves grass',
+  '6:14 AM exactly',
   '1983 or 1984?',
-  'Browsing cannot count alone',
-  'Silence on the island',
+  'Only music and sheep',
 ];
 const loadingWhisper = Math.floor(Math.random() * LOADING_WHISPERS.length);
 
