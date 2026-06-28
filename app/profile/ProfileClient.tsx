@@ -4,19 +4,19 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import UsernameSetupModal from '@/components/ui/UsernameSetupModal';
-import type { StreakData } from '@/lib/types';
-import type { GameResult } from '@/lib/db';
+import type { PublicStats, GameResult, SoloBest } from '@/lib/db';
 import type { Portrait } from '@/lib/auth';
 
 const PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
 
 interface Props {
   email: string;
-  streak?: StreakData;
   history?: GameResult[];
   username?: string;
   portrait?: Portrait;
+  stats: PublicStats;
   friendCount?: number;
+  bestSolo: SoloBest | null;
 }
 
 function formatDate(dateStr: string): string {
@@ -25,11 +25,54 @@ function formatDate(dateStr: string): string {
   return `${d} ${months[m - 1]} ${y}`;
 }
 
-export default function ProfileClient({ email, streak, history = [], username: initialUsername, portrait: initialPortrait, friendCount = 0 }: Props) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '1rem' }}>
+      {children}
+    </p>
+  );
+}
+
+function StatRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+      <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)' }}>{label}</span>
+      <span style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+        <span style={{ fontSize: '1.05rem', color: '#ffffff' }}>{value}</span>
+        {sub && <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{sub}</span>}
+      </span>
+    </div>
+  );
+}
+
+function DecadeBar({ decade, played, solved }: { decade: number; played: number; solved: number }) {
+  const rate = played > 0 ? solved / played : 0;
+  const label = `${decade % 100 === 0 ? decade : String(decade).slice(-2)}s`;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.3rem 0' }}>
+      <span className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.08em', color: 'var(--text-dim)', width: '1.8rem', flexShrink: 0, textAlign: 'right' }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, height: '3px', background: 'var(--border)', borderRadius: '1px', overflow: 'hidden' }}>
+        <div style={{ width: `${rate * 100}%`, height: '100%', background: rate >= 0.8 ? 'var(--text)' : rate >= 0.5 ? 'var(--text-mid)' : '#5a1a1a', transition: 'width 0.4s ease' }} />
+      </div>
+      <span style={{ fontSize: '0.875rem', color: '#ffffff', width: '2.5rem', textAlign: 'right', flexShrink: 0 }}>
+        {Math.round(rate * 100)}%
+      </span>
+      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', width: '3rem', textAlign: 'right', flexShrink: 0 }}>
+        {solved}/{played}
+      </span>
+    </div>
+  );
+}
+
+export default function ProfileClient({ email, history = [], username: initialUsername, portrait: initialPortrait, stats, friendCount = 0, bestSolo }: Props) {
   const [username, setUsername] = useState(initialUsername);
   const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
   const [savingPortrait, setSavingPortrait] = useState(false);
   const [showSetup, setShowSetup] = useState(!initialUsername);
+
+  const { streak, totalPlayed, totalSolved, winRate, decadeStats } = stats;
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -161,30 +204,44 @@ export default function ProfileClient({ email, streak, history = [], username: i
           )}
         </div>
 
-        {/* Streak */}
-        {streak && (streak.current > 0 || streak.longest > 0) && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-            <p className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              Streak
-            </p>
-            <div style={{ display: 'flex', gap: '3rem' }}>
-              <div>
-                <p style={{ fontSize: '3.5rem', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.current}</p>
-                <p className="font-heading" style={{ fontSize: '0.92rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Current</p>
-              </div>
-              <div>
-                <p style={{ fontSize: '3.5rem', color: 'var(--text-mid)', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.longest}</p>
-                <p className="font-heading" style={{ fontSize: '0.92rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Best</p>
-              </div>
+        {/* Performance */}
+        {totalPlayed > 0 && (
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+            <SectionLabel>Performance</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <StatRow label="Win rate" value={`${winRate}%`} sub={`${totalSolved} of ${totalPlayed}`} />
+              <StatRow label="Current streak" value={String(streak.current)} sub="days" />
+              <StatRow label="Best streak" value={String(streak.longest)} sub="days" />
             </div>
           </div>
         )}
 
+        {/* Decade sensitivity */}
+        {decadeStats.length > 0 && (
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+            <SectionLabel>Decade sensitivity</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+              {decadeStats.map(d => (
+                <DecadeBar key={d.decade} {...d} />
+              ))}
+            </div>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic', marginTop: '0.75rem' }}>
+              Based on {decadeStats.reduce((s, d) => s + d.played, 0)} games
+            </p>
+          </div>
+        )}
+
+        {/* Solo Play best score */}
+        {bestSolo && (
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+            <SectionLabel>Solo Play</SectionLabel>
+            <StatRow label="Best session" value={String(bestSolo.score)} sub="/ 5000" />
+          </div>
+        )}
+
         {/* Recent games */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Recent Omens
-          </p>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+          <SectionLabel>Recent Omens</SectionLabel>
           {history.length === 0 ? (
             <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
               No games recorded yet.
@@ -198,12 +255,17 @@ export default function ProfileClient({ email, streak, history = [], username: i
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '0.75rem 0',
+                    padding: '0.65rem 0',
                     borderBottom: '1px solid var(--border)',
                   }}
                 >
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>
+                  <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
                     {formatDate(r.date)}
+                    {r.answerYear && (
+                      <span style={{ marginLeft: '0.5rem', color: 'var(--text-dim)', opacity: 0.5 }}>
+                        · {r.answerYear}
+                      </span>
+                    )}
                   </span>
                   <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
                     {r.solved

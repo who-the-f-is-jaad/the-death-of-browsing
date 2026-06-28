@@ -14,12 +14,25 @@ export interface PublicStats {
   totalSolved: number;
   winRate: number; // 0-100
   grid: DayCell[]; // last 30 days, oldest first
+  decadeStats: DecadeStat[];
 }
 
 export interface GameResult {
   date: string;
   solved: boolean;
   attempts: number;
+  answerYear?: number;
+}
+
+export interface DecadeStat {
+  decade: number;  // e.g. 1980 means "the 80s"
+  played: number;
+  solved: number;
+}
+
+export interface SoloBest {
+  score: number;
+  date: string;
 }
 
 const DEFAULT_STREAK: StreakData = { current: 0, longest: 0, lastSolvedDate: null };
@@ -59,7 +72,19 @@ export async function getUserPublicStats(userId: string, days = 30): Promise<Pub
     grid.push({ date, played: !!result, solved: result?.solved ?? false });
   }
 
-  return { streak, totalPlayed, totalSolved, winRate, grid };
+  // Decade accuracy — only from results that have answerYear stored
+  const byDecade = new Map<number, { played: number; solved: number }>();
+  for (const r of history) {
+    if (!r.answerYear) continue;
+    const decade = Math.floor(r.answerYear / 10) * 10;
+    const prev = byDecade.get(decade) ?? { played: 0, solved: 0 };
+    byDecade.set(decade, { played: prev.played + 1, solved: prev.solved + (r.solved ? 1 : 0) });
+  }
+  const decadeStats: DecadeStat[] = Array.from(byDecade.entries())
+    .map(([decade, s]) => ({ decade, played: s.played, solved: s.solved }))
+    .sort((a, b) => a.decade - b.decade);
+
+  return { streak, totalPlayed, totalSolved, winRate, grid, decadeStats };
 }
 
 export async function recordResult(
@@ -67,12 +92,15 @@ export async function recordResult(
   date: string,
   solved: boolean,
   attempts: number,
+  answerYear?: number,
 ): Promise<void> {
   const resultKey = `tdb:result:${userId}:${date}`;
   const existing = await kv.get(resultKey);
   if (existing) return; // idempotent — don't double-record
 
-  await kv.set(resultKey, { date, solved, attempts } satisfies GameResult);
+  const result: GameResult = { date, solved, attempts };
+  if (answerYear !== undefined) result.answerYear = answerYear;
+  await kv.set(resultKey, result);
   await kv.lpush(`tdb:history:${userId}`, date);
   await kv.ltrim(`tdb:history:${userId}`, 0, 89);
 
@@ -80,5 +108,17 @@ export async function recordResult(
     const current = await getUserStreak(userId);
     const updated = updateStreakOnSolve(current, date);
     await kv.set(`tdb:streak:${userId}`, updated);
+  }
+}
+
+export async function getBestSoloScore(userId: string): Promise<SoloBest | null> {
+  return kv.get<SoloBest>(`tdb:solo-best:${userId}`);
+}
+
+export async function saveSoloScore(userId: string, score: number): Promise<void> {
+  const key = `tdb:solo-best:${userId}`;
+  const current = await kv.get<SoloBest>(key);
+  if (!current || score > current.score) {
+    await kv.set(key, { score, date: new Date().toISOString().slice(0, 10) } satisfies SoloBest);
   }
 }

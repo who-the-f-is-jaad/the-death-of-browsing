@@ -88,6 +88,12 @@ export default function PracticeClient() {
   const handleNext = useCallback(() => {
     const nextIndex = roundIndex + 1;
     if (nextIndex >= TOTAL_ROUNDS) {
+      const total = completedRounds.reduce((s, r) => s + r.score, 0);
+      fetch('/api/practice/result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score: total }),
+      }).catch(() => {});
       setPhase('finished');
     } else {
       setRoundIndex(nextIndex);
@@ -95,7 +101,7 @@ export default function PracticeClient() {
       setLastGuess(null);
       fetchRound();
     }
-  }, [roundIndex, fetchRound]);
+  }, [roundIndex, completedRounds, fetchRound]);
 
   const handlePlayAgain = useCallback(() => {
     playedIdsRef.current = [];

@@ -183,7 +183,7 @@ export default function HomePage() {
         fetch('/api/user/record', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ date: dayKey, solved: true, attempts: updated.guesses.length }),
+          body: JSON.stringify({ date: dayKey, solved: true, attempts: updated.guesses.length, answerYear: entry?.audioOmen.answerYear }),
         }).catch(() => {});
       }
     } else if (updated.guesses.length >= 3 && updated.lockedUntil) {
@@ -192,7 +192,7 @@ export default function HomePage() {
         fetch('/api/user/record', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ date: dayKey, solved: false, attempts: updated.guesses.length }),
+          body: JSON.stringify({ date: dayKey, solved: false, attempts: updated.guesses.length, answerYear: entry?.audioOmen.answerYear }),
         }).catch(() => {});
       }
     }

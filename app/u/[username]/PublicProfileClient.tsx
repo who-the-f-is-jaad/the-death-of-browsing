@@ -41,6 +41,24 @@ function DayGrid({ grid }: { grid: DayCell[] }) {
   );
 }
 
+function DecadeBar({ decade, played, solved }: { decade: number; played: number; solved: number }) {
+  const rate = played > 0 ? solved / played : 0;
+  const label = `${String(decade).slice(-2)}s`;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.3rem 0' }}>
+      <span className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.08em', color: 'var(--text-dim)', width: '1.8rem', flexShrink: 0, textAlign: 'right' }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, height: '3px', background: 'var(--border)', borderRadius: '1px', overflow: 'hidden' }}>
+        <div style={{ width: `${rate * 100}%`, height: '100%', background: rate >= 0.8 ? 'var(--text)' : rate >= 0.5 ? 'var(--text-mid)' : '#5a1a1a' }} />
+      </div>
+      <span style={{ fontSize: '0.875rem', color: '#ffffff', width: '2.5rem', textAlign: 'right', flexShrink: 0 }}>
+        {Math.round(rate * 100)}%
+      </span>
+    </div>
+  );
+}
+
 export default function PublicProfileClient({
   username,
   portrait,
@@ -49,7 +67,7 @@ export default function PublicProfileClient({
   friendStatus,
   isOwnProfile,
 }: Props) {
-  const { streak, winRate, totalPlayed, grid } = stats;
+  const { streak, winRate, totalPlayed, grid, decadeStats } = stats;
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '2rem 1.25rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -150,6 +168,20 @@ export default function PublicProfileClient({
         <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
           No games played yet.
         </p>
+      )}
+
+      {/* Decade sensitivity */}
+      {decadeStats.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            Decade sensitivity
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+            {decadeStats.map(d => (
+              <DecadeBar key={d.decade} {...d} />
+            ))}
+          </div>
+        </div>
       )}
 
     </div>

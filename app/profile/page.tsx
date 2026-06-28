@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getSession, getUserById } from '@/lib/auth';
-import { getUserStreak, getUserHistory } from '@/lib/db';
+import { getUserStreak, getUserHistory, getUserPublicStats, getBestSoloScore } from '@/lib/db';
 import { getFriendCount } from '@/lib/social';
 import ProfileClient from './ProfileClient';
 
@@ -14,21 +14,23 @@ export default async function ProfilePage() {
     redirect('/signin?from=/profile');
   }
 
-  const [streak, history, user, friendCount] = await Promise.all([
-    getUserStreak(session.userId),
+  const [history, user, stats, friendCount, bestSolo] = await Promise.all([
     getUserHistory(session.userId, 30),
     getUserById(session.userId),
+    getUserPublicStats(session.userId),
     getFriendCount(session.userId),
+    getBestSoloScore(session.userId),
   ]);
 
   return (
     <ProfileClient
       email={session.email}
-      streak={streak}
       history={history}
       username={user?.username}
       portrait={user?.portrait}
+      stats={stats}
       friendCount={friendCount}
+      bestSolo={bestSolo ?? null}
     />
   );
 }
