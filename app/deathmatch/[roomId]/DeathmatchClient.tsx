@@ -41,7 +41,7 @@ type GuessResult = {
 
 type ClientPhase =
   | 'loading'
-  | 'join'            // no token found, show nickname form
+  | 'auth-gate'       // no token + not logged in → prompt sign-in
   | 'lobby'
   | 'playing'
   | 'waiting'         // guessed, waiting for others
@@ -67,7 +67,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     return res.json();
   }, [roomId]);
 
-  // Initial load: check localStorage for tokens + nickname, then fetch room
+  // Initial load: check tokens + auth status, auto-join if logged in
   useEffect(() => {
     const pt = localStorage.getItem(`tdb:room:${roomId}:token`);
     const ht = localStorage.getItem(`tdb:room:${roomId}:hostToken`);
@@ -76,15 +76,48 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     setHostToken(ht);
     if (nick) setMyNickname(nick);
 
-    fetchRoom().then(r => {
-      if (!r) { setError('Room not found or expired'); setPhase('loading'); return; }
+    async function init() {
+      const [r, meRes] = await Promise.all([
+        fetchRoom(),
+        fetch('/api/user/me').then(res => res.ok ? res.json() : null).catch(() => null),
+      ]);
+
+      if (!r) { setError('Room not found or expired'); return; }
       setRoom(r);
-      if (!pt) {
-        setPhase(r.status === 'finished' ? 'finished' : 'join');
-      } else {
-        resolvePhase(r, pt);
+
+      // Already in room (returning visitor / host)
+      if (pt) { resolvePhase(r, pt); return; }
+
+      // Room finished — nothing to join
+      if (r.status === 'finished') { setPhase('finished'); return; }
+
+      const isLoggedIn = !!meRes?.email;
+      if (!isLoggedIn) { setPhase('auth-gate'); return; }
+
+      // Auto-join with account name (no form needed)
+      const name: string = meRes.displayName ?? meRes.username ?? (meRes.email as string).split('@')[0];
+      const joinRes = await fetch(`/api/rooms/${roomId}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: name }),
+      });
+      const joinData = await joinRes.json();
+      if (!joinRes.ok) {
+        // Name conflict or room full — fall back to auth-gate with error message
+        setError(joinData.error ?? 'Could not join room');
+        setPhase('auth-gate');
+        return;
       }
-    });
+      localStorage.setItem(`tdb:room:${roomId}:token`, joinData.playerToken);
+      localStorage.setItem(`tdb:room:${roomId}:nickname`, name);
+      setPlayerToken(joinData.playerToken);
+      setMyNickname(name);
+
+      const fresh = await fetchRoom();
+      if (fresh) { setRoom(fresh); resolvePhase(fresh, joinData.playerToken); }
+    }
+
+    init();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
@@ -243,15 +276,29 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
       <ObituaryHeader entryNumber={0} entryDate="" />
       <div className="flex-1 flex flex-col gap-6 pb-8">
 
-        {(phase === 'join') && (
-          <RoomLobby
-            room={room}
-            roomId={roomId}
-            isHost={false}
-            isJoining={true}
-            onJoin={handleJoin}
-            onStart={handleStart}
-          />
+        {phase === 'auth-gate' && (
+          <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingTop: '1rem' }}>
+            <div>
+              <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
+                Room · {room.rounds} rounds
+              </p>
+              <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
+                Sign in to play
+              </p>
+            </div>
+            <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.6 }}>
+              {error
+                ? error
+                : 'You need an account to join a deathmatch game.'}
+            </p>
+            <a
+              href={`/signin?from=/deathmatch/${roomId}`}
+              className="btn-ghost"
+              style={{ textAlign: 'center', textDecoration: 'none' }}
+            >
+              Sign in
+            </a>
+          </div>
         )}
 
         {phase === 'lobby' && (
