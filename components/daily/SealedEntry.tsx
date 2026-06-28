@@ -93,9 +93,17 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
         <Link
           href="/profile"
           className="font-heading"
-          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', borderBottom: 'none', ...GLITCH_ANIMS[2] }}
+          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', ...GLITCH_ANIMS[2] }}
         >
           Profile
+        </Link>
+
+        <Link
+          href="/friends"
+          className="font-heading"
+          style={{ ...menuItemStyle, color: 'var(--text-mid)', textDecoration: 'none', borderBottom: 'none', ...GLITCH_ANIMS[3] }}
+        >
+          Friends
         </Link>
       </nav>
 

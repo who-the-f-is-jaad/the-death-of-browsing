@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getUserByUsername, getSession } from '@/lib/auth';
 import { getUserPublicStats } from '@/lib/db';
-import { getFollowerCount, getFollowingCount, isFollowing } from '@/lib/social';
+import { getFriendCount, getFriendStatus } from '@/lib/social';
 import PublicProfileClient from './PublicProfileClient';
 
 interface Props {
@@ -24,27 +24,24 @@ export default async function PublicProfilePage({ params }: Props) {
   const user = await getUserByUsername(handle);
   if (!user || !user.username) notFound();
 
-  const [stats, followerCount, followingCount, session] = await Promise.all([
+  const [stats, friendCount, session] = await Promise.all([
     getUserPublicStats(user.id),
-    getFollowerCount(user.id),
-    getFollowingCount(user.id),
+    getFriendCount(user.id),
     getSession(),
   ]);
 
-  const viewerIsFollowing = session?.userId && session.userId !== user.id
-    ? await isFollowing(session.userId, user.id)
-    : false;
-
   const isOwnProfile = session?.userId === user.id;
+  const friendStatus = session?.userId && !isOwnProfile
+    ? await getFriendStatus(session.userId, user.id)
+    : 'none';
 
   return (
     <PublicProfileClient
       username={user.username}
       portrait={user.portrait}
       stats={stats}
-      followerCount={followerCount}
-      followingCount={followingCount}
-      viewerIsFollowing={viewerIsFollowing}
+      friendCount={friendCount}
+      friendStatus={friendStatus}
       isOwnProfile={isOwnProfile}
     />
   );

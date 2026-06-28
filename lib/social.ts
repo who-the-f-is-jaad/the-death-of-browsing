@@ -105,3 +105,97 @@ export async function recordPlayedWith(userIds: string[]): Promise<void> {
 export async function getPlayedWith(userId: string): Promise<string[]> {
   return ((await kv.smembers(`tdb:played-with:${userId}`)) ?? []) as string[];
 }
+
+// --- Friend system ---
+
+const frqIn  = (id: string) => `tdb:friend-req:in:${id}`;
+const frqOut = (id: string) => `tdb:friend-req:out:${id}`;
+const frKey  = (id: string) => `tdb:friends:${id}`;
+
+export async function getFriendStatus(
+  viewerId: string,
+  targetId: string,
+): Promise<'none' | 'friends' | 'sent' | 'incoming'> {
+  const [friendScore, sentScore, incomingScore] = await Promise.all([
+    kv.zscore(frKey(viewerId), targetId),
+    kv.zscore(frqOut(viewerId), targetId),
+    kv.zscore(frqIn(viewerId), targetId),
+  ]);
+  if (friendScore !== null) return 'friends';
+  if (sentScore !== null) return 'sent';
+  if (incomingScore !== null) return 'incoming';
+  return 'none';
+}
+
+export async function sendFriendRequest(
+  senderId: string,
+  receiverId: string,
+): Promise<'ok' | 'already_friends' | 'already_sent' | 'self'> {
+  if (senderId === receiverId) return 'self';
+  const [friendScore, sentScore] = await Promise.all([
+    kv.zscore(frKey(senderId), receiverId),
+    kv.zscore(frqOut(senderId), receiverId),
+  ]);
+  if (friendScore !== null) return 'already_friends';
+  if (sentScore !== null) return 'already_sent';
+  const score = Date.now();
+  await Promise.all([
+    kv.zadd(frqOut(senderId), { score, member: receiverId }),
+    kv.zadd(frqIn(receiverId), { score, member: senderId }),
+  ]);
+  return 'ok';
+}
+
+export async function cancelFriendRequest(senderId: string, receiverId: string): Promise<void> {
+  await Promise.all([
+    kv.zrem(frqOut(senderId), receiverId),
+    kv.zrem(frqIn(receiverId), senderId),
+  ]);
+}
+
+export async function acceptFriendRequest(receiverId: string, senderId: string): Promise<void> {
+  const score = Date.now();
+  await Promise.all([
+    kv.zrem(frqIn(receiverId), senderId),
+    kv.zrem(frqOut(senderId), receiverId),
+    kv.zadd(frKey(receiverId), { score, member: senderId }),
+    kv.zadd(frKey(senderId), { score, member: receiverId }),
+  ]);
+}
+
+export async function rejectFriendRequest(receiverId: string, senderId: string): Promise<void> {
+  await Promise.all([
+    kv.zrem(frqIn(receiverId), senderId),
+    kv.zrem(frqOut(senderId), receiverId),
+  ]);
+}
+
+export async function unfriend(userId1: string, userId2: string): Promise<void> {
+  await Promise.all([
+    kv.zrem(frKey(userId1), userId2),
+    kv.zrem(frKey(userId2), userId1),
+  ]);
+}
+
+export async function areFriends(userId1: string, userId2: string): Promise<boolean> {
+  return (await kv.zscore(frKey(userId1), userId2)) !== null;
+}
+
+export async function getFriends(userId: string, limit = 50): Promise<string[]> {
+  const members = await kv.zrange(frKey(userId), 0, limit - 1, { rev: true });
+  return (members ?? []) as string[];
+}
+
+export async function getFriendCount(userId: string): Promise<number> {
+  return (await kv.zcard(frKey(userId))) ?? 0;
+}
+
+export async function getIncomingRequests(userId: string): Promise<string[]> {
+  const members = await kv.zrange(frqIn(userId), 0, 99, { rev: true });
+  return (members ?? []) as string[];
+}
+
+export async function getOutgoingRequests(userId: string): Promise<string[]> {
+  const members = await kv.zrange(frqOut(userId), 0, 99, { rev: true });
+  return (members ?? []) as string[];
+}

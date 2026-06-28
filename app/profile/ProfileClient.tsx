@@ -16,6 +16,7 @@ interface Props {
   history?: GameResult[];
   username?: string;
   portrait?: Portrait;
+  friendCount?: number;
 }
 
 function formatDate(dateStr: string): string {
@@ -24,7 +25,7 @@ function formatDate(dateStr: string): string {
   return `${d} ${months[m - 1]} ${y}`;
 }
 
-export default function ProfileClient({ email, streak, history = [], username: initialUsername, portrait: initialPortrait }: Props) {
+export default function ProfileClient({ email, streak, history = [], username: initialUsername, portrait: initialPortrait, friendCount = 0 }: Props) {
   const [username, setUsername] = useState(initialUsername);
   const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
   const [savingPortrait, setSavingPortrait] = useState(false);
@@ -120,13 +121,20 @@ export default function ProfileClient({ email, streak, history = [], username: i
                   </span>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <Link
                   href={`/u/${username}`}
                   className="font-heading"
                   style={{ fontSize: '0.75rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
                 >
                   Public profile →
+                </Link>
+                <Link
+                  href="/friends"
+                  className="font-heading"
+                  style={{ fontSize: '0.75rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+                >
+                  Friends ({friendCount})
                 </Link>
                 <button
                   onClick={() => setShowSetup(true)}

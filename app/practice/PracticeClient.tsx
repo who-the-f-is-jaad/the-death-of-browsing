@@ -1,102 +1,128 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { track } from '@vercel/analytics';
-import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
-
 import Link from 'next/link';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
-import OmenCard from '@/components/daily/OmenCard';
-import AlbumReveal from '@/components/daily/AlbumReveal';
+import SoloRound from '@/components/practice/SoloRound';
+import SoloReveal from '@/components/practice/SoloReveal';
+import SoloFinished from '@/components/practice/SoloFinished';
+import { computeProximityScore } from '@/lib/scoring';
+import type { AudioOmenEntry } from '@/lib/omenTypes';
 
-type LoadState = 'summoning' | 'ready' | 'no_entry' | 'error';
+const TOTAL_ROUNDS = 5;
 
-function initPracticeState(entryId: string): OmenLocalState {
+interface SoloEntry {
+  audioUrl: string;
+  answerYear: number;
+  albumTitle: string;
+  artist: string;
+  coverImageUrl?: string;
+  deezerAlbumUrl: string;
+  trackTitle?: string;
+}
+
+interface CompletedRound {
+  entry: SoloEntry;
+  guessedYear: number;
+  score: number;
+}
+
+type Phase = 'loading' | 'active' | 'reveal' | 'finished' | 'error' | 'exhausted';
+
+function toSoloEntry(e: AudioOmenEntry): SoloEntry {
   return {
-    entryId,
-    opened: true,
-    solved: false,
-    attemptsSpent: 0,
-    guesses: [],
-    currentAttemptHeard: false,
+    audioUrl: e.audioOmen.audioUrl,
+    answerYear: e.audioOmen.answerYear,
+    albumTitle: e.album.title,
+    artist: e.album.artist,
+    coverImageUrl: e.album.coverImageUrl,
+    deezerAlbumUrl: e.album.deezerUrl,
+    trackTitle: e.track?.title,
   };
 }
 
 export default function PracticeClient() {
-  const [loadState, setLoadState] = useState<LoadState>('summoning');
-  const [entry, setEntry] = useState<AudioOmenEntry | null>(null);
-  const [practiceState, setPracticeState] = useState<OmenLocalState | null>(null);
-  const [revealed, setRevealed] = useState(false);
-  const [playedIds, setPlayedIds] = useState<string[]>([]);
-  const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [exhausted, setExhausted] = useState(false);
+  const [phase, setPhase] = useState<Phase>('loading');
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [currentEntry, setCurrentEntry] = useState<SoloEntry | null>(null);
+  const [completedRounds, setCompletedRounds] = useState<CompletedRound[]>([]);
+  const [lastGuess, setLastGuess] = useState<{ year: number; score: number } | null>(null);
 
-  // Use a ref so loadSong always sees the latest playedIds without stale closure
   const playedIdsRef = useRef<string[]>([]);
-  playedIdsRef.current = playedIds;
 
-  const loadSong = useCallback(async (exclude: string[]) => {
-    setLoadState('summoning');
-    setRevealed(false);
-    setExhausted(false);
+  const fetchRound = useCallback(async () => {
+    setPhase('loading');
     try {
-      const qs = exclude.length ? `?exclude=${exclude.join(',')}` : '';
+      const qs = playedIdsRef.current.length ? `?exclude=${playedIdsRef.current.join(',')}` : '';
       const res = await fetch(`/api/practice${qs}`);
       if (!res.ok) throw new Error('fetch failed');
       const data: { entry: AudioOmenEntry | null; trackId?: string; exhausted?: boolean } = await res.json();
 
-      if (data.exhausted) {
-        setExhausted(true);
-        setLoadState('ready');
-        return;
-      }
-      if (!data.entry) {
-        setLoadState('no_entry');
+      if (data.exhausted || !data.entry) {
+        setPhase('exhausted');
         return;
       }
 
-      setEntry(data.entry);
-      setPracticeState(initPracticeState(data.entry.id));
-      setLoadState('ready');
-      if (data.trackId) {
-        setPlayedIds(prev => [...prev, data.trackId!]);
-      }
-      track('practice_started');
+      if (data.trackId) playedIdsRef.current = [...playedIdsRef.current, data.trackId];
+      setCurrentEntry(toSoloEntry(data.entry));
+      setPhase('active');
     } catch {
-      setLoadState('error');
+      setPhase('error');
     }
   }, []);
 
   useEffect(() => {
-    loadSong([]);
+    fetchRound();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleGuess = useCallback((year: number) => {
+    if (!currentEntry) return;
+    const score = computeProximityScore(year, currentEntry.answerYear);
+    const completed: CompletedRound = { entry: currentEntry, guessedYear: year, score };
+    setCompletedRounds(prev => [...prev, completed]);
+    setLastGuess({ year, score });
+    setPhase('reveal');
+  }, [currentEntry]);
+
   const handleNext = useCallback(() => {
-    loadSong(playedIdsRef.current);
-  }, [loadSong]);
-
-  const handleMarkSpent = useCallback((updated: OmenLocalState) => {
-    setPracticeState(updated);
-  }, []);
-
-  const handleGuessSubmit = useCallback((
-    _year: number,
-    updated: OmenLocalState,
-    correct: boolean,
-  ) => {
-    const noLock = { ...updated, lockedUntil: undefined };
-    setPracticeState(noLock);
-    if (correct || noLock.guesses.length >= 3) {
-      setRevealed(true);
-      setScore(prev => ({ correct: prev.correct + (correct ? 1 : 0), total: prev.total + 1 }));
-      track(correct ? 'practice_solved' : 'practice_failed', { attempts: noLock.guesses.length });
+    const nextIndex = roundIndex + 1;
+    if (nextIndex >= TOTAL_ROUNDS) {
+      setPhase('finished');
+    } else {
+      setRoundIndex(nextIndex);
+      setCurrentEntry(null);
+      setLastGuess(null);
+      fetchRound();
     }
-  }, []);
+  }, [roundIndex, fetchRound]);
 
-  if (loadState === 'summoning') {
+  const handlePlayAgain = useCallback(() => {
+    playedIdsRef.current = [];
+    setRoundIndex(0);
+    setCompletedRounds([]);
+    setLastGuess(null);
+    setCurrentEntry(null);
+    fetchRound();
+  }, [fetchRound]);
+
+  const header = (
+    <header className="cat-header">
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
+          The Death of Browsing
+        </Link>
+        <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          Solo Play
+        </span>
+      </div>
+    </header>
+  );
+
+  if (phase === 'loading') {
     return (
       <DeadBrowserShell>
+        {header}
         <div className="flex-1 flex items-center justify-center py-24">
           <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Summoning a record…
@@ -106,9 +132,10 @@ export default function PracticeClient() {
     );
   }
 
-  if (loadState === 'error') {
+  if (phase === 'error') {
     return (
       <DeadBrowserShell>
+        {header}
         <div className="flex-1 flex items-center justify-center text-center py-24">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text)' }}>
@@ -117,7 +144,7 @@ export default function PracticeClient() {
             <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)' }}>
               The pool could not be reached. Try again.
             </p>
-            <button onClick={() => loadSong([])} className="btn-ghost" style={{ marginTop: '1rem' }}>
+            <button onClick={fetchRound} className="btn-ghost" style={{ marginTop: '1rem' }}>
               Try again
             </button>
           </div>
@@ -126,54 +153,20 @@ export default function PracticeClient() {
     );
   }
 
-  if (loadState === 'no_entry') {
+  if (phase === 'exhausted') {
     return (
       <DeadBrowserShell>
-        <div className="flex-1 flex items-center justify-center text-center py-24">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text)' }}>
-              No Corpse Found
-            </p>
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)' }}>
-              The pool appears empty. Return after the next dawn.
-            </p>
-            <a href="/" className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '1rem' }}>
-              Back to today
-            </a>
-          </div>
-        </div>
-      </DeadBrowserShell>
-    );
-  }
-
-  const scoreLabel = score.total > 0 ? `${score.correct} / ${score.total} correct` : 'Pick a year';
-
-  if (exhausted) {
-    return (
-      <DeadBrowserShell>
-        <header className="cat-header">
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-            <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
-              The Death of Browsing
-            </Link>
-            <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              Practice
-            </span>
-          </div>
-          <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.4, marginTop: '0.35rem' }}>
-            {scoreLabel}
-          </p>
-        </header>
+        {header}
         <div className="flex-1 flex items-center justify-center text-center py-24">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text)' }}>
               You&apos;ve heard them all.
             </p>
             <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)' }}>
-              Final score: {score.correct} / {score.total}
+              No new records left in the pool.
             </p>
             <button
-              onClick={() => { setPlayedIds([]); setScore({ correct: 0, total: 0 }); loadSong([]); }}
+              onClick={() => { playedIdsRef.current = []; setRoundIndex(0); setCompletedRounds([]); fetchRound(); }}
               className="btn-ghost"
               style={{ marginTop: '0.5rem' }}
             >
@@ -185,38 +178,38 @@ export default function PracticeClient() {
     );
   }
 
-  if (!entry || !practiceState) return null;
+  if (phase === 'finished') {
+    return (
+      <DeadBrowserShell>
+        {header}
+        <div className="flex-1 flex flex-col gap-6 pb-8">
+          <SoloFinished rounds={completedRounds} onPlayAgain={handlePlayAgain} />
+        </div>
+      </DeadBrowserShell>
+    );
+  }
+
+  if (!currentEntry || !lastGuess && phase === 'reveal') return null;
 
   return (
     <DeadBrowserShell>
-      <header className="cat-header">
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
-            The Death of Browsing
-          </Link>
-          <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Practice
-          </span>
-        </div>
-        <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.4, marginTop: '0.35rem' }}>
-          {scoreLabel}
-        </p>
-      </header>
-
+      {header}
       <div className="flex-1 flex flex-col gap-6 pb-8">
-        {!revealed ? (
-          <OmenCard
-            entry={entry}
-            omenState={practiceState}
-            onMarkSpent={handleMarkSpent}
-            onGuessSubmit={handleGuessSubmit}
-            practiceMode
+        {phase === 'active' && currentEntry && (
+          <SoloRound
+            key={roundIndex}
+            roundIndex={roundIndex}
+            audioUrl={currentEntry.audioUrl}
+            onGuess={handleGuess}
           />
-        ) : (
-          <AlbumReveal
-            entry={entry}
-            omenState={practiceState}
-            practiceMode
+        )}
+        {phase === 'reveal' && currentEntry && lastGuess && (
+          <SoloReveal
+            roundIndex={roundIndex}
+            entry={currentEntry}
+            guessedYear={lastGuess.year}
+            score={lastGuess.score}
+            isLast={roundIndex === TOTAL_ROUNDS - 1}
             onNext={handleNext}
           />
         )}

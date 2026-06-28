@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import FollowButton from '@/components/ui/FollowButton';
+import FriendButton from '@/components/ui/FriendButton';
 import type { DayCell, PublicStats } from '@/lib/db';
 import type { Portrait } from '@/lib/auth';
+
+type FriendStatus = 'none' | 'friends' | 'sent' | 'incoming';
 
 interface Props {
   username: string;
   portrait?: Portrait;
   stats: PublicStats;
-  followerCount: number;
-  followingCount: number;
-  viewerIsFollowing: boolean;
+  friendCount: number;
+  friendStatus: FriendStatus;
   isOwnProfile: boolean;
 }
 
@@ -44,9 +45,8 @@ export default function PublicProfileClient({
   username,
   portrait,
   stats,
-  followerCount,
-  followingCount,
-  viewerIsFollowing,
+  friendCount,
+  friendStatus,
   isOwnProfile,
 }: Props) {
   const { streak, winRate, totalPlayed, grid } = stats;
@@ -81,19 +81,15 @@ export default function PublicProfileClient({
           </div>
         </div>
 
-        {/* Social counts + action */}
+        {/* Friends count + action */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <Link href={`/u/${username}/followers`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-            <span style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followerCount}</span>
-            <span className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>followers</span>
-          </Link>
-          <Link href={`/u/${username}/following`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-            <span style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followingCount}</span>
-            <span className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>following</span>
+          <Link href={`/friends`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+            <span style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{friendCount}</span>
+            <span className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>friends</span>
           </Link>
           {!isOwnProfile && (
             <div style={{ marginLeft: 'auto' }}>
-              <FollowButton username={username} initialFollowing={viewerIsFollowing} />
+              <FriendButton username={username} status={friendStatus} />
             </div>
           )}
           {isOwnProfile && (
@@ -116,7 +112,7 @@ export default function PublicProfileClient({
             <div>
               <p style={{ fontSize: '4rem', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.current}</p>
               <p className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>
-                {streak.current === 1 ? 'day streak' : 'day streak'}
+                day streak
               </p>
             </div>
             <div style={{ paddingBottom: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
