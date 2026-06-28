@@ -33,97 +33,94 @@ export default function ProfileClient({ email, streak, history = [], username: i
 
   return (
     <DeadBrowserShell>
-      <div style={{ padding: '2rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          THE DEATH OF BROWSING
-        </p>
-        <p className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text)' }}>
-          Profile
-        </p>
-      </div>
+      {showSetup && (
+        <UsernameSetupModal
+          onComplete={(u, d) => {
+            setUsername(u);
+            setDisplayName(d);
+            setShowSetup(false);
+          }}
+        />
+      )}
 
-      <div className="flex-1" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingBottom: '3rem' }}>
-        {showSetup && (
-          <UsernameSetupModal
-            onComplete={(u, d) => {
-              setUsername(u);
-              setDisplayName(d);
-              setShowSetup(false);
-            }}
-          />
-        )}
+      <div style={{ padding: '2rem 0 4rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '0.5rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Signed in as
-          </p>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>{email}</p>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {/* Identity hero */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.5rem' }}>
           {username ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-                <p style={{ fontSize: '1.3rem', color: '#ffffff', letterSpacing: '0.02em' }}>
-                  {displayName ?? username}
-                </p>
-                <span className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              <p style={{ fontSize: '2.6rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05 }}>
+                {displayName ?? username}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                   @{username}
                 </span>
+                <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
+                <span className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)', fontStyle: 'normal' }}>
+                  {email}
+                </span>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem' }}>
                 <Link
                   href={`/u/${username}`}
                   className="font-heading"
-                  style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+                  style={{ fontSize: '0.46rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
                 >
-                  View public profile →
+                  Public profile →
                 </Link>
                 <button
                   onClick={() => setShowSetup(true)}
                   className="font-heading"
-                  style={{ fontSize: '0.44rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.6 }}
+                  style={{ fontSize: '0.44rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.55 }}
                 >
                   Edit handle
                 </button>
               </div>
             </>
           ) : (
-            <button
-              onClick={() => setShowSetup(true)}
-              className="btn-ghost font-heading"
-              style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start' }}
-            >
-              Claim your @handle →
-            </button>
+            <>
+              <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                {email}
+              </p>
+              <button
+                onClick={() => setShowSetup(true)}
+                className="btn-ghost font-heading"
+                style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start', marginTop: '0.5rem' }}
+              >
+                Claim your @handle →
+              </button>
+            </>
           )}
         </div>
 
+        {/* Streak */}
         {streak && (streak.current > 0 || streak.longest > 0) && (
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+            <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               Streak
             </p>
-            <div style={{ display: 'flex', gap: '2.5rem' }}>
+            <div style={{ display: 'flex', gap: '3rem' }}>
               <div>
-                <p style={{ fontSize: '2.2rem', letterSpacing: '0.05em', color: 'var(--text)', lineHeight: 1 }}>{streak.current}</p>
-                <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.35rem' }}>Current</p>
+                <p style={{ fontSize: '3.5rem', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.current}</p>
+                <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Current</p>
               </div>
               <div>
-                <p style={{ fontSize: '2.2rem', letterSpacing: '0.05em', color: 'var(--text)', lineHeight: 1 }}>{streak.longest}</p>
-                <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.35rem' }}>Longest</p>
+                <p style={{ fontSize: '3.5rem', color: 'var(--text-mid)', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.longest}</p>
+                <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Best</p>
               </div>
             </div>
           </div>
         )}
 
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        {/* Recent games */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Recent Omens
           </p>
           {history.length === 0 ? (
-            <p style={{ fontStyle: 'italic', fontSize: '0.85rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
-              No games recorded yet. Play today&apos;s omen to start.
+            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
+              No games recorded yet.
             </p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -134,14 +131,14 @@ export default function ProfileClient({ email, streak, history = [], username: i
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '0.6rem 0',
+                    padding: '0.75rem 0',
                     borderBottom: '1px solid var(--border)',
                   }}
                 >
-                  <span className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+                  <span style={{ fontSize: '0.875rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>
                     {formatDate(r.date)}
                   </span>
-                  <span className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
+                  <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
                     {r.solved
                       ? `✓ ${r.attempts} ${r.attempts === 1 ? 'try' : 'tries'}`
                       : '† failed'}
@@ -152,11 +149,13 @@ export default function ProfileClient({ email, streak, history = [], username: i
           )}
         </div>
 
-        <div style={{ paddingTop: '0.5rem' }}>
+        {/* Sign out */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
           <button onClick={handleLogout} className="btn-ghost" style={{ width: '100%' }}>
             Sign out
           </button>
         </div>
+
       </div>
 
       <footer style={{ borderTop: '1px solid var(--border-mid)', padding: '1.25rem 0', textAlign: 'center' }}>

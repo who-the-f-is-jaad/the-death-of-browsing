@@ -16,21 +16,21 @@ interface Props {
 
 function DayGrid({ grid }: { grid: DayCell[] }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
       {grid.map(cell => (
         <div
           key={cell.date}
           title={cell.date}
           style={{
-            width: 20,
-            height: 20,
+            width: 22,
+            height: 22,
             borderRadius: 3,
             background: !cell.played
               ? 'var(--border)'
               : cell.solved
               ? 'var(--text)'
               : '#5a1a1a',
-            opacity: !cell.played ? 0.35 : 1,
+            opacity: !cell.played ? 0.3 : 1,
             flexShrink: 0,
           }}
         />
@@ -48,102 +48,106 @@ export default function PublicProfileClient({
   viewerIsFollowing,
   isOwnProfile,
 }: Props) {
-  const { streak, winRate, totalPlayed, totalSolved, grid } = stats;
+  const { streak, winRate, totalPlayed, grid } = stats;
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '2rem 1.25rem 4rem', display: 'flex', flexDirection: 'column', gap: '0' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '2rem 1.25rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
+      {/* Back link */}
       <Link
         href="/"
         className="font-heading"
-        style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', display: 'block', marginBottom: '2.5rem' }}
+        style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
       >
         ← The Death of Browsing
       </Link>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* Identity block */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <p style={{ fontSize: '2.6rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05, marginBottom: '0.35rem' }}>
+            {displayName}
+          </p>
+          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            @{username}
+          </p>
+        </div>
 
-        {/* Identity */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <p style={{ fontSize: '1.75rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.1, marginBottom: '0.2rem' }}>
-              {displayName}
-            </p>
-            <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              @{username}
-            </p>
-          </div>
+        {/* Social counts + action */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <Link href={`/u/${username}/followers`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+            <span style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followerCount}</span>
+            <span className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>followers</span>
+          </Link>
+          <Link href={`/u/${username}/following`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+            <span style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followingCount}</span>
+            <span className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>following</span>
+          </Link>
           {!isOwnProfile && (
-            <FollowButton username={username} initialFollowing={viewerIsFollowing} />
+            <div style={{ marginLeft: 'auto' }}>
+              <FollowButton username={username} initialFollowing={viewerIsFollowing} />
+            </div>
           )}
           {isOwnProfile && (
             <Link
               href="/profile"
               className="font-heading"
-              style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+              style={{ marginLeft: 'auto', fontSize: '0.46rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
             >
               Edit profile
             </Link>
           )}
         </div>
-
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: '2rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-          <div>
-            <p style={{ fontSize: '1.75rem', color: '#ffffff', lineHeight: 1 }}>{streak.current}</p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Streak</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '1.75rem', color: '#ffffff', lineHeight: 1 }}>{streak.longest}</p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Best</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '1.75rem', color: '#ffffff', lineHeight: 1 }}>{winRate}<span style={{ fontSize: '1rem' }}>%</span></p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Solved</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '1.75rem', color: '#ffffff', lineHeight: 1 }}>{totalPlayed}</p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Played</p>
-          </div>
-        </div>
-
-        {/* 30-day grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Last 30 days
-          </p>
-          <DayGrid grid={grid} />
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: 12, height: 12, borderRadius: 2, background: 'var(--text)', display: 'inline-block' }} />
-              <span className="font-heading" style={{ fontSize: '0.38rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>solved</span>
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: 12, height: 12, borderRadius: 2, background: '#5a1a1a', display: 'inline-block' }} />
-              <span className="font-heading" style={{ fontSize: '0.38rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>failed</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Followers / Following */}
-        <div style={{ display: 'flex', gap: '1.5rem', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-          <Link href={`/u/${username}/followers`} style={{ textDecoration: 'none' }}>
-            <p style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followerCount}</p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Followers</p>
-          </Link>
-          <Link href={`/u/${username}/following`} style={{ textDecoration: 'none' }}>
-            <p style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1 }}>{followingCount}</p>
-            <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.3rem' }}>Following</p>
-          </Link>
-        </div>
-
-        {totalPlayed === 0 && (
-          <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
-            No games played yet.
-          </p>
-        )}
-
       </div>
+
+      {/* Stats block */}
+      {totalPlayed > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Hero stat: streak */}
+          <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'flex-end' }}>
+            <div>
+              <p style={{ fontSize: '4rem', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.current}</p>
+              <p className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>
+                {streak.current === 1 ? 'day streak' : 'day streak'}
+              </p>
+            </div>
+            <div style={{ paddingBottom: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <p style={{ fontSize: '1rem', color: 'var(--text-mid)' }}>
+                Best <span style={{ color: '#ffffff' }}>{streak.longest}</span>
+              </p>
+              <p style={{ fontSize: '1rem', color: 'var(--text-mid)' }}>
+                Solved <span style={{ color: '#ffffff' }}>{winRate}%</span>
+              </p>
+              <p style={{ fontSize: '1rem', color: 'var(--text-mid)' }}>
+                Played <span style={{ color: '#ffffff' }}>{totalPlayed}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* 30-day grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              Last 30 days
+            </p>
+            <DayGrid grid={grid} />
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.1rem' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--text)', display: 'inline-block' }} />
+                <span className="font-heading" style={{ fontSize: '0.38rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>solved</span>
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, background: '#5a1a1a', display: 'inline-block' }} />
+                <span className="font-heading" style={{ fontSize: '0.38rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>failed</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+          No games played yet.
+        </p>
+      )}
+
     </div>
   );
 }
