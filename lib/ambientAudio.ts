@@ -2,6 +2,7 @@
 const SRC = '/audio/Quest%20Master%20-%20In%20the%20Abbey%20of%20Innocence.mp3';
 
 let audio: HTMLAudioElement | null = null;
+let pausedByOmen = false;
 
 function getAudio(): HTMLAudioElement {
   if (!audio) {
@@ -10,6 +11,22 @@ function getAudio(): HTMLAudioElement {
     audio.volume = 0.28;
   }
   return audio;
+}
+
+// Pause ambient while the record clip plays; resume when it stops
+if (typeof window !== 'undefined') {
+  document.addEventListener('omen-audio-start', () => {
+    if (isAmbientPlaying()) {
+      getAudio().pause();
+      pausedByOmen = true;
+    }
+  });
+  document.addEventListener('omen-audio-stop', () => {
+    if (pausedByOmen) {
+      pausedByOmen = false;
+      getAudio().play().catch(() => {});
+    }
+  });
 }
 
 export function playAmbient(): Promise<void> {
