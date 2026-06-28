@@ -31,24 +31,8 @@ const menuItemStyle: React.CSSProperties = {
 };
 
 export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed, hasSolved }: Props) {
-  const showStats = typeof plays === 'number' && plays > 0;
-  const fails = showStats && typeof solves === 'number' ? plays! - solves : null;
-
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-      {/* Daily stats */}
-      {showStats && fails !== null && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
-          <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: fails > 0 ? 'var(--text)' : 'var(--text-mid)' }}>
-            {fails} {fails === 1 ? 'person' : 'people'} failed today
-          </span>
-          <span style={{ color: 'var(--border-hi)', fontSize: '0.875rem' }}>·</span>
-          <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            {solves === 0 ? 'no one succeeded' : `only ${solves} succeeded`}
-          </span>
-        </div>
-      )}
 
       {/* Sheep image — floating */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>

@@ -65,15 +65,26 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
-      {/* Year confirmation — only on success */}
+      {/* You guessed / Correct split */}
       {solvedYear !== undefined && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Correct Guess
-          </p>
-          <p style={{ fontSize: '2rem', letterSpacing: '0.08em', color: 'var(--text)', lineHeight: 1 }}>
-            {solvedYear}
-          </p>
+        <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', display: 'flex', gap: '0', justifyContent: 'space-around' }}>
+          <div style={{ textAlign: 'center' }}>
+            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+              You guessed
+            </p>
+            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: 'var(--gold)' }}>
+              {solvedYear}
+            </p>
+          </div>
+          <div style={{ width: '1px', background: 'var(--border)' }} />
+          <div style={{ textAlign: 'center' }}>
+            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+              Correct
+            </p>
+            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
+              {audioOmen.answerYear}
+            </p>
+          </div>
         </div>
       )}
 

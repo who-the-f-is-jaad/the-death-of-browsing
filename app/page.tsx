@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { track } from '@vercel/analytics';
-import { getCurrentDayKey, getNextResetTimestamp } from '@/lib/resetTime';
+import { getCurrentDayKey } from '@/lib/resetTime';
 import { loadOmenState, saveOmenState, initOmenState } from '@/lib/omenStorage';
 import { loadStreak, saveStreak } from '@/lib/localState';
 import { updateStreakOnSolve, isStreakAlive } from '@/lib/streaks';
@@ -20,7 +20,6 @@ import SoftLockPanel from '@/components/daily/SoftLockPanel';
 import UnlockSequence from '@/components/daily/UnlockSequence';
 import AlbumReveal from '@/components/daily/AlbumReveal';
 import StreakDisplay from '@/components/daily/StreakDisplay';
-import Countdown from '@/components/daily/Countdown';
 
 type LoadState = 'summoning' | 'ready' | 'no_entry' | 'no_preview' | 'error';
 
@@ -374,16 +373,9 @@ export default function HomePage() {
             </a>
           ))}
         </nav>
-        <div style={{ textAlign: 'center', paddingBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Next record in
-          </p>
-          <Countdown
-            targetTimestamp={getNextResetTimestamp()}
-            className="countdown"
-          />
-          <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Every day at 07:00 UTC
+        <div style={{ textAlign: 'center', paddingBottom: '1.5rem' }}>
+          <p style={{ fontStyle: 'italic', fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
+            knew the difference between the synth-pop of 1983 and the synth-pop of 1984.
           </p>
         </div>
       </footer>

@@ -4,25 +4,18 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import UsernameSetupModal from '@/components/ui/UsernameSetupModal';
-import type { PublicStats, GameResult, SoloBest } from '@/lib/db';
+import type { PublicStats, SoloBest } from '@/lib/db';
 import type { Portrait } from '@/lib/auth';
 
 const PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
 
 interface Props {
   email: string;
-  history?: GameResult[];
   username?: string;
   portrait?: Portrait;
   stats: PublicStats;
   friendCount?: number;
   bestSolo: SoloBest | null;
-}
-
-function formatDate(dateStr: string): string {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${d} ${months[m - 1]} ${y}`;
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -66,7 +59,7 @@ function DecadeBar({ decade, played, solved }: { decade: number; played: number;
   );
 }
 
-export default function ProfileClient({ email, history = [], username: initialUsername, portrait: initialPortrait, stats, friendCount = 0, bestSolo }: Props) {
+export default function ProfileClient({ email, username: initialUsername, portrait: initialPortrait, stats, friendCount = 0, bestSolo }: Props) {
   const [username, setUsername] = useState(initialUsername);
   const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
   const [savingPortrait, setSavingPortrait] = useState(false);
@@ -238,45 +231,6 @@ export default function ProfileClient({ email, history = [], username: initialUs
             <StatRow label="Best session" value={String(bestSolo.score)} sub="/ 5000" />
           </div>
         )}
-
-        {/* Recent games */}
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-          <SectionLabel>Recent Omens</SectionLabel>
-          {history.length === 0 ? (
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
-              No games recorded yet.
-            </p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {history.map((r, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '0.65rem 0',
-                    borderBottom: '1px solid var(--border)',
-                  }}
-                >
-                  <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    {formatDate(r.date)}
-                    {r.answerYear && (
-                      <span style={{ marginLeft: '0.5rem', color: 'var(--text-dim)', opacity: 0.5 }}>
-                        · {r.answerYear}
-                      </span>
-                    )}
-                  </span>
-                  <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
-                    {r.solved
-                      ? `✓ ${r.attempts} ${r.attempts === 1 ? 'try' : 'tries'}`
-                      : '† failed'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* Sign out */}
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
