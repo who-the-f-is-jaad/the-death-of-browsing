@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -13,14 +13,14 @@ export default function AboutPage() {
       <Link
         href="/"
         className="font-heading"
-        style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', display: 'block', marginBottom: '3rem' }}
+        style={{ fontSize: '0.76rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', display: 'block', marginBottom: '3rem' }}
       >
         ← The Death of Browsing
       </Link>
 
       <article style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
 
-        <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           The Story of Browsing.
         </p>
 
@@ -55,7 +55,7 @@ export default function AboutPage() {
           . Built because the feed needed to die.
         </p>
 
-        <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           The Story of Browsing · 2026
         </p>
 

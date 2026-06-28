@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -13,14 +13,14 @@ export default function ContactPage() {
       <Link
         href="/"
         className="font-heading"
-        style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', display: 'block', marginBottom: '3rem' }}
+        style={{ fontSize: '0.76rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', display: 'block', marginBottom: '3rem' }}
       >
         ← The Death of Browsing
       </Link>
 
       <article style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
 
-        <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           A word.
         </p>
 
@@ -39,7 +39,7 @@ export default function ContactPage() {
         <div style={{ borderTop: '1px solid var(--border)' }} />
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Find me here
           </p>
           <a
@@ -58,7 +58,7 @@ export default function ContactPage() {
           No support queue. No ticket system. Just a person.
         </p>
 
-        <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Contact · 2026
         </p>
 

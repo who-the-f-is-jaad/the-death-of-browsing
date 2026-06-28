@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { track } from '@vercel/analytics';
@@ -294,7 +294,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
       {/* Playing indicator */}
       {attempt.audioStatus === 'playing' && (
-        <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.84rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Playing...
         </p>
       )}
@@ -343,7 +343,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
               {copy.body}
             </p>
             <p className="font-heading" style={{
-              fontSize: '0.5rem',
+              fontSize: '0.82rem',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--text-dim)',
@@ -358,7 +358,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       {/* Year input — centered 4-digit box */}
       {inputActive && (
         <form onSubmit={handleYearSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
+          <p className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
             Guess the year
           </p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -389,7 +389,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
             />
           </div>
           {yearError && (
-            <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--crimson-hi)', textAlign: 'center' }}>
+            <p className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--crimson-hi)', textAlign: 'center' }}>
               {yearError}
             </p>
           )}
@@ -402,7 +402,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
       {/* Scars */}
       {omenState.guesses.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Scars
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
@@ -411,7 +411,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
                 ? `${g.band} — ${g.direction === 'UNBORN' ? 'too early' : 'too late'}`
                 : g.correct ? 'named' : '—';
               return (
-                <p key={i} className="font-heading" style={{ fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <p key={i} className="font-heading" style={{ fontSize: '0.86rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                   {g.year} — {bandDirection}
                 </p>
               );

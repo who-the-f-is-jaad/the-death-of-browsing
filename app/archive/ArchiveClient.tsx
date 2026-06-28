@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ export default function ArchiveClient() {
 
       {status === 'loading' && (
         <div style={{ padding: '3rem 0', textAlign: 'center' }}>
-          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Loading...
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function ArchiveClient() {
                 )}
                 <p
                   className="font-heading"
-                  style={{ fontSize: '0.46rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}
+                  style={{ fontSize: '0.75rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}
                 >
                   {formatDate(item.date)}
                 </p>

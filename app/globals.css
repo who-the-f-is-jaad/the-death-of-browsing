@@ -211,7 +211,7 @@ main {
 
 .photo-fallback-title {
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.65rem;
+  font-size: 0.82rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -220,7 +220,7 @@ main {
 
 .photo-fallback-ref {
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.55rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--border-hi);
@@ -380,7 +380,7 @@ main {
   border: none;
   color: var(--text-mid);
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.65rem;
+  font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
@@ -411,7 +411,7 @@ main {
 
 .meta-key {
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.6rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-mid);
@@ -459,14 +459,14 @@ main {
 }
 
 .chamber-icon {
-  font-size: 0.55rem;
+  font-size: 0.78rem;
   color: var(--text-mid);
   flex-shrink: 0;
 }
 
 .chamber-label {
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
-  font-size: 0.65rem;
+  font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-mid);
@@ -507,7 +507,7 @@ main {
   cursor: pointer;
   font-family: 'IM Fell DW Pica SC', Georgia, serif;
   font-style: italic;
-  font-size: 0.58rem;
+  font-size: 0.78rem;
   letter-spacing: 0.16em;
   color: var(--text-dim);
   padding: 0.75rem 0 0.75rem 0.75rem;
@@ -522,7 +522,7 @@ main {
 .audio-toggle::before {
   content: '○';
   font-style: normal;
-  font-size: 0.45rem;
+  font-size: 0.7rem;
   transition: color 0.2s;
   flex-shrink: 0;
 }

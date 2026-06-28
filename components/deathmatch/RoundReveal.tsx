@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 type RevealEntry = {
   roundIndex: number;
@@ -20,7 +20,7 @@ export default function RoundReveal({ entry, score }: Props) {
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.5rem' }}>
 
       <div>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
           Round {entry.roundIndex + 1} · Revealed
         </p>
         <p className="font-brand" style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 0.9, color: 'var(--text)' }}>
@@ -60,7 +60,7 @@ export default function RoundReveal({ entry, score }: Props) {
           target="_blank"
           rel="noopener noreferrer"
           className="font-heading"
-          style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.25rem' }}
+          style={{ fontSize: '0.76rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.25rem' }}
         >
           Open on Deezer →
         </a>
@@ -69,13 +69,13 @@ export default function RoundReveal({ entry, score }: Props) {
       {/* Your score this round */}
       {score !== null && (
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', textAlign: 'center' }}>
-          <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.35rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.35rem' }}>
             Your score
           </p>
           <p className="font-brand" style={{ fontSize: '2.5rem', fontWeight: 700, color: score > 0 ? 'var(--text)' : '#c41a1a', lineHeight: 1 }}>
             {score}
           </p>
-          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}>
             pts
           </p>
         </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -50,7 +50,7 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
 
   if (loading) return (
     <div style={{ textAlign: 'center', paddingTop: '2rem' }}>
-      <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+      <p className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
         Tallying scores…
       </p>
     </div>
@@ -61,7 +61,7 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
 
       {/* Header */}
       <div>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
           Game over · {completedRounds} / {totalRounds} rounds
         </p>
         <p className="font-brand" style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 0.9, color: 'var(--text)' }}>
@@ -72,7 +72,7 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
       {/* Winner callout */}
       {winner && (
         <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1rem 0', textAlign: 'center' }}>
-          <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.3rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.3rem' }}>
             Winner
           </p>
           <p className="font-brand" style={{ fontSize: '2.2rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>
@@ -111,7 +111,7 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
                   <span
                     key={rs.roundIndex}
                     className="font-heading"
-                    style={{ fontSize: '0.42rem', letterSpacing: '0.1em', color: rs.correct ? 'var(--text)' : 'var(--text-dim)', background: 'var(--border)', padding: '0.1rem 0.3rem' }}
+                    style={{ fontSize: '0.92rem', letterSpacing: '0.1em', color: rs.correct ? 'var(--text)' : 'var(--text-dim)', background: 'var(--border)', padding: '0.1rem 0.3rem' }}
                     title={`R${rs.roundIndex + 1}: guessed ${rs.year}, base ${rs.baseScore}${rs.bonus ? ` +${rs.bonus}` : ''}`}
                   >
                     R{rs.roundIndex + 1}: {rs.baseScore + rs.bonus}
@@ -131,7 +131,7 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
         <Link href="/deathmatch" className="btn-ghost" style={{ textAlign: 'center', display: 'block' }}>
           New room
         </Link>
-        <Link href="/" className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center', textDecoration: 'none' }}>
+        <Link href="/" className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center', textDecoration: 'none' }}>
           Back to home
         </Link>
       </div>

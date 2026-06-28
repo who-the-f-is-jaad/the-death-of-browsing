@@ -1,4 +1,4 @@
-// Thin-border inscription frame. No corner ornaments, no double borders.
+﻿// Thin-border inscription frame. No corner ornaments, no double borders.
 // Just a clean photocopied border with subtle inner shadow.
 
 import { cn } from '@/lib/classNames';
@@ -25,7 +25,7 @@ export default function RitualFrame({ children, className, label, variant = 'def
         <p
           className="font-heading"
           style={{
-            fontSize: '0.52rem',
+            fontSize: '0.84rem',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
             color: 'var(--text-dim)',

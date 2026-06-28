@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef } from 'react';
 
@@ -67,7 +67,7 @@ export default function DeathmatchRound({
 
       {/* Round counter */}
       <div style={{ paddingTop: '0.5rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
           Round {roundIndex + 1} / {totalRounds}
         </p>
         <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
@@ -93,7 +93,7 @@ export default function DeathmatchRound({
       {/* Listen button */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {audioStatus === 'error' ? (
-          <p className="font-heading" style={{ fontSize: '0.55rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#c41a1a' }}>
+          <p className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#c41a1a' }}>
             Audio unavailable
           </p>
         ) : (
@@ -111,7 +111,7 @@ export default function DeathmatchRound({
       {/* Year input */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
+          <p className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
             Guess the year
           </p>
           <input
@@ -134,7 +134,7 @@ export default function DeathmatchRound({
 
       {/* Live player status */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
           Opponents
         </p>
         {players.map(p => (
@@ -142,7 +142,7 @@ export default function DeathmatchRound({
             <span className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
               {p.nickname}
             </span>
-            <span style={{ fontSize: '0.6rem', color: p.hasGuessedCurrentRound ? 'var(--text)' : 'var(--text-dim)' }}>
+            <span style={{ fontSize: '0.875rem', color: p.hasGuessedCurrentRound ? 'var(--text)' : 'var(--text-dim)' }}>
               {p.hasGuessedCurrentRound ? 'Locked in' : '…'}
             </span>
           </div>
@@ -151,7 +151,7 @@ export default function DeathmatchRound({
 
       {/* Host skip */}
       {isHost && (
-        <button onClick={onAdvance} className="btn-ghost" style={{ fontSize: '0.65rem', opacity: 0.6 }}>
+        <button onClick={onAdvance} className="btn-ghost" style={{ fontSize: '0.9rem', opacity: 0.6 }}>
           Skip round (host)
         </button>
       )}

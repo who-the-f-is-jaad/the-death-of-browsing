@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 
@@ -64,7 +64,7 @@ export default function UsernameSetupModal({ onComplete }: Props) {
         }}
       >
         <div>
-          <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
             Claim your identity
           </p>
           <p style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1.4 }}>
@@ -77,7 +77,7 @@ export default function UsernameSetupModal({ onComplete }: Props) {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            <label className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               @handle
             </label>
             <input
@@ -95,7 +95,7 @@ export default function UsernameSetupModal({ onComplete }: Props) {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            <label className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               Display name <span style={{ opacity: 0.5 }}>(optional)</span>
             </label>
             <input

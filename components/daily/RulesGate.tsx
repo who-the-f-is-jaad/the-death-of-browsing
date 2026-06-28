@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { playClick } from '@/lib/clickSound';
 
@@ -37,7 +37,7 @@ export default function RulesGate({ onBegin }: Props) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {RULES.map((rule, i) => (
           <div key={i} style={{ display: 'flex', gap: '1rem', alignItems: 'baseline', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
-            <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', color: 'var(--text-dim)', flexShrink: 0, minWidth: '1.25rem' }}>
+            <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.16em', color: 'var(--text-dim)', flexShrink: 0, minWidth: '1.25rem' }}>
               {NUMERALS[i]}
             </span>
             <p style={{ fontFamily: "'IM Fell DW Pica SC', Georgia, serif", fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.6 }}>

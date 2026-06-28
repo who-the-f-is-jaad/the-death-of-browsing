@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { track } from '@vercel/analytics';
@@ -98,7 +98,7 @@ export default function PracticeClient() {
     return (
       <DeadBrowserShell>
         <div className="flex-1 flex items-center justify-center py-24">
-          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Summoning a record…
           </p>
         </div>
@@ -137,7 +137,7 @@ export default function PracticeClient() {
             <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-mid)' }}>
               The pool appears empty. Return after the next dawn.
             </p>
-            <a href="/" className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '1rem' }}>
+            <a href="/" className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '1rem' }}>
               Back to today
             </a>
           </div>
@@ -156,7 +156,7 @@ export default function PracticeClient() {
             <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
               The Death of Browsing
             </Link>
-            <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               Practice
             </span>
           </div>
@@ -194,7 +194,7 @@ export default function PracticeClient() {
           <Link href="/" className="cat-brand" style={{ textDecoration: 'none' }}>
             The Death of Browsing
           </Link>
-          <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Practice
           </span>
         </div>

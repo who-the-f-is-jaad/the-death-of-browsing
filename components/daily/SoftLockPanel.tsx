@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
@@ -45,7 +45,7 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
         <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
           {!expired ? (
             <>
-              <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                 You can retry in
               </p>
               <Countdown
@@ -55,7 +55,7 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
               />
             </>
           ) : (
-            <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
+            <p className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
               The Rite Resumes. The Scars Remain.
             </p>
           )}
@@ -65,7 +65,7 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
       {/* Scars */}
       {scars.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Scars
           </p>
           {scars.map((g, i) => {
@@ -73,7 +73,7 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
               ? `${g.band}, ${g.direction === 'UNBORN' ? 'before the birth' : 'after the burial'}`
               : 'unknown';
             return (
-              <p key={i} className="font-heading" style={{ fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              <p key={i} className="font-heading" style={{ fontSize: '0.86rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                 {g.year} — {bandDir}
               </p>
             );
@@ -92,7 +92,7 @@ export default function SoftLockPanel({ expiresAt, onRetry, scars = [], date = '
         <Link
           href="/practice"
           className="font-heading"
-          style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+          style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
         >
           Practice on yesterday&apos;s record
         </Link>

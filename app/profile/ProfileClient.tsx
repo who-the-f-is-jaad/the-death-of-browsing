@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useState } from 'react';
 import Link from 'next/link';
@@ -53,11 +53,11 @@ export default function ProfileClient({ email, streak, history = [], username: i
                 {displayName ?? username}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                   @{username}
                 </span>
-                <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
-                <span className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)', fontStyle: 'normal' }}>
+                <span style={{ color: 'var(--border-hi)', fontSize: '0.875rem' }}>·</span>
+                <span className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)', fontStyle: 'normal' }}>
                   {email}
                 </span>
               </div>
@@ -65,14 +65,14 @@ export default function ProfileClient({ email, streak, history = [], username: i
                 <Link
                   href={`/u/${username}`}
                   className="font-heading"
-                  style={{ fontSize: '0.46rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+                  style={{ fontSize: '0.75rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
                 >
                   Public profile →
                 </Link>
                 <button
                   onClick={() => setShowSetup(true)}
                   className="font-heading"
-                  style={{ fontSize: '0.44rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.55 }}
+                  style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.55 }}
                 >
                   Edit handle
                 </button>
@@ -80,13 +80,13 @@ export default function ProfileClient({ email, streak, history = [], username: i
             </>
           ) : (
             <>
-              <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                 {email}
               </p>
               <button
                 onClick={() => setShowSetup(true)}
                 className="btn-ghost font-heading"
-                style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start', marginTop: '0.5rem' }}
+                style={{ fontSize: '0.76rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start', marginTop: '0.5rem' }}
               >
                 Claim your @handle →
               </button>
@@ -97,17 +97,17 @@ export default function ProfileClient({ email, streak, history = [], username: i
         {/* Streak */}
         {streak && (streak.current > 0 || streak.longest > 0) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-            <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            <p className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               Streak
             </p>
             <div style={{ display: 'flex', gap: '3rem' }}>
               <div>
                 <p style={{ fontSize: '3.5rem', color: '#ffffff', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.current}</p>
-                <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Current</p>
+                <p className="font-heading" style={{ fontSize: '0.92rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Current</p>
               </div>
               <div>
                 <p style={{ fontSize: '3.5rem', color: 'var(--text-mid)', lineHeight: 1, letterSpacing: '-0.02em' }}>{streak.longest}</p>
-                <p className="font-heading" style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Best</p>
+                <p className="font-heading" style={{ fontSize: '0.92rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>Best</p>
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
 
         {/* Recent games */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.46rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Recent Omens
           </p>
           {history.length === 0 ? (
@@ -138,7 +138,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
                   <span style={{ fontSize: '0.875rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>
                     {formatDate(r.date)}
                   </span>
-                  <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
+                  <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: r.solved ? 'var(--text)' : 'var(--crimson)' }}>
                     {r.solved
                       ? `✓ ${r.attempts} ${r.attempts === 1 ? 'try' : 'tries'}`
                       : '† failed'}
@@ -162,7 +162,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
         <Link
           href="/"
           className="font-heading"
-          style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+          style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
         >
           Back to today&apos;s omen
         </Link>

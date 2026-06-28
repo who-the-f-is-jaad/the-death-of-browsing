@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
       {/* Year confirmation — only on success */}
       {solvedYear !== undefined && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             You Named
           </p>
           <p style={{ fontSize: '2rem', letterSpacing: '0.08em', color: 'var(--text)', lineHeight: 1 }}>
@@ -136,7 +136,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
       {/* Scars — wrong guesses */}
       {omenState.guesses.filter(g => !g.correct).length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Scars
           </p>
           {omenState.guesses.filter(g => !g.correct).map((g, i) => {
@@ -144,7 +144,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
               ? `${g.band}, ${g.direction === 'UNBORN' ? 'before the birth' : 'after the burial'}`
               : '';
             return (
-              <p key={i} className="font-heading" style={{ fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              <p key={i} className="font-heading" style={{ fontSize: '0.86rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                 {g.year} — {bandDir}
               </p>
             );
@@ -167,11 +167,11 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
       {/* Countdown — not shown in practice mode */}
       {!practiceMode && (
         <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             {COPY.nextRecordLabel}
           </p>
           <Countdown targetTimestamp={getNextResetTimestamp()} className="countdown" />
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             07:00 UTC
           </p>
         </div>
@@ -190,7 +190,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
           <Link
             href="/"
             className="font-heading"
-            style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+            style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
           >
             Back to today&apos;s omen
           </Link>
@@ -199,14 +199,14 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
             <Link
               href="/practice"
               className="font-heading"
-              style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+              style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
             >
               Practice
             </Link>
             <Link
               href="/archive"
               className="font-heading"
-              style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+              style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
             >
               See past omens
             </Link>

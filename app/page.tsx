@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { track } from '@vercel/analytics';
@@ -218,7 +218,7 @@ export default function HomePage() {
     return (
       <DeadBrowserShell>
         <div className="flex-1 flex items-center justify-center py-24">
-          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Summoning the Omen
           </p>
         </div>
@@ -369,14 +369,14 @@ export default function HomePage() {
           ))}
         </nav>
         <div style={{ textAlign: 'center', paddingBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Next record in
           </p>
           <Countdown
             targetTimestamp={getNextResetTimestamp()}
             className="countdown"
           />
-          <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Every day at 07:00 UTC
           </p>
         </div>

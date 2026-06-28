@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/classNames';
@@ -54,7 +54,7 @@ export default function RiddleCard({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
           <span
             className="font-heading"
-            style={{ fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
+            style={{ fontSize: '0.84rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
           >
             {COPY.riddleLabel}
           </span>
@@ -100,7 +100,7 @@ export default function RiddleCard({
               >
                 <span
                   className="font-heading"
-                  style={{ fontStyle: 'normal', fontSize: '0.5rem', letterSpacing: '0.15em', color: 'var(--text-dim)' }}
+                  style={{ fontStyle: 'normal', fontSize: '0.82rem', letterSpacing: '0.15em', color: 'var(--text-dim)' }}
                 >
                   clue {i + 1} —{' '}
                 </span>
@@ -117,7 +117,7 @@ export default function RiddleCard({
           <label
             htmlFor="riddle-answer"
             className="font-heading"
-            style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
+            style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}
           >
             {COPY.riddleInputLabel}
           </label>
@@ -152,7 +152,7 @@ export default function RiddleCard({
           <span
             className="font-heading"
             style={{
-              fontSize: '0.5rem',
+              fontSize: '0.82rem',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: remaining <= 1 ? 'var(--crimson-hi)' : 'var(--text-dim)',

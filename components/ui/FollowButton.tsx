@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -41,7 +41,7 @@ export default function FollowButton({ username, initialFollowing }: Props) {
       disabled={loading}
       className="btn-ghost font-heading"
       style={{
-        fontSize: '0.52rem',
+        fontSize: '0.84rem',
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
         padding: '0.5rem 1rem',

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 
@@ -79,7 +79,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
     return (
       <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingTop: '1rem' }}>
         <div>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
             Room · {room.rounds} rounds
           </p>
           <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
@@ -89,7 +89,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
 
         <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            <label className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               Your name
             </label>
             <input
@@ -122,7 +122,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
 
       {/* Identity */}
       <div>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
           {isHost ? 'you are' : 'waiting in'} · {room.rounds} rounds
         </p>
         <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)', textTransform: 'uppercase' }}>
@@ -132,10 +132,10 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
 
       {/* Invite */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Invite link
         </p>
-        <code style={{ fontSize: '0.72rem', color: 'var(--text-mid)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+        <code style={{ fontSize: '0.92rem', color: 'var(--text-mid)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
           {inviteUrl}
         </code>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -158,7 +158,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
 
       {/* Players */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Players ({room.players.length}/10)
         </p>
         {room.players.length === 0 ? (
@@ -167,7 +167,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
           </p>
         ) : room.players.map((p, i) => (
           <div key={p.nickname} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ fontSize: '0.6rem', color: 'var(--text-dim)', minWidth: '1rem' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', minWidth: '1rem' }}>
               {i + 1}
             </span>
             <span className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text)' }}>

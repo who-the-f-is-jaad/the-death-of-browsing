@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -46,7 +46,7 @@ export default function SignInClient({ from }: Props) {
   return (
     <DeadBrowserShell>
       <div style={{ padding: '2rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+        <p className="font-heading" style={{ fontSize: '0.875rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           THE DEATH OF BROWSING
         </p>
         <p className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text)' }}>
@@ -61,7 +61,7 @@ export default function SignInClient({ from }: Props) {
               Check your email — the sign-in link expires in 15 minutes.
             </p>
             {devLink && (
-              <a href={devLink} style={{ fontSize: '0.62rem', color: 'var(--text-dim)', wordBreak: 'break-all' }}>
+              <a href={devLink} style={{ fontSize: '0.88rem', color: 'var(--text-dim)', wordBreak: 'break-all' }}>
                 [dev] {devLink}
               </a>
             )}
@@ -84,7 +84,7 @@ export default function SignInClient({ from }: Props) {
                 style={{ width: '100%', padding: '0.6rem 0.75rem', fontSize: '0.875rem' }}
               />
               {error && (
-                <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
+                <p className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
                   {error}
                 </p>
               )}
@@ -104,7 +104,7 @@ export default function SignInClient({ from }: Props) {
         <Link
           href="/"
           className="font-heading"
-          style={{ fontSize: '0.52rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+          style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
         >
           Back to today&apos;s omen
         </Link>

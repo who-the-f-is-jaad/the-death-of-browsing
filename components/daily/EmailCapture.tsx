@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -79,13 +79,13 @@ export default function EmailCapture() {
     return (
       <div style={wrapStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.13em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.13em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             Signed in as {userEmail}
           </p>
           <Link
             href="/profile"
             className="font-heading"
-            style={{ fontSize: '0.5rem', letterSpacing: '0.13em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
+            style={{ fontSize: '0.82rem', letterSpacing: '0.13em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
           >
             Profile
           </Link>
@@ -101,7 +101,7 @@ export default function EmailCapture() {
           Check your email — the sign-in link expires in 15 minutes.
         </p>
         {devLink && (
-          <a href={devLink} style={{ fontSize: '0.62rem', color: 'var(--text-dim)', wordBreak: 'break-all' }}>
+          <a href={devLink} style={{ fontSize: '0.88rem', color: 'var(--text-dim)', wordBreak: 'break-all' }}>
             [dev] {devLink}
           </a>
         )}
@@ -126,7 +126,7 @@ export default function EmailCapture() {
           style={{ width: '100%', padding: '0.6rem 0.75rem', fontSize: '0.875rem' }}
         />
         {error && (
-          <p className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
+          <p className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--crimson-hi)' }}>
             {error}
           </p>
         )}
@@ -143,7 +143,7 @@ export default function EmailCapture() {
             type="button"
             onClick={dismiss}
             className="btn-text"
-            style={{ flexShrink: 0, fontSize: '0.65rem' }}
+            style={{ flexShrink: 0, fontSize: '0.9rem' }}
           >
             No thanks
           </button>

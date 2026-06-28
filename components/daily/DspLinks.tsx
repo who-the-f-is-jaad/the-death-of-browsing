@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import type { DailyEntry } from '@/lib/types';
 
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const DSP_LABEL_STYLE: React.CSSProperties = {
-  fontSize: '0.62rem',
+  fontSize: '0.88rem',
   letterSpacing: '0.14em',
   textTransform: 'uppercase' as const,
 };
@@ -24,7 +24,7 @@ export default function DspLinks({ entry }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <p
         className="font-heading"
-        style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}
+        style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}
       >
         Listen
       </p>

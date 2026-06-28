@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { playClick } from '@/lib/clickSound';
@@ -40,11 +40,11 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
       {/* Daily stats */}
       {showStats && fails !== null && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
-          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: fails > 0 ? 'var(--text)' : 'var(--text-mid)' }}>
+          <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: fails > 0 ? 'var(--text)' : 'var(--text-mid)' }}>
             {fails} {fails === 1 ? 'person' : 'people'} failed to save Browsing today
           </span>
-          <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
-          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          <span style={{ color: 'var(--border-hi)', fontSize: '0.875rem' }}>·</span>
+          <span className="font-heading" style={{ fontSize: '0.84rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
             {solves} succeeded
           </span>
         </div>
@@ -89,7 +89,7 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
           }}
         >
           Daily game{hasNotPlayed && (
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.06em', textTransform: 'none', color: 'var(--text-mid)', marginLeft: '0.5rem', fontStyle: 'italic' }}>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '0.06em', textTransform: 'none', color: 'var(--text-mid)', marginLeft: '0.5rem', fontStyle: 'italic' }}>
               (new today)
             </span>
           )}
