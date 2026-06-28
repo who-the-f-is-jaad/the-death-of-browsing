@@ -360,9 +360,7 @@ export default function HomePage() {
         >
           {[
             { label: 'Archive', href: '/archive' },
-            { label: 'Profile', href: '/profile' },
             { label: 'About', href: '/about' },
-            { label: 'Contact', href: '/contact' },
           ].map(({ label, href }) => (
             <a
               key={href}
