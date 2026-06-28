@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 type RoomState = {
   id: string;
@@ -16,16 +16,25 @@ interface Props {
   roomId: string;
   isHost: boolean;
   isJoining: boolean;
+  myNickname: string | null;
+  playerToken: string | null;
   onJoin: (nickname: string) => Promise<void>;
   onStart: () => Promise<void>;
 }
 
-export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onStart }: Props) {
+export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname, playerToken, onJoin, onStart }: Props) {
   const [nickname, setNickname] = useState('Shaun');
   const [joining, setJoining] = useState(false);
   const [starting, setStarting] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Rename state
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(myNickname ?? '');
+  const [renameError, setRenameError] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const inviteUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/deathmatch/${roomId}`
@@ -61,17 +70,30 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
   const handleInvite = async () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({
-          title: 'THE DEATH OF BROWSING',
-          text: 'Come guess the year with me.',
-          url: inviteUrl,
-        });
-      } catch {
-        // user cancelled
-      }
+        await navigator.share({ title: 'THE DEATH OF BROWSING', text: 'Come guess the year with me.', url: inviteUrl });
+      } catch { /* user cancelled */ }
     } else {
       handleCopy();
     }
+  };
+
+  const handleRenameSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = nameInput.trim();
+    if (!trimmed || trimmed === myNickname || !playerToken) { setEditingName(false); return; }
+    setRenaming(true);
+    setRenameError(null);
+    const res = await fetch(`/api/rooms/${roomId}/player`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${playerToken}` },
+      body: JSON.stringify({ nickname: trimmed }),
+    });
+    const data = await res.json();
+    setRenaming(false);
+    if (!res.ok) { setRenameError(data.error ?? 'Name taken'); return; }
+    setEditingName(false);
+    // Refresh page so player list updates
+    window.location.reload();
   };
 
   // Guest joining: show name input
@@ -86,7 +108,6 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
             Enter
           </p>
         </div>
-
         <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
             <label className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
@@ -104,11 +125,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
               autoFocus
             />
           </div>
-          {joinError && (
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: '#c41a1a' }}>
-              {joinError}
-            </p>
-          )}
+          {joinError && <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: '#c41a1a' }}>{joinError}</p>}
           <button type="submit" className="btn-ghost" disabled={joining || !nickname.trim()}>
             {joining ? 'Joining…' : 'Join game'}
           </button>
@@ -139,20 +156,8 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
           {inviteUrl}
         </code>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button
-            onClick={handleInvite}
-            className="btn-ghost"
-            style={{ flex: 1 }}
-          >
-            Invite friends
-          </button>
-          <button
-            onClick={handleCopy}
-            className="btn-ghost"
-            style={{ flex: 1 }}
-          >
-            {copied ? 'Copied!' : 'Copy link'}
-          </button>
+          <button onClick={handleInvite} className="btn-ghost" style={{ flex: 1 }}>Invite friends</button>
+          <button onClick={handleCopy} className="btn-ghost" style={{ flex: 1 }}>{copied ? 'Copied!' : 'Copy link'}</button>
         </div>
       </div>
 
@@ -161,35 +166,59 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
         <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Players ({room.players.length}/10)
         </p>
-        {room.players.length === 0 ? (
-          <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)' }}>
-            No players yet.
-          </p>
-        ) : room.players.map((p, i) => (
-          <div key={p.nickname} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', minWidth: '1rem' }}>
-              {i + 1}
-            </span>
-            <span className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text)' }}>
-              {p.nickname}
-            </span>
-            {i === 0 && (
-              <span className="font-heading" style={{ fontSize: '0.4rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginLeft: 'auto' }}>
-                host
-              </span>
-            )}
-          </div>
-        ))}
+        {room.players.map((p, i) => {
+          const isMe = p.nickname === myNickname;
+          return (
+            <div key={p.nickname} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', minWidth: '1rem' }}>{i + 1}</span>
+
+              {isMe && editingName ? (
+                <form onSubmit={handleRenameSubmit} style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
+                  <input
+                    ref={nameInputRef}
+                    type="text"
+                    value={nameInput}
+                    onChange={e => { setNameInput(e.target.value); setRenameError(null); }}
+                    maxLength={24}
+                    autoFocus
+                    className="ritual-input font-heading"
+                    style={{ fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', borderBottom: '1px solid var(--border-mid)', outline: 'none', color: 'var(--text)', flex: 1, padding: '0 0.1rem' }}
+                    onBlur={handleRenameSubmit as unknown as React.FocusEventHandler}
+                  />
+                  <button type="submit" disabled={renaming} className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)', padding: '0 0.25rem' }}>
+                    {renaming ? '…' : 'OK'}
+                  </button>
+                </form>
+              ) : (
+                <span className="font-heading" style={{ fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text)', flex: 1 }}>
+                  {p.nickname}
+                </span>
+              )}
+
+              {i === 0 && !editingName && (
+                <span className="font-heading" style={{ fontSize: '0.4rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginLeft: 'auto' }}>
+                  host
+                </span>
+              )}
+              {isMe && !editingName && (
+                <button
+                  onClick={() => { setNameInput(myNickname ?? ''); setEditingName(true); }}
+                  className="font-heading"
+                  style={{ fontSize: '0.42rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0.25rem', opacity: 0.6 }}
+                >
+                  edit
+                </button>
+              )}
+            </div>
+          );
+        })}
+        {renameError && <p style={{ fontStyle: 'italic', fontSize: '0.8rem', color: '#c41a1a' }}>{renameError}</p>}
       </div>
 
       {/* Host controls */}
       {isHost && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <button
-            onClick={handleStart}
-            className="btn-ghost"
-            disabled={starting || room.players.length < 1}
-          >
+          <button onClick={handleStart} className="btn-ghost" disabled={starting || room.players.length < 1}>
             {starting ? 'Starting…' : 'Start game'}
           </button>
           {room.players.length < 2 && (
@@ -200,7 +229,6 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
         </div>
       )}
 
-      {/* Guest waiting */}
       {!isHost && (
         <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)', textAlign: 'center' }}>
           Waiting for the host to start…

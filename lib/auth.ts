@@ -13,7 +13,6 @@ export interface User {
   email: string;
   createdAt: string;
   username?: string;
-  displayName?: string;
   portrait?: Portrait;
 }
 
@@ -67,7 +66,7 @@ export async function getUserByUsername(handle: string): Promise<User | null> {
 
 export async function updateUser(
   email: string,
-  updates: Partial<Pick<User, 'username' | 'displayName' | 'portrait'>>,
+  updates: Partial<Pick<User, 'username' | 'portrait'>>,
 ): Promise<User | null> {
   const key = `tdb:user:${email}`;
   const existing = await kv.get<User>(key);

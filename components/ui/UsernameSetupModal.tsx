@@ -1,33 +1,43 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 
 interface Props {
-  onComplete: (username: string, displayName: string) => void;
+  onComplete: (username: string) => void;
+}
+
+function toHandle(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '')
+    .slice(0, 20);
 }
 
 export default function UsernameSetupModal({ onComplete }: Props) {
-  const [username, setUsername] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [show, setShow] = useState(false);
 
+  const handle = toHandle(name);
+
   useEffect(() => {
-    // Slight delay so it doesn't flash immediately
     const t = setTimeout(() => setShow(true), 300);
     return () => clearTimeout(t);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (handle.length < 3) return;
     setSaving(true);
     setError(null);
     try {
       const res = await fetch('/api/user/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim().toLowerCase(), displayName: displayName.trim() }),
+        body: JSON.stringify({ username: handle }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -35,7 +45,7 @@ export default function UsernameSetupModal({ onComplete }: Props) {
         setSaving(false);
         return;
       }
-      onComplete(data.username, data.displayName);
+      onComplete(data.username);
     } catch {
       setError('Could not reach the server.');
       setSaving(false);
@@ -68,45 +78,26 @@ export default function UsernameSetupModal({ onComplete }: Props) {
             Claim your identity
           </p>
           <p style={{ fontSize: '1.1rem', color: '#ffffff', lineHeight: 1.4 }}>
-            Choose a handle.
-          </p>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', lineHeight: 1.6, marginTop: '0.4rem' }}>
-            Your profile will be visible at /u/@handle. You can change it later.
+            Choose your name.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              @handle
-            </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <input
               type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-              maxLength={20}
-              placeholder="shaun"
-              className="ritual-input"
-              style={{ fontSize: '1.4rem', padding: '0.4rem 0.25rem' }}
+              value={name}
+              onChange={e => { setName(e.target.value); setError(null); }}
+              maxLength={32}
+              placeholder="Shaun"
+              className="ritual-input font-brand"
+              style={{ fontSize: '2.8rem', padding: '0.25rem 0', background: 'none', border: 'none', borderBottom: '1px solid var(--border-mid)', outline: 'none', color: 'var(--text)', width: '100%' }}
               autoFocus
               required
             />
-            <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>3–20 characters. Letters, numbers, underscores.</p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              Display name <span style={{ opacity: 0.5 }}>(optional)</span>
-            </label>
-            <input
-              type="text"
-              value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
-              maxLength={32}
-              placeholder="Shaun"
-              className="ritual-input"
-              style={{ fontSize: '1.1rem', padding: '0.4rem 0.25rem' }}
-            />
+            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: handle.length >= 3 ? 'var(--text-dim)' : 'transparent' }}>
+              @{handle || '…'}
+            </p>
           </div>
 
           {error && (
@@ -116,10 +107,10 @@ export default function UsernameSetupModal({ onComplete }: Props) {
           <button
             type="submit"
             className="btn-ghost"
-            disabled={saving || username.length < 3}
+            disabled={saving || handle.length < 3}
             style={{ marginTop: '0.25rem' }}
           >
-            {saving ? 'Claiming…' : 'Claim handle'}
+            {saving ? 'Saving…' : 'Continue'}
           </button>
         </form>
       </div>

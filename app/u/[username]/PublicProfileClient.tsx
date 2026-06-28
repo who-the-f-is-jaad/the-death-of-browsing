@@ -7,7 +7,6 @@ import type { Portrait } from '@/lib/auth';
 
 interface Props {
   username: string;
-  displayName: string;
   portrait?: Portrait;
   stats: PublicStats;
   followerCount: number;
@@ -43,7 +42,6 @@ function DayGrid({ grid }: { grid: DayCell[] }) {
 
 export default function PublicProfileClient({
   username,
-  displayName,
   portrait,
   stats,
   followerCount,
@@ -72,15 +70,12 @@ export default function PublicProfileClient({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`/assets/portraits/portrait-${portrait}.png`}
-              alt={`${displayName}'s portrait`}
+              alt={`${username}'s portrait`}
               style={{ width: 64, height: 64, borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
             />
           )}
           <div>
             <p style={{ fontSize: '2.6rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05, marginBottom: '0.35rem' }}>
-              {displayName}
-            </p>
-            <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
               @{username}
             </p>
           </div>

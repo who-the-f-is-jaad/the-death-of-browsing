@@ -15,7 +15,6 @@ interface Props {
   streak?: StreakData;
   history?: GameResult[];
   username?: string;
-  displayName?: string;
   portrait?: Portrait;
 }
 
@@ -25,9 +24,8 @@ function formatDate(dateStr: string): string {
   return `${d} ${months[m - 1]} ${y}`;
 }
 
-export default function ProfileClient({ email, streak, history = [], username: initialUsername, displayName: initialDisplayName, portrait: initialPortrait }: Props) {
+export default function ProfileClient({ email, streak, history = [], username: initialUsername, portrait: initialPortrait }: Props) {
   const [username, setUsername] = useState(initialUsername);
-  const [displayName, setDisplayName] = useState(initialDisplayName);
   const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
   const [savingPortrait, setSavingPortrait] = useState(false);
   const [showSetup, setShowSetup] = useState(!initialUsername);
@@ -53,9 +51,8 @@ export default function ProfileClient({ email, streak, history = [], username: i
     <DeadBrowserShell>
       {showSetup && (
         <UsernameSetupModal
-          onComplete={(u, d) => {
+          onComplete={(u) => {
             setUsername(u);
-            setDisplayName(d);
             setShowSetup(false);
           }}
         />
@@ -116,10 +113,10 @@ export default function ProfileClient({ email, streak, history = [], username: i
                 )}
                 <div>
                   <p style={{ fontSize: '2.2rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05 }}>
-                    {displayName ?? username}
-                  </p>
-                  <span className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                     @{username}
+                  </p>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)' }}>
+                    {email}
                   </span>
                 </div>
               </div>
@@ -136,7 +133,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
                   className="font-heading"
                   style={{ fontSize: '0.74rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.55 }}
                 >
-                  Edit handle
+                  Edit name
                 </button>
               </div>
             </>

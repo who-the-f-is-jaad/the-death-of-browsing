@@ -25,7 +25,6 @@ export default async function ProfilePage() {
       streak={streak}
       history={history}
       username={user?.username}
-      displayName={user?.displayName}
       portrait={user?.portrait}
     />
   );

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const user = await getUserByUsername(username.toLowerCase());
   if (!user) return { title: 'Not found — THE DEATH OF BROWSING' };
-  const display = user.displayName ?? user.username ?? username;
+  const display = user.username ?? username;
   return { title: `${display} (@${user.username}) — THE DEATH OF BROWSING` };
 }
 
@@ -40,7 +40,6 @@ export default async function PublicProfilePage({ params }: Props) {
   return (
     <PublicProfileClient
       username={user.username}
-      displayName={user.displayName ?? user.username}
       portrait={user.portrait}
       stats={stats}
       followerCount={followerCount}

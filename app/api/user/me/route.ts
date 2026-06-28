@@ -6,12 +6,11 @@ const VALID_PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
 
 export async function GET() {
   const session = await getSession();
-  if (!session) return Response.json({ email: null, username: null, displayName: null, portrait: null });
+  if (!session) return Response.json({ email: null, username: null, portrait: null });
   const user = await getUserById(session.userId);
   return Response.json({
     email: session.email,
     username: user?.username ?? null,
-    displayName: user?.displayName ?? null,
     portrait: user?.portrait ?? null,
   });
 }
@@ -20,8 +19,8 @@ export async function PATCH(req: Request) {
   const session = await getSession();
   if (!session) return Response.json({ error: 'Not authenticated' }, { status: 401 });
 
-  const body = await req.json() as { username?: string; displayName?: string; portrait?: string };
-  const { username, displayName, portrait } = body;
+  const body = await req.json() as { username?: string; portrait?: string };
+  const { username, portrait } = body;
 
   // Portrait-only update
   if (portrait !== undefined && !username) {
@@ -32,13 +31,13 @@ export async function PATCH(req: Request) {
     return Response.json({ ok: true, portrait: updated?.portrait });
   }
 
-  // Username (+ optional displayName + optional portrait) update
+  // Username (+ optional portrait) update
   if (!username) return Response.json({ error: 'username is required' }, { status: 400 });
 
   const handle = username.trim().toLowerCase();
   if (!isValidUsername(handle)) {
     return Response.json(
-      { error: 'Username must be 3–20 characters: lowercase letters, numbers, underscores only.' },
+      { error: 'Username must be 3–20 characters: letters, numbers, underscores only.' },
       { status: 400 },
     );
   }
@@ -52,15 +51,11 @@ export async function PATCH(req: Request) {
     if (oldHandle) await releaseUsername(oldHandle, session.userId);
   }
 
-  const updates: Parameters<typeof updateUser>[1] = {
-    username: handle,
-    displayName: displayName?.trim() || handle,
-  };
+  const updates: Parameters<typeof updateUser>[1] = { username: handle };
   if (portrait && VALID_PORTRAITS.includes(portrait as Portrait)) {
     updates.portrait = portrait as Portrait;
   }
 
   const updated = await updateUser(session.email, updates);
-
-  return Response.json({ ok: true, username: updated?.username, displayName: updated?.displayName, portrait: updated?.portrait });
+  return Response.json({ ok: true, username: updated?.username, portrait: updated?.portrait });
 }

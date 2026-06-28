@@ -34,7 +34,7 @@ export default async function FollowingPage({
             href={`/u/${u!.username}`}
             style={{ display: 'flex', flexDirection: 'column', padding: '0.75rem 0', borderBottom: '1px solid var(--border)', textDecoration: 'none' }}
           >
-            <span style={{ fontSize: '1rem', color: '#ffffff' }}>{u!.displayName ?? u!.username}</span>
+            <span style={{ fontSize: '1rem', color: '#ffffff' }}>{u!.username}</span>
             <span className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.2rem' }}>@{u!.username}</span>
           </Link>
         ))}

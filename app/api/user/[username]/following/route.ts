@@ -15,6 +15,6 @@ export async function GET(
   return Response.json({
     following: following
       .filter((u): u is NonNullable<typeof u> => u !== null && !!u.username)
-      .map(u => ({ username: u.username!, displayName: u.displayName ?? u.username! })),
+      .map(u => ({ username: u.username!, displayName: u.username! })),
   });
 }

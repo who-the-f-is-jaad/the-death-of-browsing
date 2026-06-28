@@ -23,7 +23,7 @@ export async function GET(
   return Response.json({
     userId: user.id,
     username: user.username,
-    displayName: user.displayName ?? user.username,
+    displayName: user.username,
     ...stats,
     followerCount,
     followingCount,

@@ -53,6 +53,26 @@ export async function isNicknameTaken(roomId: string, nickname: string): Promise
   return result === 1;
 }
 
+export async function renamePlayer(
+  roomId: string,
+  token: string,
+  newNickname: string,
+): Promise<'ok' | 'taken' | 'not_found'> {
+  const player = await getPlayer(roomId, token);
+  if (!player) return 'not_found';
+  const oldNickname = player.nickname;
+  if (oldNickname === newNickname) return 'ok';
+  const taken = await kv.sismember(nk(roomId), newNickname);
+  if (taken === 1) return 'taken';
+  await Promise.all([
+    kv.srem(nk(roomId), oldNickname),
+    kv.sadd(nk(roomId), newNickname),
+  ]);
+  player.nickname = newNickname;
+  await setPlayer(roomId, player);
+  return 'ok';
+}
+
 export async function addGuessToPlayer(
   roomId: string,
   token: string,

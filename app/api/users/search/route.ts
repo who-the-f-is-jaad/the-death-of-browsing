@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   const results = await Promise.all(
     matches.map(async ({ username, userId }) => {
       const user = await getUserById(userId);
-      return { username, displayName: user?.displayName ?? username };
+      return { username };
     }),
   );
 
