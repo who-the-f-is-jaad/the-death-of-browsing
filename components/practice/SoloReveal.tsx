@@ -28,13 +28,35 @@ export default function SoloReveal({ roundIndex, entry, guessedYear, score, isLa
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingTop: '0.5rem' }}>
 
-      <div>
-        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
+      {/* Round label + guess/correct split */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Round {roundIndex + 1} · Revealed
         </p>
-        <p className="font-brand" style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 0.9, color: 'var(--text)' }}>
-          {entry.answerYear}
-        </p>
+        <div style={{ display: 'flex', gap: '0', justifyContent: 'space-around' }}>
+          <div style={{ textAlign: 'center' }}>
+            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+              You guessed
+            </p>
+            <p className="font-brand" style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1, color: noAnswer ? 'var(--text-dim)' : exact ? 'var(--gold)' : '#c41a1a' }}>
+              {noAnswer ? '—' : guessedYear}
+            </p>
+          </div>
+          <div style={{ width: '1px', background: 'var(--border)' }} />
+          <div style={{ textAlign: 'center' }}>
+            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
+              Correct
+            </p>
+            <p className="font-brand" style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
+              {entry.answerYear}
+            </p>
+          </div>
+        </div>
+        {exact && (
+          <p className="font-heading animate-exact" style={{ fontSize: '0.72rem', letterSpacing: '0.38em', textTransform: 'uppercase', color: 'var(--text)', textAlign: 'center' }}>
+            — exact year —
+          </p>
+        )}
       </div>
 
       {entry.coverImageUrl && (
@@ -71,34 +93,6 @@ export default function SoloReveal({ roundIndex, entry, guessedYear, score, isLa
         >
           Open on Deezer →
         </a>
-      </div>
-
-      {/* Your guess vs correct */}
-      <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        <div style={{ display: 'flex', gap: '0', justifyContent: 'space-around' }}>
-          <div style={{ textAlign: 'center' }}>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
-              You guessed
-            </p>
-            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: noAnswer ? 'var(--text-dim)' : exact ? 'var(--gold)' : '#c41a1a' }}>
-              {noAnswer ? '—' : guessedYear}
-            </p>
-          </div>
-          <div style={{ width: '1px', background: 'var(--border)' }} />
-          <div style={{ textAlign: 'center' }}>
-            <p className="font-heading" style={{ fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.25rem' }}>
-              Correct
-            </p>
-            <p className="font-brand" style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
-              {entry.answerYear}
-            </p>
-          </div>
-        </div>
-        {exact && (
-          <p className="font-heading animate-exact" style={{ fontSize: '0.72rem', letterSpacing: '0.38em', textTransform: 'uppercase', color: 'var(--text)', textAlign: 'center' }}>
-            — exact year —
-          </p>
-        )}
       </div>
 
       {/* Score */}
