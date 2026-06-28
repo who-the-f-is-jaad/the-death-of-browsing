@@ -30,7 +30,7 @@ export async function GET(
     currentEntry = { roundIndex: room.currentRound, audioUrl };
   }
 
-  // Completed rounds: full album info revealed
+  // Completed rounds: full album info + per-player guesses revealed
   const revealedEntries = room.roundEntries
     .filter(e => e.roundIndex < room.currentRound || room.status === 'finished')
     .map(e => ({
@@ -41,6 +41,13 @@ export async function GET(
       coverImageUrl: e.coverImageUrl,
       deezerAlbumUrl: e.deezerAlbumUrl,
       trackTitle: e.trackTitle,
+      playerGuesses: players
+        .map(p => {
+          const g = p.guesses.find(g => g.roundIndex === e.roundIndex);
+          return g ? { nickname: p.nickname, year: g.year, score: g.score, correct: g.correct } : null;
+        })
+        .filter((g): g is { nickname: string; year: number; score: number; correct: boolean } => g !== null)
+        .sort((a, b) => b.score - a.score),
     }));
 
   return NextResponse.json({

@@ -7,6 +7,9 @@ import RoomLobby from '@/components/deathmatch/RoomLobby';
 import DeathmatchRound from '@/components/deathmatch/DeathmatchRound';
 import RoundReveal from '@/components/deathmatch/RoundReveal';
 import Leaderboard from '@/components/deathmatch/Leaderboard';
+import AnimatedScore from '@/components/ui/AnimatedScore';
+
+type PlayerGuess = { nickname: string; year: number; score: number; correct: boolean };
 
 type RoomState = {
   id: string;
@@ -22,6 +25,7 @@ type RoomState = {
     coverImageUrl: string;
     deezerAlbumUrl: string;
     trackTitle?: string;
+    playerGuesses?: PlayerGuess[];
   }>;
   players: Array<{ nickname: string; hasGuessedCurrentRound: boolean }>;
   expiresAt: string;
@@ -32,6 +36,7 @@ type GuessResult = {
   correct: boolean;
   band: string | null;
   direction: string | null;
+  year: number;
 };
 
 type ClientPhase =
@@ -48,6 +53,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
   const [room, setRoom] = useState<RoomState | null>(null);
   const [playerToken, setPlayerToken] = useState<string | null>(null);
   const [hostToken, setHostToken] = useState<string | null>(null);
+  const [myNickname, setMyNickname] = useState<string | null>(null);
   const [lastGuess, setLastGuess] = useState<GuessResult | null>(null);
   const [revealEntry, setRevealEntry] = useState<RoomState['revealedEntries'][0] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -61,12 +67,14 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     return res.json();
   }, [roomId]);
 
-  // Initial load: check localStorage for tokens, then fetch room
+  // Initial load: check localStorage for tokens + nickname, then fetch room
   useEffect(() => {
     const pt = localStorage.getItem(`tdb:room:${roomId}:token`);
     const ht = localStorage.getItem(`tdb:room:${roomId}:hostToken`);
+    const nick = localStorage.getItem(`tdb:room:${roomId}:nickname`);
     setPlayerToken(pt);
     setHostToken(ht);
+    if (nick) setMyNickname(nick);
 
     fetchRoom().then(r => {
       if (!r) { setError('Room not found or expired'); setPhase('loading'); return; }
@@ -110,8 +118,9 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
         if (justRevealed) {
           setRevealEntry(justRevealed);
           setPhase('revealing');
-          setLastGuess(null);
+          // Keep lastGuess so the reveal screen can show the player's guessed year
           setTimeout(() => {
+            setLastGuess(null);
             setPhase(r.status === 'finished' ? 'finished' : 'playing');
           }, 4000);
         }
@@ -139,7 +148,9 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     if (!res.ok) throw new Error(data.error ?? 'Join failed');
 
     localStorage.setItem(`tdb:room:${roomId}:token`, data.playerToken);
+    localStorage.setItem(`tdb:room:${roomId}:nickname`, nickname);
     setPlayerToken(data.playerToken);
+    setMyNickname(nickname);
 
     const r = await fetchRoom();
     if (r) { setRoom(r); setPhase(r.status === 'lobby' ? 'lobby' : 'playing'); }
@@ -180,7 +191,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? 'Guess failed');
 
-    const result: GuessResult = { score: data.score, correct: data.correct, band: data.band, direction: data.direction };
+    const result: GuessResult = { score: data.score, correct: data.correct, band: data.band, direction: data.direction, year };
     setLastGuess(result);
     setPhase('waiting');
 
@@ -274,7 +285,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
                 Round {room.currentRound + 1} / {room.rounds}
               </p>
               <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, color: lastGuess.correct ? 'var(--text)' : '#c41a1a', lineHeight: 1 }}>
-                {lastGuess.score}
+                <AnimatedScore target={lastGuess.score} />
               </p>
               <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.4rem' }}>
                 points
@@ -304,7 +315,12 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
         )}
 
         {phase === 'revealing' && revealEntry && (
-          <RoundReveal entry={revealEntry} score={lastGuess?.score ?? null} />
+          <RoundReveal
+            entry={revealEntry}
+            score={lastGuess?.score ?? null}
+            myYear={lastGuess?.year ?? null}
+            myNickname={myNickname}
+          />
         )}
 
         {phase === 'finished' && (
