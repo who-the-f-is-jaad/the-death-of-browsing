@@ -192,7 +192,7 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false, on
             className="font-heading"
             style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none', borderBottom: '1px solid var(--border-mid)', paddingBottom: '1px' }}
           >
-            Back to today&apos;s omen
+            Exit to menu
           </Link>
         ) : (
           <>

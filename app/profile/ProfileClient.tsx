@@ -164,7 +164,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
           className="font-heading"
           style={{ fontSize: '0.84rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
         >
-          Back to today&apos;s omen
+          Exit to menu
         </Link>
       </footer>
     </DeadBrowserShell>
