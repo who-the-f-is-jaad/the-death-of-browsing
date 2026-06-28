@@ -28,11 +28,11 @@ export default function ContactPage() {
           Something to say?
         </p>
 
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
           A wrong answer. A missing record. A song you think should be in the omen. A bug that broke the ritual. A thought you had while guessing.
         </p>
 
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
           All of it is welcome.
         </p>
 
@@ -40,20 +40,22 @@ export default function ContactPage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
           <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Write to
+            Find me here
           </p>
           <a
-            href="mailto:jad.benyahia@gmail.com"
+            href="https://who-the-f-is-jaad.github.io/jaad/"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{ fontSize: '1.05rem', color: 'var(--text)', textDecoration: 'underline', textUnderlineOffset: '4px' }}
           >
-            jad.benyahia@gmail.com
+            who-the-f-is-jaad
           </a>
         </div>
 
         <div style={{ borderTop: '1px solid var(--border)', margin: '0.5rem 0' }} />
 
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
-          No support queue. No ticket system. Just an inbox.
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+          No support queue. No ticket system. Just a person.
         </p>
 
         <p className="font-heading" style={{ fontSize: '0.45rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.5rem' }}>

@@ -285,7 +285,7 @@ export default function HomePage() {
         entryNumber={entryNumber}
         entryDate={entry.dateUtc}
         streakNode={streakNode}
-        onLogoClick={isOpen && !isSolved && !isLocked
+        onLogoClick={isOpen
           ? () => persistOmen({ ...omenState, opened: false })
           : undefined}
       />

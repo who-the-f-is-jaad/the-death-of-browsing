@@ -24,27 +24,27 @@ export default function AboutPage() {
           The Story of Browsing.
         </p>
 
-        <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: 'var(--text-mid)', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '0.95rem', fontStyle: 'italic', color: 'var(--text-mid)', lineHeight: 1.7 }}>
           The following is a brief account of a sheep who possessed excellent taste in music, but absolutely no concept of time.
         </p>
 
         <div style={{ borderTop: '1px solid var(--border)', margin: '0.25rem 0' }} />
 
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
           Browsing lived on an island of grey stone, surrounded by a sea of black ink. Her routine was precise: wake at 6:14, chew three pounds of mountain grass, stare all afternoon at a rusty gramophone on a pedestal of obsidian.
         </p>
 
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text-mid)', lineHeight: 1.8 }}>
           Every day, when the wind came from the north, the gramophone would spin. And its music carried across the desolate land, all the way up to the sky.
         </p>
 
-        <p style={{ fontSize: '1.05rem', fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '1.15rem', fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.6 }}>
           Browsing hoped, more than anything, that whoever was listening up there knew the difference between the synth-pop of 1983 and the synth-pop of 1984.
         </p>
 
         <div style={{ borderTop: '1px solid var(--border)', margin: '0.5rem 0' }} />
 
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
           A side project by{' '}
           <a
             href="https://who-the-f-is-jaad.github.io/jaad/"

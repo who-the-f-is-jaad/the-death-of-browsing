@@ -32,27 +32,21 @@ const menuItemStyle: React.CSSProperties = {
 
 export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed, hasSolved }: Props) {
   const showStats = typeof plays === 'number' && plays > 0;
-  const solveRate = showStats && typeof solves === 'number' && solves > 0
-    ? Math.round((solves / plays!) * 100)
-    : null;
+  const fails = showStats && typeof solves === 'number' ? plays! - solves : null;
 
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
       {/* Daily stats */}
-      {showStats && (
+      {showStats && fails !== null && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
-          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
-            {plays} {plays === 1 ? 'play' : 'plays'} today
+          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: fails > 0 ? 'var(--text)' : 'var(--text-mid)' }}>
+            {fails} {fails === 1 ? 'soul' : 'souls'} failed today
           </span>
-          {solveRate !== null && (
-            <>
-              <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
-              <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
-                {solveRate}% solved
-              </span>
-            </>
-          )}
+          <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
+          <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+            {plays} tried
+          </span>
         </div>
       )}
 
@@ -65,7 +59,7 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
             cursor: 'pointer',
             animation: 'sheep-float 5s ease-in-out infinite',
           }}
-          onClick={() => { new Audio('/audio/sheep.wav').play().catch(() => {}); }}
+          onClick={() => { if (!hasFailed) new Audio('/audio/sheep.wav').play().catch(() => {}); }}
           role="button"
           aria-label="Baa"
         >
