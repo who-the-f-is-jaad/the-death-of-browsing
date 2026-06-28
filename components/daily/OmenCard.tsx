@@ -138,9 +138,17 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
         setAttempt({ hasSpentMark: true, canGuess: true, audioStatus: 'error' });
       });
 
-      // First attempt: wait for audio to finish before showing input
-      // Subsequent attempts: show input immediately
       setAttempt({ hasSpentMark: true, canGuess: !isFirst, audioStatus: 'playing' });
+
+      // First attempt: unlock input after 12s (or when audio ends, whichever comes first)
+      if (isFirst) {
+        setTimeout(() => {
+          setAttempt(prev => prev.audioStatus === 'playing' || prev.audioStatus === 'ended'
+            ? { ...prev, canGuess: true }
+            : prev
+          );
+        }, 12000);
+      }
     }, 3000);
   }, [canHear, entry, omenState, onMarkSpent]);
 
@@ -331,8 +339,8 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
 
       {/* Playing indicator */}
       {attempt.audioStatus === 'playing' && countdown === null && (
-        <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.84rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          Playing...
+        <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.84rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
+          Listen carefully. Guess the exact year.
         </p>
       )}
 
