@@ -12,9 +12,10 @@ export async function GET(
 
   const players = await getAllPlayers(roomId);
 
-  // Build player list showing only nicknames + whether they've guessed this round
+  // Build player list showing nicknames, portrait, and whether they've guessed this round
   const playerList = players.map(p => ({
     nickname: p.nickname,
+    portrait: p.portrait ?? null,
     hasGuessedCurrentRound: p.guesses.some(g => g.roundIndex === room.currentRound),
   }));
 

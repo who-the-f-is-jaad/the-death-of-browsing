@@ -2,12 +2,14 @@
 
 import { useState, useRef } from 'react';
 
+const PORTRAITS = ['red', 'blue', 'green', 'yellow'] as const;
+
 type RoomState = {
   id: string;
   status: 'lobby' | 'active' | 'finished';
   rounds: number;
   currentRound: number;
-  players: Array<{ nickname: string; hasGuessedCurrentRound: boolean }>;
+  players: Array<{ nickname: string; portrait: string | null; hasGuessedCurrentRound: boolean }>;
   expiresAt: string;
 };
 
@@ -20,14 +22,32 @@ interface Props {
   playerToken: string | null;
   onJoin: (nickname: string) => Promise<void>;
   onStart: () => Promise<void>;
+  onPortraitChange: (portrait: string) => Promise<void>;
 }
 
-export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname, playerToken, onJoin, onStart }: Props) {
+function Portrait({ src, size = 44 }: { src: string | null; size?: number }) {
+  if (!src) {
+    return (
+      <div style={{ width: size, height: size, borderRadius: '3px', background: 'var(--border)', flexShrink: 0 }} />
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/assets/portraits/portrait-${src}.png`}
+      alt=""
+      style={{ width: size, height: size, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
+    />
+  );
+}
+
+export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname, playerToken, onJoin, onStart, onPortraitChange }: Props) {
   const [nickname, setNickname] = useState('Shaun');
   const [joining, setJoining] = useState(false);
   const [starting, setStarting] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [changingPortrait, setChangingPortrait] = useState(false);
 
   // Rename state
   const [editingName, setEditingName] = useState(false);
@@ -41,6 +61,8 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
     : `/deathmatch/${roomId}`;
 
   const hostName = room.players[0]?.nickname ?? '';
+  const myPlayer = room.players.find(p => p.nickname === myNickname);
+  const myPortrait = myPlayer?.portrait ?? null;
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,8 +114,14 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
     setRenaming(false);
     if (!res.ok) { setRenameError(data.error ?? 'Name taken'); return; }
     setEditingName(false);
-    // Refresh page so player list updates
     window.location.reload();
+  };
+
+  const handlePortraitPick = async (portrait: string) => {
+    if (portrait === myPortrait || changingPortrait) return;
+    setChangingPortrait(true);
+    await onPortraitChange(portrait);
+    setChangingPortrait(false);
   };
 
   // Guest joining: show name input
@@ -147,6 +175,39 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
         </p>
       </div>
 
+      {/* Portrait picker for current user */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          Your portrait
+        </p>
+        <div style={{ display: 'flex', gap: '0.6rem' }}>
+          {PORTRAITS.map(p => (
+            <button
+              key={p}
+              onClick={() => handlePortraitPick(p)}
+              disabled={changingPortrait}
+              style={{
+                background: 'none', border: 'none', padding: 0,
+                cursor: changingPortrait ? 'default' : 'pointer',
+                borderRadius: '4px',
+                outline: myPortrait === p ? '2px solid var(--text)' : '2px solid transparent',
+                outlineOffset: '3px',
+                opacity: changingPortrait && myPortrait !== p ? 0.4 : 1,
+                transition: 'outline-color 0.15s, opacity 0.15s',
+              }}
+              aria-label={`${p} portrait`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/assets/portraits/portrait-${p}.png`}
+                alt={p}
+                style={{ width: 56, height: 56, display: 'block', borderRadius: '3px', objectFit: 'cover' }}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Invite */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
@@ -170,6 +231,8 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
           const isMe = p.nickname === myNickname;
           return (
             <div key={p.nickname} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+              <Portrait src={p.portrait} size={40} />
+
               <span style={{ fontSize: '0.875rem', color: 'var(--text-dim)', minWidth: '1rem' }}>{i + 1}</span>
 
               {isMe && editingName ? (

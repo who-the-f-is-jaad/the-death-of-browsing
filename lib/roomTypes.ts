@@ -28,6 +28,7 @@ export type RoundGuess = {
 export type Player = {
   token: string;
   nickname: string;
+  portrait?: string;
   joinedAt: string;
   guesses: RoundGuess[];
 };

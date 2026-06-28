@@ -35,7 +35,7 @@ type RoomState = {
     trackTitle?: string;
     playerGuesses?: PlayerGuess[];
   }>;
-  players: Array<{ nickname: string; hasGuessedCurrentRound: boolean }>;
+  players: Array<{ nickname: string; portrait: string | null; hasGuessedCurrentRound: boolean }>;
   expiresAt: string;
   revealReadyAt?: number | null;
 };
@@ -267,6 +267,17 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     if (r) { setRoom(r); setPhase(r.status === 'lobby' ? 'lobby' : 'playing'); }
   };
 
+  const handlePortraitChange = useCallback(async (portrait: string) => {
+    if (!playerToken) return;
+    await fetch(`/api/rooms/${roomId}/player`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${playerToken}` },
+      body: JSON.stringify({ portrait }),
+    });
+    const r = await fetchRoom();
+    if (r) setRoom(r);
+  }, [playerToken, roomId, fetchRoom]);
+
   const handleStart = async () => {
     if (!hostToken) return;
     await fetch(`/api/rooms/${roomId}/start`, {
@@ -485,6 +496,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
             playerToken={playerToken}
             onJoin={handleJoin}
             onStart={handleStart}
+            onPortraitChange={handlePortraitChange}
           />
         )}
 

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
 import { fetchMultiPool, samplePool } from '@/lib/songPool';
 import { generateRoomId, generateToken, addPlayerToRoom, setRoom } from '@/lib/roomStorage';
-import { getSession } from '@/lib/auth';
+import { getSession, getUserById } from '@/lib/auth';
 import type { Room, Player, RoundEntry } from '@/lib/roomTypes';
 
 export async function POST(req: Request) {
@@ -65,6 +65,7 @@ export async function POST(req: Request) {
     }
 
     const session = await getSession();
+    const hostUser = session ? await getUserById(session.userId) : null;
     const hostToken = generateToken();
     const playerToken = generateToken();
     const now = new Date();
@@ -85,6 +86,7 @@ export async function POST(req: Request) {
     const player: Player = {
       token: playerToken,
       nickname: nick,
+      ...(hostUser?.portrait ? { portrait: hostUser.portrait } : {}),
       joinedAt: now.toISOString(),
       guesses: [],
     };

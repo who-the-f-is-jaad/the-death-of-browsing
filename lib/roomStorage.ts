@@ -86,6 +86,18 @@ export async function addGuessToPlayer(
   return player;
 }
 
+export async function updatePlayerPortrait(
+  roomId: string,
+  token: string,
+  portrait: string,
+): Promise<'ok' | 'not_found'> {
+  const player = await getPlayer(roomId, token);
+  if (!player) return 'not_found';
+  player.portrait = portrait;
+  await setPlayer(roomId, player);
+  return 'ok';
+}
+
 export async function getCachedPreview(trackId: string): Promise<string | null> {
   return kv.get<string>(`tdb:preview:${trackId}`);
 }

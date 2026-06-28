@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRoom, getAllPlayers, addPlayerToRoom, isNicknameTaken, generateToken } from '@/lib/roomStorage';
-import { getSession } from '@/lib/auth';
+import { getSession, getUserById } from '@/lib/auth';
 import { addFriends } from '@/lib/social';
 import type { Player } from '@/lib/roomTypes';
 
@@ -34,17 +34,18 @@ export async function POST(
   }
 
   const playerToken = generateToken();
+  const session = await getSession();
+  const joinerUser = session ? await getUserById(session.userId) : null;
   const player: Player = {
     token: playerToken,
     nickname: nick,
+    ...(joinerUser?.portrait ? { portrait: joinerUser.portrait } : {}),
     joinedAt: new Date().toISOString(),
     guesses: [],
   };
 
   await addPlayerToRoom(roomId, player);
 
-  // Auto-friend the host if both have accounts
-  const session = await getSession();
   if (session && room.hostUserId && session.userId !== room.hostUserId) {
     addFriends(session.userId, room.hostUserId).catch(() => {});
   }
