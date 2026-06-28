@@ -24,6 +24,16 @@ import Countdown from '@/components/daily/Countdown';
 
 type LoadState = 'summoning' | 'ready' | 'no_entry' | 'no_preview' | 'error';
 
+const LOADING_WHISPERS = [
+  'Browsing prefers the taste of mountain grass',
+  'Browsing always wakes at precisely 6:14 AM',
+  'A bad guess makes the mountain grass wither',
+  '1983 or 1984?',
+  'Browsing cannot count alone',
+  'Silence on the island',
+];
+const loadingWhisper = Math.floor(Math.random() * LOADING_WHISPERS.length);
+
 export default function HomePage() {
   const [introComplete, setIntroComplete] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('summoning');
@@ -218,8 +228,8 @@ export default function HomePage() {
     return (
       <DeadBrowserShell>
         <div className="flex-1 flex items-center justify-center py-24">
-          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            Summoning the Omen
+          <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', textAlign: 'center' }}>
+            {LOADING_WHISPERS[loadingWhisper]}
           </p>
         </div>
       </DeadBrowserShell>
