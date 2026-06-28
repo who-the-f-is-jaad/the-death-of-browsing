@@ -67,7 +67,7 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLo
         </div>
       </div>
       <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.4, marginTop: '0.35rem', textAlign: 'center' }}>
-        you don&apos;t listen.
+        guess the year.
       </p>
     </header>
   );
