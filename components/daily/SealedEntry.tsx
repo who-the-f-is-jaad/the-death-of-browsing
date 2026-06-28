@@ -41,11 +41,11 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
       {showStats && fails !== null && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
           <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: fails > 0 ? 'var(--text)' : 'var(--text-mid)' }}>
-            {fails} {fails === 1 ? 'soul' : 'souls'} failed today
+            {fails} {fails === 1 ? 'person' : 'people'} failed to save Browsing today
           </span>
           <span style={{ color: 'var(--border-hi)', fontSize: '0.6rem' }}>·</span>
           <span className="font-heading" style={{ fontSize: '0.52rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-            {plays} tried
+            {solves} succeeded
           </span>
         </div>
       )}
