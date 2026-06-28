@@ -65,7 +65,7 @@ Get a Resend API key from [resend.com](https://resend.com).
 ```
 app/
   page.tsx              # Home / daily game
-  about/                # Manifesto
+  about/                # The Story of Browsing
   archive/              # Past daily omens
   contact/              # Contact page
   deathmatch/           # Multiplayer lobby + game
