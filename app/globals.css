@@ -554,6 +554,26 @@ main {
   50%       { opacity: 0.35; }
 }
 
+/* Rare text glitch — mostly idle, spikes briefly */
+@keyframes text-glitch {
+  0%, 87%, 100% {
+    transform: none;
+    opacity: 1;
+    text-shadow: none;
+  }
+  88% { transform: translateX(-3px) skewX(-1deg); opacity: 0.85; text-shadow: 2px 0 var(--crimson); }
+  89% { transform: translateX(3px);  opacity: 0.9;  text-shadow: -2px 0 rgba(160,20,20,0.5); }
+  90% { transform: translateX(-1px); opacity: 0.95; text-shadow: none; }
+  91% { transform: none; opacity: 1; }
+}
+
+/* Gentle sheep float */
+@keyframes sheep-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  40%       { transform: translateY(-5px) rotate(0.4deg); }
+  60%       { transform: translateY(-4px) rotate(-0.2deg); }
+}
+
 .animate-fadein {
   animation: ink-appear 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
