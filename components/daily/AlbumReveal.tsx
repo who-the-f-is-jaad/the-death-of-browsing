@@ -16,9 +16,10 @@ interface Props {
   entry: AudioOmenEntry;
   omenState: OmenLocalState;
   practiceMode?: boolean;
+  onNext?: () => void;
 }
 
-export default function AlbumReveal({ entry, omenState, practiceMode = false }: Props) {
+export default function AlbumReveal({ entry, omenState, practiceMode = false, onNext }: Props) {
   const [copied, setCopied] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const rescuedAudio = useRef<HTMLAudioElement | null>(null);
@@ -174,6 +175,13 @@ export default function AlbumReveal({ entry, omenState, practiceMode = false }: 
             07:00 UTC
           </p>
         </div>
+      )}
+
+      {/* Next song — practice mode only */}
+      {onNext && (
+        <button onClick={onNext} className="btn-ghost">
+          Next song
+        </button>
       )}
 
       {/* Navigation links */}
