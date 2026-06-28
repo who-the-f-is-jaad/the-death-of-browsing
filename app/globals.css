@@ -158,7 +158,7 @@ main {
 .cat-brand {
   font-family: 'Unifraktur', Georgia, serif;
   font-weight: 700;
-  font-size: 1.6rem;
+  font-size: 2rem;
   letter-spacing: 0.01em;
   text-transform: none;
   color: var(--text);

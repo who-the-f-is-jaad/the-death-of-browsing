@@ -42,7 +42,7 @@ export default function IntroScreen({ onComplete }: Props) {
     >
       <p
         className="font-brand"
-        style={{ fontSize: '2.4rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.1, textAlign: 'center' }}
+        style={{ fontSize: '3rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.1, textAlign: 'center' }}
       >
         The Death of Browsing
       </p>
