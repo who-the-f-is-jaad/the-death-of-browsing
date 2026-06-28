@@ -230,30 +230,6 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-      {/* Lives — one sheep per attempt, goes dead on wrong guess */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }} role="img" aria-label={`${MAX_ATTEMPTS - omenState.guesses.length} lives remaining`}>
-        {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
-          const isDead = i < omenState.guesses.length;
-          return (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              src={isDead ? '/assets/sheep-life-dead-removebg-preview.png' : '/assets/sheep-head-removebg-preview.png'}
-              alt=""
-              aria-hidden="true"
-              style={{
-                width: '32px',
-                height: '32px',
-                objectFit: 'cover',
-                opacity: isDead ? 0.45 : 1,
-                transition: 'opacity 0.3s',
-                filter: isDead ? 'grayscale(1)' : 'none',
-              }}
-            />
-          );
-        })}
-      </div>
-
       {/* Mystery sleeve — flips to reveal album cover on correct answer */}
       <div style={{ perspective: '900px', width: '100%', aspectRatio: '1' }}>
         <div
@@ -443,6 +419,30 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
           </button>
         </form>
       )}
+
+      {/* Lives — centered below Confirm */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }} role="img" aria-label={`${MAX_ATTEMPTS - omenState.guesses.length} lives remaining`}>
+        {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
+          const isDead = i < omenState.guesses.length;
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={isDead ? '/assets/sheep-life-dead-removebg-preview.png' : '/assets/sheep-head-removebg-preview.png'}
+              alt=""
+              aria-hidden="true"
+              style={{
+                width: '32px',
+                height: '32px',
+                objectFit: 'cover',
+                opacity: isDead ? 0.45 : 1,
+                transition: 'opacity 0.3s',
+                filter: isDead ? 'grayscale(1)' : 'none',
+              }}
+            />
+          );
+        })}
+      </div>
 
       {/* Scars */}
       {omenState.guesses.length > 0 && (
