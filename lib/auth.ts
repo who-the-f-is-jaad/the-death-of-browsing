@@ -10,6 +10,8 @@ export interface User {
   id: string;
   email: string;
   createdAt: string;
+  username?: string;
+  displayName?: string;
 }
 
 export interface Session {
@@ -33,14 +35,46 @@ export async function verifyMagicToken(token: string): Promise<string | null> {
 export async function ensureUser(email: string): Promise<User> {
   const key = `tdb:user:${email}`;
   const existing = await kv.get<User>(key);
-  if (existing) return existing;
+  if (existing) {
+    // Backfill reverse index for existing users on next login
+    await kv.set(`tdb:userid:${existing.id}`, existing, { nx: true });
+    return existing;
+  }
   const user: User = {
     id: crypto.randomUUID(),
     email,
     createdAt: new Date().toISOString(),
   };
-  await kv.set(key, user);
+  await Promise.all([
+    kv.set(key, user),
+    kv.set(`tdb:userid:${user.id}`, user),
+  ]);
   return user;
+}
+
+export async function getUserById(userId: string): Promise<User | null> {
+  return kv.get<User>(`tdb:userid:${userId}`);
+}
+
+export async function getUserByUsername(handle: string): Promise<User | null> {
+  const userId = await kv.get<string>(`tdb:username:${handle.toLowerCase()}`);
+  if (!userId) return null;
+  return getUserById(userId);
+}
+
+export async function updateUser(
+  email: string,
+  updates: Partial<Pick<User, 'username' | 'displayName'>>,
+): Promise<User | null> {
+  const key = `tdb:user:${email}`;
+  const existing = await kv.get<User>(key);
+  if (!existing) return null;
+  const updated: User = { ...existing, ...updates };
+  await Promise.all([
+    kv.set(key, updated),
+    kv.set(`tdb:userid:${existing.id}`, updated),
+  ]);
+  return updated;
 }
 
 export async function createSession(email: string): Promise<string> {

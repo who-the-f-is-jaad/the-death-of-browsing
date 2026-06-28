@@ -2,6 +2,20 @@ import { kv } from '@vercel/kv';
 import { updateStreakOnSolve } from './streaks';
 import type { StreakData } from './types';
 
+export interface DayCell {
+  date: string;
+  played: boolean;
+  solved: boolean;
+}
+
+export interface PublicStats {
+  streak: StreakData;
+  totalPlayed: number;
+  totalSolved: number;
+  winRate: number; // 0-100
+  grid: DayCell[]; // last 30 days, oldest first
+}
+
 export interface GameResult {
   date: string;
   solved: boolean;
@@ -22,6 +36,30 @@ export async function getUserHistory(userId: string, limit = 30): Promise<GameRe
     dates.map(date => kv.get<GameResult>(`tdb:result:${userId}:${date}`))
   );
   return results.filter((r): r is GameResult => r !== null);
+}
+
+export async function getUserPublicStats(userId: string, days = 30): Promise<PublicStats> {
+  const [streak, history] = await Promise.all([
+    getUserStreak(userId),
+    getUserHistory(userId, 90),
+  ]);
+
+  const totalPlayed = history.length;
+  const totalSolved = history.filter(r => r.solved).length;
+  const winRate = totalPlayed > 0 ? Math.round((totalSolved / totalPlayed) * 100) : 0;
+
+  const historyMap = new Map(history.map(r => [r.date, r]));
+  const grid: DayCell[] = [];
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - i);
+    const date = d.toISOString().slice(0, 10);
+    const result = historyMap.get(date);
+    grid.push({ date, played: !!result, solved: result?.solved ?? false });
+  }
+
+  return { streak, totalPlayed, totalSolved, winRate, grid };
 }
 
 export async function recordResult(

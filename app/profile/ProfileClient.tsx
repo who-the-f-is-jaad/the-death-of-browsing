@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
+import UsernameSetupModal from '@/components/ui/UsernameSetupModal';
 import type { StreakData } from '@/lib/types';
 import type { GameResult } from '@/lib/db';
 
@@ -11,6 +12,8 @@ interface Props {
   email?: string;
   streak?: StreakData;
   history?: GameResult[];
+  username?: string;
+  displayName?: string;
 }
 
 function formatDate(dateStr: string): string {
@@ -19,7 +22,11 @@ function formatDate(dateStr: string): string {
   return `${d} ${months[m - 1]} ${y}`;
 }
 
-export default function ProfileClient({ loggedIn, email, streak, history = [] }: Props) {
+export default function ProfileClient({ loggedIn, email, streak, history = [], username: initialUsername, displayName: initialDisplayName }: Props) {
+  const [username, setUsername] = useState(initialUsername);
+  const [displayName, setDisplayName] = useState(initialDisplayName);
+  const [showSetup, setShowSetup] = useState(loggedIn && !initialUsername);
+
   const handleLogout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
@@ -51,11 +58,60 @@ export default function ProfileClient({ loggedIn, email, streak, history = [] }:
           </div>
         ) : (
           <>
+            {showSetup && (
+              <UsernameSetupModal
+                onComplete={(u, d) => {
+                  setUsername(u);
+                  setDisplayName(d);
+                  setShowSetup(false);
+                }}
+              />
+            )}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '0.5rem' }}>
               <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
                 Signed in as
               </p>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>{email}</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {username ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
+                    <p style={{ fontSize: '1.3rem', color: '#ffffff', letterSpacing: '0.02em' }}>
+                      {displayName ?? username}
+                    </p>
+                    <span className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                      @{username}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <Link
+                      href={`/u/${username}`}
+                      className="font-heading"
+                      style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+                    >
+                      View public profile →
+                    </Link>
+                    <button
+                      onClick={() => setShowSetup(true)}
+                      className="font-heading"
+                      style={{ fontSize: '0.44rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.6 }}
+                    >
+                      Edit handle
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowSetup(true)}
+                  className="btn-ghost font-heading"
+                  style={{ fontSize: '0.48rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start' }}
+                >
+                  Claim your @handle →
+                </button>
+              )}
             </div>
 
             {streak && (streak.current > 0 || streak.longest > 0) && (

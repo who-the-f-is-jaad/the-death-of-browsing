@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSession } from '@/lib/auth';
+import { getSession, getUserById } from '@/lib/auth';
 import { getUserStreak, getUserHistory } from '@/lib/db';
 import ProfileClient from './ProfileClient';
 
@@ -12,9 +12,10 @@ export default async function ProfilePage() {
     return <ProfileClient loggedIn={false} />;
   }
 
-  const [streak, history] = await Promise.all([
+  const [streak, history, user] = await Promise.all([
     getUserStreak(session.userId),
     getUserHistory(session.userId, 30),
+    getUserById(session.userId),
   ]);
 
   return (
@@ -23,6 +24,8 @@ export default async function ProfilePage() {
       email={session.email}
       streak={streak}
       history={history}
+      username={user?.username}
+      displayName={user?.displayName}
     />
   );
 }
