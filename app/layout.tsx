@@ -21,7 +21,6 @@ export const metadata: Metadata = {
     title: 'THE DEATH OF BROWSING',
     description: 'One record. One riddle. Every dawn.',
     type: 'website',
-    images: [{ url: '/assets/sheep-head-removebg-preview.png', width: 512, height: 512 }],
   },
 };
 
