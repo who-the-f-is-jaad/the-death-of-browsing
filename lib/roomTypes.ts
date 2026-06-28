@@ -41,6 +41,8 @@ export type Room = {
   currentRound: number;
   createdAt: string;
   expiresAt: string;
+  // Timestamp (ms) when the next phase starts — set by host "Ready", cleared on round advance
+  revealReadyAt?: number | null;
 };
 
 // Leaderboard row returned to client

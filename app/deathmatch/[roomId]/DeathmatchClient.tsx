@@ -29,6 +29,7 @@ type RoomState = {
   }>;
   players: Array<{ nickname: string; hasGuessedCurrentRound: boolean }>;
   expiresAt: string;
+  revealReadyAt?: number | null;
 };
 
 type GuessResult = {
@@ -41,11 +42,11 @@ type GuessResult = {
 
 type ClientPhase =
   | 'loading'
-  | 'auth-gate'       // no token + not logged in → prompt sign-in
+  | 'auth-gate'       // not logged in → prompt sign-in
   | 'lobby'
   | 'playing'
   | 'waiting'         // guessed, waiting for others
-  | 'revealing'       // brief reveal between rounds
+  | 'revealing'       // round reveal — host clicks "Ready" to advance
   | 'finished';
 
 export default function DeathmatchClient({ roomId }: { roomId: string }) {
@@ -56,16 +57,45 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
   const [myNickname, setMyNickname] = useState<string | null>(null);
   const [lastGuess, setLastGuess] = useState<GuessResult | null>(null);
   const [revealEntry, setRevealEntry] = useState<RoomState['revealedEntries'][0] | null>(null);
+  const [revealCountdown, setRevealCountdown] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const prevRoundRef = useRef<number>(-1);
-  const prevStatusRef = useRef<string>('');
+  const revealTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clear countdown interval on unmount
+  useEffect(() => {
+    return () => { if (revealTimerRef.current) clearInterval(revealTimerRef.current); };
+  }, []);
 
   const fetchRoom = useCallback(async (): Promise<RoomState | null> => {
     const res = await fetch(`/api/rooms/${roomId}`);
     if (!res.ok) return null;
     return res.json();
   }, [roomId]);
+
+  // Start a 3-second countdown then transition to next phase
+  const beginCountdown = useCallback((readyAt: number, finalStatus: string) => {
+    if (revealTimerRef.current) clearInterval(revealTimerRef.current);
+
+    const tick = () => {
+      const remaining = Math.ceil((readyAt - Date.now()) / 1000);
+      if (remaining <= 0) {
+        clearInterval(revealTimerRef.current!);
+        revealTimerRef.current = null;
+        setRevealCountdown(null);
+        setLastGuess(null);
+        setRevealEntry(null);
+        setPhase(finalStatus === 'finished' ? 'finished' : 'playing');
+      } else {
+        setRevealCountdown(remaining);
+      }
+    };
+
+    tick();
+    revealTimerRef.current = setInterval(tick, 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // state setters are stable
 
   // Initial load: check tokens + auth status, auto-join if logged in
   useEffect(() => {
@@ -103,7 +133,6 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
       });
       const joinData = await joinRes.json();
       if (!joinRes.ok) {
-        // Name conflict or room full — fall back to auth-gate with error message
         setError(joinData.error ?? 'Could not join room');
         setPhase('auth-gate');
         return;
@@ -127,16 +156,20 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     setPhase('playing');
   }
 
-  // Polling — lobby (player list + game start) and active play (round advances)
+  // Polling — lobby/playing/waiting detect state changes; revealing waits for host "Ready"
   useEffect(() => {
-    if (phase !== 'lobby' && phase !== 'playing' && phase !== 'waiting') return;
+    if (
+      phase !== 'lobby' &&
+      phase !== 'playing' &&
+      phase !== 'waiting' &&
+      phase !== 'revealing'
+    ) return;
 
     const interval = setInterval(async () => {
       const r = await fetchRoom();
       if (!r) return;
       setRoom(r);
 
-      // Lobby: detect when host starts the game
       if (phase === 'lobby') {
         if (r.status === 'active') {
           prevRoundRef.current = r.currentRound;
@@ -145,31 +178,29 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
         return;
       }
 
-      // Playing/waiting: detect round advance
-      if (r.currentRound !== prevRoundRef.current && prevRoundRef.current >= 0) {
-        const justRevealed = r.revealedEntries.find(e => e.roundIndex === prevRoundRef.current);
+      // In reveal: detect when host has clicked "Ready"
+      if (phase === 'revealing') {
+        if (r.revealReadyAt && !revealTimerRef.current) {
+          beginCountdown(r.revealReadyAt, r.status);
+        }
+        return;
+      }
+
+      // Playing/waiting: detect round advance (non-host / late-guessing path)
+      const oldRound = prevRoundRef.current;
+      prevRoundRef.current = r.currentRound;
+
+      if (r.currentRound !== oldRound && oldRound >= 0) {
+        const justRevealed = r.revealedEntries.find(e => e.roundIndex === oldRound);
         if (justRevealed) {
           setRevealEntry(justRevealed);
           setPhase('revealing');
-          // Keep lastGuess so the reveal screen can show the player's guessed year
-          setTimeout(() => {
-            setLastGuess(null);
-            setPhase(r.status === 'finished' ? 'finished' : 'playing');
-          }, 4000);
         }
-      }
-
-      prevRoundRef.current = r.currentRound;
-      prevStatusRef.current = r.status;
-
-      if (r.status === 'finished') {
-        setPhase('finished');
-        clearInterval(interval);
       }
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [phase, fetchRoom]);
+  }, [phase, fetchRoom, beginCountdown]);
 
   const handleJoin = async (nickname: string) => {
     const res = await fetch(`/api/rooms/${roomId}/join`, {
@@ -211,6 +242,19 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     if (r) setRoom(r);
   };
 
+  // Host clicks "Ready" during reveal → 3-second countdown for all clients
+  const handleRevealReady = async () => {
+    if (!hostToken || !room) return;
+    const res = await fetch(`/api/rooms/${roomId}/ready`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hostToken }),
+    });
+    if (!res.ok) return;
+    const data = await res.json() as { revealReadyAt: number };
+    beginCountdown(data.revealReadyAt, room.status);
+  };
+
   const handleGuess = async (year: number): Promise<GuessResult> => {
     if (!playerToken || !room) throw new Error('Not connected');
     const res = await fetch(`/api/rooms/${roomId}/guess`, {
@@ -228,7 +272,7 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
     setLastGuess(result);
     setPhase('waiting');
 
-    // If last player caused advance, fetch fresh state
+    // If last player to guess triggered the advance, show reveal immediately
     if (data.roundAdvanced) {
       const r = await fetchRoom();
       if (r) {
@@ -237,14 +281,11 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
         if (justRevealed) {
           setRevealEntry(justRevealed);
           prevRoundRef.current = r.currentRound;
-          setTimeout(() => {
-            setPhase(r.status === 'finished' ? 'finished' : 'playing');
-            setLastGuess(null);
-            setRevealEntry(null);
-          }, 4000);
           setPhase('revealing');
+          // Host will click "Ready" to advance — no auto-timeout
         }
-        if (r.status === 'finished') setPhase('finished');
+        // Do NOT call setPhase('finished') here even if r.status === 'finished':
+        // the reveal for the last round must show first.
       }
     }
 
@@ -367,6 +408,9 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
             score={lastGuess?.score ?? null}
             myYear={lastGuess?.year ?? null}
             myNickname={myNickname}
+            isHost={!!hostToken}
+            countdown={revealCountdown}
+            onReady={handleRevealReady}
           />
         )}
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useState } from 'react';
 import Link from 'next/link';
@@ -6,6 +6,9 @@ import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import UsernameSetupModal from '@/components/ui/UsernameSetupModal';
 import type { StreakData } from '@/lib/types';
 import type { GameResult } from '@/lib/db';
+import type { Portrait } from '@/lib/auth';
+
+const PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
 
 interface Props {
   email: string;
@@ -13,6 +16,7 @@ interface Props {
   history?: GameResult[];
   username?: string;
   displayName?: string;
+  portrait?: Portrait;
 }
 
 function formatDate(dateStr: string): string {
@@ -21,15 +25,29 @@ function formatDate(dateStr: string): string {
   return `${d} ${months[m - 1]} ${y}`;
 }
 
-export default function ProfileClient({ email, streak, history = [], username: initialUsername, displayName: initialDisplayName }: Props) {
+export default function ProfileClient({ email, streak, history = [], username: initialUsername, displayName: initialDisplayName, portrait: initialPortrait }: Props) {
   const [username, setUsername] = useState(initialUsername);
   const [displayName, setDisplayName] = useState(initialDisplayName);
+  const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
+  const [savingPortrait, setSavingPortrait] = useState(false);
   const [showSetup, setShowSetup] = useState(!initialUsername);
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
   }, []);
+
+  const handlePortraitSelect = async (p: Portrait) => {
+    if (p === portrait || savingPortrait) return;
+    setSavingPortrait(true);
+    setPortrait(p);
+    await fetch('/api/user/me', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ portrait: p }),
+    });
+    setSavingPortrait(false);
+  };
 
   return (
     <DeadBrowserShell>
@@ -46,22 +64,66 @@ export default function ProfileClient({ email, streak, history = [], username: i
       <div style={{ padding: '2rem 0 4rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
         {/* Identity hero */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingTop: '0.5rem' }}>
+
+          {/* Portrait picker */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              {PORTRAITS.map(p => (
+                <button
+                  key={p}
+                  onClick={() => handlePortraitSelect(p)}
+                  disabled={savingPortrait}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: savingPortrait ? 'default' : 'pointer',
+                    borderRadius: '4px',
+                    outline: portrait === p ? '2px solid var(--text)' : '2px solid transparent',
+                    outlineOffset: '3px',
+                    opacity: savingPortrait && portrait !== p ? 0.5 : 1,
+                    transition: 'outline-color 0.15s, opacity 0.15s',
+                  }}
+                  aria-label={`${p} portrait`}
+                  aria-pressed={portrait === p}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/assets/portraits/portrait-${p}.png`}
+                    alt={`${p} portrait`}
+                    style={{ width: 64, height: 64, display: 'block', borderRadius: '3px', objectFit: 'cover' }}
+                  />
+                </button>
+              ))}
+            </div>
+            <p className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              Choose your portrait
+            </p>
+          </div>
+
+          {/* Name / handle */}
           {username ? (
             <>
-              <p style={{ fontSize: '2.6rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05 }}>
-                {displayName ?? username}
-              </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-                  @{username}
-                </span>
-                <span style={{ color: 'var(--border-hi)', fontSize: '0.875rem' }}>·</span>
-                <span className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)', fontStyle: 'normal' }}>
-                  {email}
-                </span>
+                {portrait && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={`/assets/portraits/portrait-${portrait}.png`}
+                    alt="Your portrait"
+                    style={{ width: 48, height: 48, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
+                  />
+                )}
+                <div>
+                  <p style={{ fontSize: '2.2rem', color: '#ffffff', fontWeight: 400, lineHeight: 1.05 }}>
+                    {displayName ?? username}
+                  </p>
+                  <span className="font-heading" style={{ fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                    @{username}
+                  </span>
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem' }}>
+              <div style={{ display: 'flex', gap: '1rem' }}>
                 <Link
                   href={`/u/${username}`}
                   className="font-heading"
@@ -86,7 +148,7 @@ export default function ProfileClient({ email, streak, history = [], username: i
               <button
                 onClick={() => setShowSetup(true)}
                 className="btn-ghost font-heading"
-                style={{ fontSize: '0.76rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start', marginTop: '0.5rem' }}
+                style={{ fontSize: '0.76rem', letterSpacing: '0.16em', textTransform: 'uppercase', alignSelf: 'flex-start' }}
               >
                 Claim your @handle →
               </button>

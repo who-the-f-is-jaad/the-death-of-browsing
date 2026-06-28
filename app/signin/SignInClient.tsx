@@ -31,7 +31,7 @@ export default function SignInClient({ from }: Props) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError('Something went wrong. Try again.');
+        setError(data.error ?? 'Something went wrong. Try again.');
         setStatus('idle');
         return;
       }

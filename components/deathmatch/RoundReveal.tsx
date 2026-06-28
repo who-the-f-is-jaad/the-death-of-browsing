@@ -19,9 +19,12 @@ interface Props {
   score: number | null;
   myYear: number | null;
   myNickname: string | null;
+  isHost: boolean;
+  countdown: number | null;
+  onReady: () => void;
 }
 
-export default function RoundReveal({ entry, score, myYear, myNickname }: Props) {
+export default function RoundReveal({ entry, score, myYear, myNickname, isHost, countdown, onReady }: Props) {
   const guesses = entry.playerGuesses ?? [];
   // If we have playerGuesses, derive myYear from there as fallback
   const resolvedMyYear = myYear ?? (myNickname ? (guesses.find(g => g.nickname === myNickname)?.year ?? null) : null);
@@ -161,9 +164,31 @@ export default function RoundReveal({ entry, score, myYear, myNickname }: Props)
         </div>
       )}
 
-      <p style={{ fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--text-dim)', textAlign: 'center' }}>
-        Next round starting…
-      </p>
+      {/* Host "Ready" button or countdown */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', paddingTop: '0.5rem' }}>
+        {countdown !== null ? (
+          <>
+            <p className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              Starting in
+            </p>
+            <p className="font-brand" style={{ fontSize: '3.5rem', fontWeight: 700, lineHeight: 1, color: 'var(--text)' }}>
+              {countdown}
+            </p>
+          </>
+        ) : isHost ? (
+          <button
+            onClick={onReady}
+            className="btn-ghost"
+            style={{ minWidth: '10rem' }}
+          >
+            Ready
+          </button>
+        ) : (
+          <p style={{ fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+            Waiting for host…
+          </p>
+        )}
+      </div>
 
     </div>
   );

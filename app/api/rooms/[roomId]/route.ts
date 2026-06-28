@@ -59,5 +59,6 @@ export async function GET(
     revealedEntries,
     players: playerList,
     expiresAt: room.expiresAt,
+    revealReadyAt: room.revealReadyAt ?? null,
   });
 }

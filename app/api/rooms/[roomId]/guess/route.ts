@@ -72,6 +72,7 @@ export async function POST(
       if (freshRoom.currentRound >= freshRoom.rounds) {
         freshRoom.status = 'finished';
       }
+      freshRoom.revealReadyAt = null; // clear stale ready-signal from previous reveal
       await setRoom(freshRoom);
       roundAdvanced = true;
     }

@@ -41,6 +41,7 @@ export default async function PublicProfilePage({ params }: Props) {
     <PublicProfileClient
       username={user.username}
       displayName={user.displayName ?? user.username}
+      portrait={user.portrait}
       stats={stats}
       followerCount={followerCount}
       followingCount={followingCount}

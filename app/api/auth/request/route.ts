@@ -22,17 +22,24 @@ export async function POST(req: Request) {
   const verifyUrl = `${origin}/api/auth/verify?token=${token}&from=${encodeURIComponent(from)}`;
 
   if (process.env.RESEND_API_KEY) {
-    const from = process.env.EMAIL_FROM ?? 'onboarding@resend.dev';
+    const senderAddress = process.env.EMAIL_FROM ?? 'onboarding@resend.dev';
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { error } = await resend.emails.send({
-      from: `The Death of Browsing <${from}>`,
+      from: `The Death of Browsing <${senderAddress}>`,
       to: [raw],
       subject: 'Your sign-in link',
       html: buildEmail(verifyUrl),
     });
     if (error) {
-      console.error('[auth/request] Resend error:', JSON.stringify(error));
-      return Response.json({ error: 'Failed to send email. Try again.' }, { status: 502 });
+      const resendError = error as { name?: string; message?: string };
+      console.error('[auth/request] Resend error:', JSON.stringify(resendError));
+      // Resend rejects onboarding@resend.dev when sending to non-account recipients.
+      // Fix: verify a domain in Resend and set EMAIL_FROM in env vars.
+      const isDomainError = resendError.name === 'validation_error';
+      return Response.json(
+        { error: isDomainError ? 'Email delivery not configured — contact the site owner.' : 'Failed to send email. Try again.' },
+        { status: 502 },
+      );
     }
   } else {
     console.warn('[auth/request] RESEND_API_KEY not set — email not sent');

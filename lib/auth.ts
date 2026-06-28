@@ -6,12 +6,15 @@ export const SESSION_COOKIE_NAME = SESSION_COOKIE;
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 const TOKEN_TTL = 60 * 15; // 15 minutes
 
+export type Portrait = 'red' | 'blue' | 'green' | 'yellow';
+
 export interface User {
   id: string;
   email: string;
   createdAt: string;
   username?: string;
   displayName?: string;
+  portrait?: Portrait;
 }
 
 export interface Session {
@@ -64,7 +67,7 @@ export async function getUserByUsername(handle: string): Promise<User | null> {
 
 export async function updateUser(
   email: string,
-  updates: Partial<Pick<User, 'username' | 'displayName'>>,
+  updates: Partial<Pick<User, 'username' | 'displayName' | 'portrait'>>,
 ): Promise<User | null> {
   const key = `tdb:user:${email}`;
   const existing = await kv.get<User>(key);
