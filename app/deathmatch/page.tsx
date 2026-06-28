@@ -7,8 +7,8 @@ import ObituaryHeader from '@/components/ui/ObituaryHeader';
 
 export default function DeathmatchPage() {
   const router = useRouter();
-  const [nickname, setNickname] = useState('');
-  const [rounds, setRounds] = useState<3 | 5 | 10>(5);
+  const [nickname, setNickname] = useState('Shaun');
+  const [rounds, setRounds] = useState<3 | 5 | 10>(3);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

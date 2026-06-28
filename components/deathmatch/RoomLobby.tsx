@@ -21,14 +21,17 @@ interface Props {
 }
 
 export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onStart }: Props) {
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState('Shaun');
   const [joining, setJoining] = useState(false);
   const [starting, setStarting] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const inviteUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/deathmatch/${roomId}`
     : `/deathmatch/${roomId}`;
+
+  const hostName = room.players[0]?.nickname ?? '';
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,38 +52,108 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
     setStarting(false);
   };
 
-  const handleCopyLink = () => {
+  const handleCopy = () => {
     navigator.clipboard.writeText(inviteUrl).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  return (
-    <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+  const handleInvite = async () => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'THE DEATH OF BROWSING',
+          text: 'Come guess the year with me.',
+          url: inviteUrl,
+        });
+      } catch {
+        // user cancelled
+      }
+    } else {
+      handleCopy();
+    }
+  };
 
-      {/* Title */}
-      <div style={{ paddingTop: '0.5rem' }}>
+  // Guest joining: show name input
+  if (isJoining) {
+    return (
+      <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingTop: '1rem' }}>
+        <div>
+          <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.5rem' }}>
+            Room · {room.rounds} rounds
+          </p>
+          <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
+            Enter
+          </p>
+        </div>
+
+        <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <label className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+              Your name
+            </label>
+            <input
+              type="text"
+              value={nickname}
+              onChange={e => setNickname(e.target.value)}
+              maxLength={24}
+              placeholder="Shaun"
+              className="ritual-input"
+              style={{ fontSize: '1.4rem', padding: '0.5rem 0.25rem' }}
+              required
+              autoFocus
+            />
+          </div>
+          {joinError && (
+            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: '#c41a1a' }}>
+              {joinError}
+            </p>
+          )}
+          <button type="submit" className="btn-ghost" disabled={joining || !nickname.trim()}>
+            {joining ? 'Joining…' : 'Join game'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingTop: '1rem' }}>
+
+      {/* Identity */}
+      <div>
         <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
-          Room · {room.rounds} rounds
+          {isHost ? 'you are' : 'waiting in'} · {room.rounds} rounds
         </p>
-        <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)' }}>
-          Lobby
+        <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 0.95, color: 'var(--text)', textTransform: 'uppercase' }}>
+          {isHost ? hostName : 'Lobby'}
         </p>
       </div>
 
-      {/* Invite link */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      {/* Invite */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Invite link
         </p>
         <code style={{ fontSize: '0.72rem', color: 'var(--text-mid)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
           {inviteUrl}
         </code>
-        <button
-          onClick={handleCopyLink}
-          className="btn-ghost"
-          style={{ padding: '0.45rem 0.75rem', fontSize: '0.65rem' }}
-        >
-          Copy link
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button
+            onClick={handleInvite}
+            className="btn-ghost"
+            style={{ flex: 1 }}
+          >
+            Invite friends
+          </button>
+          <button
+            onClick={handleCopy}
+            className="btn-ghost"
+            style={{ flex: 1 }}
+          >
+            {copied ? 'Copied!' : 'Copy link'}
+          </button>
+        </div>
       </div>
 
       {/* Players */}
@@ -88,7 +161,11 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
         <p className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Players ({room.players.length}/10)
         </p>
-        {room.players.map((p, i) => (
+        {room.players.length === 0 ? (
+          <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)' }}>
+            No players yet.
+          </p>
+        ) : room.players.map((p, i) => (
           <div key={p.nickname} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: '0.6rem', color: 'var(--text-dim)', minWidth: '1rem' }}>
               {i + 1}
@@ -103,44 +180,10 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
             )}
           </div>
         ))}
-        {room.players.length === 0 && (
-          <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)' }}>
-            No players yet.
-          </p>
-        )}
       </div>
 
-      {/* Join form (shown when guest lands on room URL without a token) */}
-      {isJoining && (
-        <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label className="font-heading" style={{ fontSize: '0.48rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-              Your nickname
-            </label>
-            <input
-              type="text"
-              value={nickname}
-              onChange={e => setNickname(e.target.value)}
-              maxLength={24}
-              placeholder="e.g. GraveDigger"
-              className="ritual-input"
-              style={{ fontSize: '1.1rem', padding: '0.5rem 0.25rem' }}
-              required
-            />
-          </div>
-          {joinError && (
-            <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: '#c41a1a' }}>
-              {joinError}
-            </p>
-          )}
-          <button type="submit" className="btn-ghost" disabled={joining || !nickname.trim()}>
-            {joining ? 'Joining…' : 'Join room'}
-          </button>
-        </form>
-      )}
-
       {/* Host controls */}
-      {isHost && !isJoining && (
+      {isHost && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <button
             onClick={handleStart}
@@ -157,10 +200,10 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, onJoin, onS
         </div>
       )}
 
-      {/* Non-host waiting message */}
-      {!isHost && !isJoining && (
+      {/* Guest waiting */}
+      {!isHost && (
         <p style={{ fontStyle: 'italic', fontSize: '0.875rem', color: 'var(--text-dim)', textAlign: 'center' }}>
-          Waiting for the host to start the game…
+          Waiting for the host to start…
         </p>
       )}
 
