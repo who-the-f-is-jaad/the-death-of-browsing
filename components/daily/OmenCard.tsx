@@ -211,7 +211,7 @@ export default function OmenCard({ entry, omenState, onMarkSpent, onGuessSubmit,
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={i}
-              src={isDead ? '/assets/sheep-life-dead.png' : '/assets/sheep-head.jpg'}
+              src={isDead ? '/assets/sheep-life-dead-removebg-preview.png' : '/assets/sheep-head-removebg-preview.png'}
               alt=""
               aria-hidden="true"
               style={{
