@@ -8,13 +8,22 @@ const BASE_URL =
 const spreadsheetId = BASE_URL.match(/spreadsheets\/d\/([^/&?]+)/)?.[1] ?? '';
 
 // /gviz/tq?tqx=out:csv&sheet=Multiplayer targets the "Multiplayer" named tab
-const MULTI_URL =
+export const MULTI_URL =
   process.env.MULTI_SHEET_CSV_URL ||
   `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=Multiplayer`;
 
 export type PoolRow = {
   deezerTrackUrl: string;
   answerYear: number;
+  scheduledDate?: string; // YYYY-MM-DD if this row is pinned as a daily song
+};
+
+export type ScheduledPoolRow = {
+  trackId: string;
+  deezerTrackUrl: string;
+  answerYear: number;
+  scheduledDate: string;
+  entryNumber?: number;
 };
 
 export async function fetchMultiPool(): Promise<PoolRow[]> {
@@ -39,9 +48,47 @@ export async function fetchMultiPool(): Promise<PoolRow[]> {
     if (!url || !yearRaw) continue;
     const answerYear = parseInt(yearRaw, 10);
     if (isNaN(answerYear)) continue;
-    rows.push({ deezerTrackUrl: url, answerYear });
+    const scheduledDate = (row['scheduled_date'] ?? '').trim() || undefined;
+    rows.push({ deezerTrackUrl: url, answerYear, scheduledDate });
   }
   return rows;
+}
+
+// Returns only rows that have a scheduled_date set (used by /api/daily).
+export async function fetchScheduledPool(): Promise<ScheduledPoolRow[]> {
+  const res = await fetch(MULTI_URL, { next: { revalidate: 300 } });
+  if (!res.ok) throw new Error(`MULTI sheet fetch failed: ${res.status}`);
+  const text = await res.text();
+
+  const result = Papa.parse<Record<string, string>>(text, {
+    header: true,
+    skipEmptyLines: true,
+  });
+
+  const rows: ScheduledPoolRow[] = [];
+  for (const row of result.data) {
+    const trackId = (row['track_id'] ?? '').trim();
+    if (!trackId) continue;
+    const scheduledDate = (row['scheduled_date'] ?? '').trim();
+    if (!scheduledDate) continue;
+    const yearRaw = (row['year'] ?? row['answerYear'] ?? '').trim();
+    const answerYear = parseInt(yearRaw, 10);
+    if (isNaN(answerYear)) continue;
+    const entryRaw = (row['entry_number'] ?? '').trim();
+    const entryNumber = entryRaw ? parseInt(entryRaw, 10) : undefined;
+    rows.push({
+      trackId,
+      deezerTrackUrl: `https://www.deezer.com/track/${trackId}`,
+      answerYear,
+      scheduledDate,
+      entryNumber: entryNumber && !isNaN(entryNumber) ? entryNumber : undefined,
+    });
+  }
+  return rows;
+}
+
+export function selectScheduledRow(rows: ScheduledPoolRow[], dayKey: string): ScheduledPoolRow | null {
+  return rows.find(r => r.scheduledDate === dayKey) ?? null;
 }
 
 // Fisher-Yates sample of n rows from the pool

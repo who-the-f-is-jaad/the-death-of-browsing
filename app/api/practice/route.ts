@@ -1,5 +1,6 @@
 import { fetchMultiPool, samplePool } from '@/lib/songPool';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
+import { getCurrentDayKey } from '@/lib/resetTime';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -13,9 +14,12 @@ export async function GET(req: Request) {
     return Response.json({ entry: null }, { status: 502 });
   }
 
+  const today = getCurrentDayKey();
   const available = pool.filter(r => {
     const id = r.deezerTrackUrl.split('/').pop() ?? '';
-    return !excluded.has(id);
+    // Exclude already-played tracks and any track scheduled as a future daily (spoiler protection)
+    const isFutureDaily = r.scheduledDate && r.scheduledDate >= today;
+    return !excluded.has(id) && !isFutureDaily;
   });
 
   if (!available.length) {

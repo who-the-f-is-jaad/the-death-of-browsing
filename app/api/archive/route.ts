@@ -1,4 +1,5 @@
 import { fetchOmenSheet } from '@/lib/omenSheet';
+import { fetchScheduledPool } from '@/lib/songPool';
 import { enrichFromDeezer } from '@/lib/omenDeezer';
 import { getCurrentDayKey } from '@/lib/resetTime';
 
@@ -11,14 +12,29 @@ export interface ArchiveItem {
 
 export async function GET() {
   const today = getCurrentDayKey();
-  const rows = await fetchOmenSheet();
 
-  const past = rows
-    .filter(r => r.date < today)
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const [sheetResult, scheduledResult] = await Promise.allSettled([
+    fetchOmenSheet(),
+    fetchScheduledPool(),
+  ]);
+
+  const sheetRows = sheetResult.status === 'fulfilled' ? sheetResult.value : [];
+  const schedRows = scheduledResult.status === 'fulfilled'
+    ? scheduledResult.value.filter(r => r.scheduledDate < today)
+    : [];
+
+  // Build merged list: deduplicate by date (sheet rows take priority)
+  const datesSeen = new Set(sheetRows.filter(r => r.date < today).map(r => r.date));
+
+  const allRows: Array<{ date: string; deezerTrackUrl: string; answerYear: number }> = [
+    ...sheetRows.filter(r => r.date < today),
+    ...schedRows
+      .filter(r => !datesSeen.has(r.scheduledDate))
+      .map(r => ({ date: r.scheduledDate, deezerTrackUrl: r.deezerTrackUrl, answerYear: r.answerYear })),
+  ].sort((a, b) => b.date.localeCompare(a.date));
 
   const items: ArchiveItem[] = await Promise.all(
-    past.map(async (row): Promise<ArchiveItem> => {
+    allRows.map(async (row): Promise<ArchiveItem> => {
       try {
         const entry = await enrichFromDeezer(row.deezerTrackUrl, row.answerYear, row.date);
         return {
