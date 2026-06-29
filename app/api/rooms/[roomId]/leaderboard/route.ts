@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import { getRoom, getAllPlayers } from '@/lib/roomStorage';
 import { computeRoundBonuses } from '@/lib/scoring';
+import { getSession } from '@/lib/auth';
+import { addPoints } from '@/lib/db';
 import type { PlayerScore } from '@/lib/roomTypes';
 
 function getToken(req: Request): string | null {
@@ -56,6 +59,25 @@ export async function GET(
   });
 
   scores.sort((a, b) => b.totalScore - a.totalScore);
+
+  // Award points once per player when game is finished
+  if (room.status === 'finished' && myToken) {
+    const awardKey = `tdb:pts-awarded:${roomId}:${myToken}`;
+    const alreadyAwarded = await kv.get(awardKey);
+    if (!alreadyAwarded) {
+      const myPlayer = players.find(p => p.token === myToken);
+      const myTotalScore = myPlayer
+        ? scores.find(s => s.nickname === myPlayer.nickname)?.totalScore ?? 0
+        : 0;
+      const session = await getSession();
+      if (myTotalScore > 0 && session) {
+        await Promise.all([
+          addPoints(session.userId, myTotalScore),
+          kv.set(awardKey, 1, { ex: 60 * 60 * 24 * 7 }),
+        ]);
+      }
+    }
+  }
 
   return NextResponse.json({ players: scores, completedRounds, totalRounds: room.rounds });
 }

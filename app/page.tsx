@@ -42,6 +42,7 @@ export default function HomePage() {
   const [unlocking, setUnlocking] = useState(false);
   const [showingRules, setShowingRules] = useState(false);
   const [dailyStats, setDailyStats] = useState<{ plays: number; solves: number } | null>(null);
+  const [coins, setCoins] = useState<number | null>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem('tdb:intro-seen') === '1') {
@@ -104,6 +105,11 @@ export default function HomePage() {
         fetch(`/api/stats?date=${key}`)
           .then(r => r.ok ? r.json() : null)
           .then(data => { if (data) setDailyStats(data); })
+          .catch(() => {});
+
+        fetch('/api/user/me')
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (typeof data?.coins === 'number') setCoins(data.coins); })
           .catch(() => {});
       } catch {
         setLoadState('error');
@@ -277,10 +283,23 @@ export default function HomePage() {
   const isLocked = !!omenState.lockedUntil && new Date(omenState.lockedUntil) > new Date();
   const isSolved = omenState.solved;
   const isOpen = omenState.opened;
+  const isMenuScreen = !isOpen && !showingRules;
 
   const streakAlive = streak ? isStreakAlive(streak, dayKey!) : false;
   const streakNode = streak && streak.current > 0 && streakAlive
     ? <StreakDisplay streak={streak} />
+    : undefined;
+
+  const coinNode = isMenuScreen && coins !== null
+    ? (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/assets/coin.png" alt="" width={16} height={16} style={{ display: 'block', opacity: 0.85 }} />
+        <span className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'var(--text-mid)', lineHeight: 1 }}>
+          {coins}
+        </span>
+      </div>
+    )
     : undefined;
 
   // Compute a fake entry number from date for the header
@@ -292,6 +311,7 @@ export default function HomePage() {
         entryNumber={entryNumber}
         entryDate={entry.dateUtc}
         streakNode={streakNode}
+        leftNode={coinNode}
         onLogoClick={isOpen
           ? () => persistOmen({ ...omenState, opened: false })
           : undefined}

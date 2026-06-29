@@ -10,10 +10,11 @@ interface Props {
   entryNumber: number;
   entryDate: string;
   streakNode?: React.ReactNode;
+  leftNode?: React.ReactNode;
   onLogoClick?: () => void;
 }
 
-export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLogoClick }: Props) {
+export default function ObituaryHeader({ entryDate: _entryDate, streakNode, leftNode, onLogoClick }: Props) {
   const [playing, setPlaying] = useState(false);
 
   // Sync with actual audio state (another component may have started it)
@@ -38,6 +39,11 @@ export default function ObituaryHeader({ entryDate: _entryDate, streakNode, onLo
   return (
     <header className="cat-header">
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {leftNode && (
+          <div style={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
+            {leftNode}
+          </div>
+        )}
         <Link
           href="/"
           className="cat-brand"

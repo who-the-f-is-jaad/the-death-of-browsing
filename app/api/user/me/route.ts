@@ -1,17 +1,22 @@
 import { getSession, getUserById, updateUser } from '@/lib/auth';
 import { claimUsername, releaseUsername, isValidUsername } from '@/lib/social';
+import { getUserCoins } from '@/lib/db';
 import type { Portrait } from '@/lib/auth';
 
 const VALID_PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
 
 export async function GET() {
   const session = await getSession();
-  if (!session) return Response.json({ email: null, username: null, portrait: null });
-  const user = await getUserById(session.userId);
+  if (!session) return Response.json({ email: null, username: null, portrait: null, coins: null });
+  const [user, coins] = await Promise.all([
+    getUserById(session.userId),
+    getUserCoins(session.userId),
+  ]);
   return Response.json({
     email: session.email,
     username: user?.username ?? null,
     portrait: user?.portrait ?? null,
+    coins,
   });
 }
 

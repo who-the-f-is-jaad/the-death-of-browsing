@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/auth';
-import { saveSoloScore } from '@/lib/db';
+import { saveSoloScore, addPoints } from '@/lib/db';
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -12,6 +12,9 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid score' }, { status: 400 });
   }
 
-  await saveSoloScore(session.userId, score);
+  await Promise.all([
+    saveSoloScore(session.userId, score),
+    addPoints(session.userId, score),
+  ]);
   return Response.json({ ok: true });
 }

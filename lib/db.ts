@@ -127,6 +127,16 @@ export async function recordResult(
   }
 }
 
+export async function addPoints(userId: string, points: number): Promise<void> {
+  if (points <= 0) return;
+  await kv.incrby(`tdb:points:${userId}`, Math.round(points));
+}
+
+export async function getUserCoins(userId: string): Promise<number> {
+  const points = (await kv.get<number>(`tdb:points:${userId}`)) ?? 0;
+  return Math.floor(points / 10000);
+}
+
 export async function getBestSoloScore(userId: string): Promise<SoloBest | null> {
   return kv.get<SoloBest>(`tdb:solo-best:${userId}`);
 }
