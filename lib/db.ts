@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
 import { updateStreakOnSolve } from './streaks';
+import { fetchScheduledPool } from './songPool';
 import type { StreakData } from './types';
 
 export interface DayCell {
@@ -72,11 +73,21 @@ export async function getUserPublicStats(userId: string, days = 30): Promise<Pub
     grid.push({ date, played: !!result, solved: result?.solved ?? false });
   }
 
-  // Decade accuracy — only from results that have answerYear stored
+  // Decade accuracy — for records missing answerYear, fall back to the scheduled pool
+  const missingYearDates = history.filter(r => !r.answerYear);
+  const dateToYear = new Map<string, number>();
+  if (missingYearDates.length > 0) {
+    try {
+      const scheduled = await fetchScheduledPool();
+      for (const row of scheduled) dateToYear.set(row.scheduledDate, row.answerYear);
+    } catch {}
+  }
+
   const byDecade = new Map<number, { played: number; solved: number }>();
   for (const r of history) {
-    if (!r.answerYear) continue;
-    const decade = Math.floor(r.answerYear / 10) * 10;
+    const year = r.answerYear ?? dateToYear.get(r.date);
+    if (!year) continue;
+    const decade = Math.floor(year / 10) * 10;
     const prev = byDecade.get(decade) ?? { played: 0, solved: 0 };
     byDecade.set(decade, { played: prev.played + 1, solved: prev.solved + (r.solved ? 1 : 0) });
   }
@@ -95,8 +106,13 @@ export async function recordResult(
   answerYear?: number,
 ): Promise<void> {
   const resultKey = `tdb:result:${userId}:${date}`;
-  const existing = await kv.get(resultKey);
-  if (existing) return; // idempotent — don't double-record
+  const existing = await kv.get<GameResult>(resultKey);
+  if (existing) {
+    if (answerYear !== undefined && !existing.answerYear) {
+      await kv.set(resultKey, { ...existing, answerYear });
+    }
+    return;
+  }
 
   const result: GameResult = { date, solved, attempts };
   if (answerYear !== undefined) result.answerYear = answerYear;
