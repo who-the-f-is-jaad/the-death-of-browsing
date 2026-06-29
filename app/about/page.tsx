@@ -43,16 +43,7 @@ export default function AboutPage() {
         <div style={{ borderTop: '1px solid var(--border)', marginTop: '1rem' }} />
 
         <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
-          A side project by{' '}
-          <a
-            href="https://who-the-f-is-jaad.github.io/jaad/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
-          >
-            Jaad
-          </a>
-          . Built because the feed needed to die.
+          Side project by Jaad. To give Browsing a fighting chance.
         </p>
 
         <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
