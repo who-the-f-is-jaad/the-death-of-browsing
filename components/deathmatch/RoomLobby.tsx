@@ -42,7 +42,7 @@ function Portrait({ src, size = 44 }: { src: string | null; size?: number }) {
 }
 
 export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname, playerToken, onJoin, onStart, onPortraitChange }: Props) {
-  const [nickname, setNickname] = useState('Shaun');
+  const [nickname, setNickname] = useState('');
   const [joining, setJoining] = useState(false);
   const [starting, setStarting] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
