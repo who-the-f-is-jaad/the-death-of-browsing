@@ -208,16 +208,16 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
         </div>
       </div>
 
-      {/* Invite */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Room code */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          Invite link
+          Room code
         </p>
-        <code style={{ fontSize: '0.92rem', color: 'var(--text-mid)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-          {inviteUrl}
-        </code>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={handleInvite} className="btn-ghost" style={{ flex: 1 }}>Invite friends</button>
+        <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text)', lineHeight: 1 }}>
+          {roomId}
+        </p>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
+          <button onClick={handleInvite} className="btn-ghost" style={{ flex: 1 }}>Share link</button>
           <button onClick={handleCopy} className="btn-ghost" style={{ flex: 1 }}>{copied ? 'Copied!' : 'Copy link'}</button>
         </div>
       </div>
