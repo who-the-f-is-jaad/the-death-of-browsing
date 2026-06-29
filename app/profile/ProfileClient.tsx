@@ -6,8 +6,7 @@ import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import UsernameSetupModal from '@/components/ui/UsernameSetupModal';
 import type { PublicStats, DecadeStat, SoloBest } from '@/lib/db';
 import type { Portrait } from '@/lib/auth';
-
-const PORTRAITS: Portrait[] = ['red', 'blue', 'green', 'yellow'];
+import { PORTRAIT_DEFS } from '@/lib/portraitConfig';
 
 // All decades we always show, 60s → 20s
 const ALL_DECADES = [1960, 1970, 1980, 1990, 2000, 2010, 2020];
@@ -19,6 +18,8 @@ interface Props {
   stats: PublicStats;
   friendCount?: number;
   bestSolo: SoloBest | null;
+  unlockedPortraits: string[];
+  coins: number;
 }
 
 function decadeLabel(d: number) {
@@ -86,12 +87,19 @@ export default function ProfileClient({
   stats,
   friendCount = 0,
   bestSolo,
+  unlockedPortraits: initialUnlocked,
+  coins: initialCoins,
 }: Props) {
   const [username, setUsername] = useState(initialUsername);
   const [portrait, setPortrait] = useState<Portrait | undefined>(initialPortrait);
   const [savingPortrait, setSavingPortrait] = useState(false);
   const [showSetup, setShowSetup] = useState(!initialUsername);
   const [editing, setEditing] = useState(false);
+  const [unlockedPortraits, setUnlockedPortraits] = useState<string[]>(initialUnlocked);
+  const [coins, setCoins] = useState(initialCoins);
+  const [buying, setBuying] = useState<string | null>(null); // portrait id being purchased
+  const [buyLoading, setBuyLoading] = useState(false);
+  const [buyError, setBuyError] = useState<string | null>(null);
 
   const { streak, totalPlayed, totalSolved, winRate, decadeStats } = stats;
 
@@ -110,6 +118,26 @@ export default function ProfileClient({
       body: JSON.stringify({ portrait: p }),
     });
     setSavingPortrait(false);
+  };
+
+  const handleBuyPortrait = async (portraitId: string) => {
+    setBuyLoading(true);
+    setBuyError(null);
+    const res = await fetch('/api/user/portraits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ portrait: portraitId }),
+    });
+    const data = await res.json();
+    setBuyLoading(false);
+    if (!res.ok) {
+      setBuyError(data.error ?? 'Purchase failed');
+      return;
+    }
+    setUnlockedPortraits(prev => [...prev, portraitId]);
+    setCoins(data.coins);
+    setBuying(null);
+    await handlePortraitSelect(portraitId as Portrait);
   };
 
   const dim: React.CSSProperties = { fontSize: '0.44rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', fontFamily: 'inherit' };
@@ -181,36 +209,113 @@ export default function ProfileClient({
           {/* Edit panel — portrait picker + name + sign out */}
           {editing && (
             <div className="animate-fadein" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <p className="font-heading" style={{ ...dim, color: 'var(--text-dim)', marginBottom: '0.1rem' }}>
-                Portrait
-              </p>
-              <div style={{ display: 'flex', gap: '0.6rem' }}>
-                {PORTRAITS.map(p => (
-                  <button
-                    key={p}
-                    onClick={() => handlePortraitSelect(p)}
-                    disabled={savingPortrait}
-                    style={{
-                      background: 'none', border: 'none', padding: 0,
-                      cursor: savingPortrait ? 'default' : 'pointer',
-                      borderRadius: '4px',
-                      outline: portrait === p ? '2px solid var(--text)' : '2px solid transparent',
-                      outlineOffset: '3px',
-                      opacity: savingPortrait && portrait !== p ? 0.4 : 1,
-                      transition: 'outline-color 0.15s, opacity 0.15s',
-                    }}
-                    aria-label={`${p} portrait`}
-                    aria-pressed={portrait === p}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/assets/portraits/portrait-${p}.png`}
-                      alt={p}
-                      style={{ width: 60, height: 60, display: 'block', borderRadius: '3px', objectFit: 'cover' }}
-                    />
-                  </button>
-                ))}
+
+              {/* Portrait picker header with coin balance */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <p className="font-heading" style={{ ...dim, color: 'var(--text-dim)' }}>
+                  Portrait
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/assets/coin.png" alt="" width={12} height={12} style={{ opacity: 0.75 }} />
+                  <span className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.1em', color: 'var(--text-dim)' }}>
+                    {coins} coin{coins !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
+
+              {/* Portrait grid */}
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                {PORTRAIT_DEFS.map(def => {
+                  const isUnlocked = unlockedPortraits.includes(def.id);
+                  const isSelected = portrait === def.id;
+                  const isLocked = !isUnlocked;
+                  const isBuying = buying === def.id;
+
+                  return (
+                    <div key={def.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+                      <button
+                        onClick={() => {
+                          if (isLocked) {
+                            setBuying(isBuying ? null : def.id);
+                            setBuyError(null);
+                          } else {
+                            handlePortraitSelect(def.id as Portrait);
+                          }
+                        }}
+                        disabled={savingPortrait || buyLoading}
+                        style={{
+                          position: 'relative', background: 'none', border: 'none', padding: 0,
+                          cursor: (savingPortrait || buyLoading) ? 'default' : 'pointer',
+                          borderRadius: '4px',
+                          outline: isSelected ? '2px solid var(--text)' : isBuying ? '2px solid var(--text-mid)' : '2px solid transparent',
+                          outlineOffset: '3px',
+                          opacity: (savingPortrait && !isSelected) || (buyLoading && !isBuying) ? 0.4 : 1,
+                          transition: 'outline-color 0.15s, opacity 0.15s',
+                        }}
+                        aria-label={isLocked ? `${def.label} — ${def.price} coins` : `${def.label} portrait`}
+                        aria-pressed={isSelected}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`/assets/portraits/portrait-${def.id}.png`}
+                          alt={def.label}
+                          style={{ width: 60, height: 60, display: 'block', borderRadius: '3px', objectFit: 'cover', filter: isLocked ? 'brightness(0.35)' : 'none', transition: 'filter 0.2s' }}
+                        />
+                        {isLocked && (
+                          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px' }}>
+                            <span style={{ fontSize: '0.8rem', lineHeight: 1 }}>🔒</span>
+                            <span className="font-heading" style={{ fontSize: '0.34rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.7)' }}>
+                              {def.price}
+                            </span>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src="/assets/coin.png" alt="" width={8} height={8} style={{ opacity: 0.8 }} />
+                          </div>
+                        )}
+                      </button>
+                      <span className="font-heading" style={{ fontSize: '0.36rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: isSelected ? 'var(--text)' : 'var(--text-dim)' }}>
+                        {def.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Buy panel */}
+              {buying && (() => {
+                const def = PORTRAIT_DEFS.find(p => p.id === buying)!;
+                const canAfford = coins >= (def.price ?? 0);
+                return (
+                  <div className="animate-fadein" style={{ borderTop: '1px solid var(--border)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-mid)', lineHeight: 1.5 }}>
+                      Unlock the <strong style={{ color: 'var(--text)' }}>{def.label}</strong> portrait for{' '}
+                      <strong style={{ color: canAfford ? 'var(--text)' : '#c41a1a' }}>{def.price} coins</strong>
+                      {!canAfford && <span style={{ fontSize: '0.78rem', color: '#c41a1a' }}> — you have {coins}</span>}
+                    </p>
+                    {buyError && (
+                      <p style={{ fontStyle: 'italic', fontSize: '0.8rem', color: '#c41a1a' }}>{buyError}</p>
+                    )}
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                      <button
+                        onClick={() => handleBuyPortrait(buying)}
+                        disabled={buyLoading || !canAfford}
+                        className="btn-ghost"
+                        style={{ flex: 1, opacity: canAfford ? 1 : 0.4 }}
+                      >
+                        {buyLoading ? 'Unlocking…' : `Unlock · ${def.price} coins`}
+                      </button>
+                      <button
+                        onClick={() => { setBuying(null); setBuyError(null); }}
+                        className="font-heading"
+                        style={{ ...dim, background: 'none', border: 'none', cursor: 'pointer', padding: '0 0.5rem', color: 'var(--text-dim)' }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                 {username && (
                   <button

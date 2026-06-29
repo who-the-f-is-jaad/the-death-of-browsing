@@ -137,6 +137,34 @@ export async function getUserCoins(userId: string): Promise<number> {
   return Math.floor(points / 10000);
 }
 
+export async function getUnlockedPortraits(userId: string): Promise<string[]> {
+  return (await kv.get<string[]>(`tdb:portrait-unlocks:${userId}`)) ?? [];
+}
+
+export async function unlockPortrait(
+  userId: string,
+  portrait: string,
+  price: number,
+): Promise<'ok' | 'insufficient_coins' | 'already_unlocked'> {
+  const [unlocked, rawPoints] = await Promise.all([
+    getUnlockedPortraits(userId),
+    kv.get<number>(`tdb:points:${userId}`),
+  ]);
+
+  if (unlocked.includes(portrait)) return 'already_unlocked';
+
+  const coins = Math.floor((rawPoints ?? 0) / 10000);
+  if (coins < price) return 'insufficient_coins';
+
+  const cost = price * 10000;
+  await Promise.all([
+    kv.incrby(`tdb:points:${userId}`, -cost),
+    kv.set(`tdb:portrait-unlocks:${userId}`, [...unlocked, portrait]),
+  ]);
+
+  return 'ok';
+}
+
 export async function getBestSoloScore(userId: string): Promise<SoloBest | null> {
   return kv.get<SoloBest>(`tdb:solo-best:${userId}`);
 }

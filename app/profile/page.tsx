@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getSession, getUserById } from '@/lib/auth';
-import { getUserPublicStats, getBestSoloScore } from '@/lib/db';
+import { getUserPublicStats, getBestSoloScore, getUnlockedPortraits, getUserCoins } from '@/lib/db';
 import { getFriendCount } from '@/lib/social';
+import { FREE_PORTRAIT_IDS } from '@/lib/portraitConfig';
 import ProfileClient from './ProfileClient';
 
 export const metadata: Metadata = { title: 'Profile — THE DEATH OF BROWSING' };
@@ -14,12 +15,16 @@ export default async function ProfilePage() {
     redirect('/signin?from=/profile');
   }
 
-  const [user, stats, friendCount, bestSolo] = await Promise.all([
+  const [user, stats, friendCount, bestSolo, paidUnlocks, coins] = await Promise.all([
     getUserById(session.userId),
     getUserPublicStats(session.userId),
     getFriendCount(session.userId),
     getBestSoloScore(session.userId),
+    getUnlockedPortraits(session.userId),
+    getUserCoins(session.userId),
   ]);
+
+  const unlockedPortraits = [...FREE_PORTRAIT_IDS, ...paidUnlocks];
 
   return (
     <ProfileClient
@@ -29,6 +34,8 @@ export default async function ProfilePage() {
       stats={stats}
       friendCount={friendCount}
       bestSolo={bestSolo ?? null}
+      unlockedPortraits={unlockedPortraits}
+      coins={coins}
     />
   );
 }
