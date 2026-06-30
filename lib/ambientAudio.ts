@@ -29,6 +29,12 @@ if (typeof window !== 'undefined') {
   });
 }
 
+// Pre-create the audio element and return it — call early to make
+// volumechange events fire on iOS when physical volume buttons are pressed.
+export function getAmbientElement(): HTMLAudioElement {
+  return getAudio();
+}
+
 export function playAmbient(): Promise<void> {
   return getAudio().play();
 }

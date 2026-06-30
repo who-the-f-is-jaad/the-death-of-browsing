@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import speakerSrc from '@/components/ui/speaker.png';
-import { playAmbient } from '@/lib/ambientAudio';
+import { playAmbient, getAmbientElement, isAmbientPlaying } from '@/lib/ambientAudio';
 
 interface Props {
   onComplete: () => void;
@@ -11,9 +11,36 @@ interface Props {
 
 export default function IntroScreen({ onComplete }: Props) {
   const [playing, setPlaying] = useState(false);
+  const unlockedRef = useRef(false);
+
+  const startMusic = useCallback(() => {
+    if (unlockedRef.current) return;
+    unlockedRef.current = true;
+    playAmbient().then(() => setPlaying(true)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    // Pre-create the element so iOS knows it exists before volume buttons are pressed
+    const el = getAmbientElement();
+
+    // iOS fires volumechange on audio elements when the physical volume button is pressed
+    const onVolumeChange = () => {
+      if (!isAmbientPlaying()) startMusic();
+    };
+    el.addEventListener('volumechange', onVolumeChange);
+
+    // First touch anywhere on the page also unlocks audio (satisfies mobile autoplay policy)
+    const onFirstTouch = () => startMusic();
+    document.addEventListener('touchstart', onFirstTouch, { once: true, passive: true });
+
+    return () => {
+      el.removeEventListener('volumechange', onVolumeChange);
+      document.removeEventListener('touchstart', onFirstTouch);
+    };
+  }, [startMusic]);
 
   const handleSpeakerClick = () => {
-    playAmbient().then(() => setPlaying(true)).catch(() => {});
+    startMusic();
   };
 
   const handleOk = () => {
