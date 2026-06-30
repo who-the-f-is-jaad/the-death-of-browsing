@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedScore from '@/components/ui/AnimatedScore';
+import CoinWinOverlay from '@/components/ui/CoinWinOverlay';
 
 type RoundScore = {
   roundIndex: number;
@@ -69,6 +70,12 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
       .catch(() => setLoading(false));
   }, [roomId, playerToken]);
 
+  const myCoins = useMemo(() => {
+    const me = players.find(p => p.isYou);
+    if (!me) return 0;
+    return Math.floor(me.totalScore / 1000) / 10;
+  }, [players]);
+
   if (loading) return (
     <div style={{ textAlign: 'center', paddingTop: '3rem' }}>
       <p className="font-heading animate-pulse-gold" style={{ fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
@@ -82,6 +89,8 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
   const restPlayers = players.slice(hasPodium ? 3 : 1);
 
   return (
+    <>
+    <CoinWinOverlay coins={myCoins} delayMs={1800} />
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', paddingTop: '0.5rem' }}>
 
       {/* ── Winner reveal ── */}
@@ -258,5 +267,6 @@ export default function Leaderboard({ roomId, playerToken }: Props) {
       </div>
 
     </div>
+    </>
   );
 }

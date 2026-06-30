@@ -48,6 +48,7 @@ export default function PracticeClient() {
   const [currentEntry, setCurrentEntry] = useState<SoloEntry | null>(null);
   const [completedRounds, setCompletedRounds] = useState<CompletedRound[]>([]);
   const [lastGuess, setLastGuess] = useState<{ year: number; score: number } | null>(null);
+  const [sessionCoins, setSessionCoins] = useState(0);
 
   const playedIdsRef = useRef<string[]>([]);
 
@@ -91,10 +92,14 @@ export default function PracticeClient() {
     const nextIndex = roundIndex + 1;
     if (nextIndex >= TOTAL_ROUNDS) {
       const total = completedRounds.reduce((s, r) => s + r.score, 0);
+      setSessionCoins(Math.floor(total / 1000) / 10);
       fetch('/api/practice/result', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ score: total }),
+        body: JSON.stringify({
+          score: total,
+          rounds: completedRounds.map(r => ({ answerYear: r.entry.answerYear, score: r.score })),
+        }),
       }).catch(() => {});
       setPhase('finished');
     } else {
@@ -191,7 +196,7 @@ export default function PracticeClient() {
       <DeadBrowserShell>
         {header}
         <div className="flex-1 flex flex-col gap-6 pb-8">
-          <SoloFinished rounds={completedRounds} onPlayAgain={handlePlayAgain} />
+          <SoloFinished rounds={completedRounds} onPlayAgain={handlePlayAgain} coinsEarned={sessionCoins} />
         </div>
       </DeadBrowserShell>
     );

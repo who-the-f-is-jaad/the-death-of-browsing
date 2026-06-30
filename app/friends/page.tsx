@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession, getUserById } from '@/lib/auth';
 import { getFriends, getIncomingRequests } from '@/lib/social';
-import { getUserHistory, getUserPublicStats, getUserCoins } from '@/lib/db';
+import { getUserHistory, getUserPublicStats, getUserPoints } from '@/lib/db';
 import RequestList from './RequestList';
 
 export const metadata: Metadata = { title: 'Friends — THE DEATH OF BROWSING' };
@@ -58,23 +58,23 @@ export default async function FriendsPage() {
   const leaderboardIds = [session.userId, ...friendIds];
   const leaderboardRaw = await Promise.all(
     leaderboardIds.map(async id => {
-      const [user, stats, coins] = await Promise.all([
+      const [user, stats, points] = await Promise.all([
         getUserById(id),
         getUserPublicStats(id),
-        getUserCoins(id),
+        getUserPoints(id),
       ]);
       if (!user?.username) return null;
       return {
         username: user.username!,
         portrait: user.portrait ?? null,
-        coins,
+        points,
         totalPlayed: stats.totalPlayed,
         isSelf: id === session.userId,
       };
     }),
   );
   const leaderboard = (leaderboardRaw.filter(Boolean) as NonNullable<typeof leaderboardRaw[0]>[])
-    .sort((a, b) => b.coins - a.coins);
+    .sort((a, b) => b.points - a.points);
 
   return (
     <div style={{ width: '100%', maxWidth: '52rem', margin: '0 auto', padding: '1.75rem 1.5rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -135,7 +135,7 @@ export default async function FriendsPage() {
 
       {/* Leaderboard */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <p style={sectionLabel}>Leaderboard · coins earned</p>
+        <p style={sectionLabel}>Leaderboard · points earned</p>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {leaderboard.map((entry, i) => (
             <div
@@ -171,10 +171,9 @@ export default async function FriendsPage() {
                   <span style={{ color: 'var(--text-mid)', fontSize: '0.8rem', marginLeft: '0.6rem' }}>you</span>
                 )}
               </Link>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/coin.png" alt="" width={15} height={15} style={{ opacity: 0.8 }} />
-                <span style={{ fontSize: '1.15rem', color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{entry.coins.toFixed(1)}</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', flexShrink: 0 }}>
+                <span style={{ fontSize: '1.15rem', color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{entry.points.toLocaleString()}</span>
+                <span className="font-heading" style={{ fontSize: '0.65rem', letterSpacing: '0.1em', color: 'var(--text-mid)' }}>pts</span>
               </div>
             </div>
           ))}

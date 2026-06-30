@@ -13,7 +13,7 @@ export interface PublicStats {
   streak: StreakData;
   totalPlayed: number;
   totalSolved: number;
-  winRate: number; // 0-100
+  precision: number; // 0-100, rounds with any score / total rounds
   grid: DayCell[]; // last 30 days, oldest first
   decadeStats: DecadeStat[];
 }
@@ -60,7 +60,7 @@ export async function getUserPublicStats(userId: string, days = 30): Promise<Pub
 
   const totalPlayed = history.length;
   const totalSolved = history.filter(r => r.solved).length;
-  const winRate = totalPlayed > 0 ? Math.round((totalSolved / totalPlayed) * 100) : 0;
+  const precision = totalPlayed > 0 ? Math.round((totalSolved / totalPlayed) * 100) : 0;
 
   const historyMap = new Map(history.map(r => [r.date, r]));
   const grid: DayCell[] = [];
@@ -95,7 +95,7 @@ export async function getUserPublicStats(userId: string, days = 30): Promise<Pub
     .map(([decade, s]) => ({ decade, played: s.played, solved: s.solved }))
     .sort((a, b) => a.decade - b.decade);
 
-  return { streak, totalPlayed, totalSolved, winRate, grid, decadeStats };
+  return { streak, totalPlayed, totalSolved, precision, grid, decadeStats };
 }
 
 export async function recordResult(
@@ -132,8 +132,26 @@ export async function addPoints(userId: string, points: number): Promise<void> {
   await kv.incrby(`tdb:points:${userId}`, Math.round(points));
 }
 
+// Record a single solo round into the shared history so profile stats reflect it.
+// Uses a non-date key so it counts in totals/decade chart but not the calendar grid.
+export async function recordSoloRound(
+  userId: string,
+  answerYear: number,
+  score: number,
+): Promise<void> {
+  const key = `solo:${Date.now()}:${Math.random().toString(36).slice(2, 7)}`;
+  const result: GameResult = { date: key, solved: score > 0, attempts: 1, answerYear };
+  await kv.set(`tdb:result:${userId}:${key}`, result);
+  await kv.lpush(`tdb:history:${userId}`, key);
+  await kv.ltrim(`tdb:history:${userId}`, 0, 499); // keep up to 500 records
+}
+
+export async function getUserPoints(userId: string): Promise<number> {
+  return (await kv.get<number>(`tdb:points:${userId}`)) ?? 0;
+}
+
 export async function getUserCoins(userId: string): Promise<number> {
-  const points = (await kv.get<number>(`tdb:points:${userId}`)) ?? 0;
+  const points = await getUserPoints(userId);
   return Math.floor(points / 1000) / 10; // 1 decimal place; 10 000 pts = 1 coin
 }
 

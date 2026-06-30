@@ -101,7 +101,7 @@ export default function ProfileClient({
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyError, setBuyError] = useState<string | null>(null);
 
-  const { streak, totalPlayed, totalSolved, winRate, decadeStats } = stats;
+  const { streak, totalPlayed, totalSolved, precision, decadeStats } = stats;
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -353,10 +353,10 @@ export default function ProfileClient({
             <div style={{ display: 'flex', gap: '0' }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 <p style={{ fontSize: '3.8rem', color: '#ffffff', lineHeight: 1, fontWeight: 400, letterSpacing: '-0.02em' }}>
-                  {winRate}<span style={{ fontSize: '1.8rem', color: 'var(--text-mid)' }}>%</span>
+                  {precision}<span style={{ fontSize: '1.8rem', color: 'var(--text-mid)' }}>%</span>
                 </p>
                 <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
-                  win rate · {totalSolved} of {totalPlayed}
+                  precision · {totalSolved} of {totalPlayed}
                 </p>
               </div>
               <div style={{ width: '1px', background: 'var(--border)', margin: '0 1.5rem' }} />

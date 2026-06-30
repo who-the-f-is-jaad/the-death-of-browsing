@@ -67,7 +67,7 @@ export default function PublicProfileClient({
   friendStatus,
   isOwnProfile,
 }: Props) {
-  const { streak, winRate, totalPlayed, grid, decadeStats } = stats;
+  const { streak, precision, totalPlayed, grid, decadeStats } = stats;
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '2rem 1.25rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -138,7 +138,7 @@ export default function PublicProfileClient({
                 Best <span style={{ color: '#ffffff' }}>{streak.longest}</span>
               </p>
               <p style={{ fontSize: '1rem', color: 'var(--text-mid)' }}>
-                Solved <span style={{ color: '#ffffff' }}>{winRate}%</span>
+                Precision <span style={{ color: '#ffffff' }}>{precision}%</span>
               </p>
               <p style={{ fontSize: '1rem', color: 'var(--text-mid)' }}>
                 Played <span style={{ color: '#ffffff' }}>{totalPlayed}</span>

@@ -1,5 +1,7 @@
 'use client';
 
+import CoinWinOverlay from '@/components/ui/CoinWinOverlay';
+
 interface SoloEntry {
   answerYear: number;
   albumTitle: string;
@@ -15,13 +17,16 @@ interface CompletedRound {
 interface Props {
   rounds: CompletedRound[];
   onPlayAgain: () => void;
+  coinsEarned: number;
 }
 
-export default function SoloFinished({ rounds, onPlayAgain }: Props) {
+export default function SoloFinished({ rounds, onPlayAgain, coinsEarned }: Props) {
   const totalScore = rounds.reduce((sum, r) => sum + r.score, 0);
   const maxScore = rounds.length * 1000;
 
   return (
+    <>
+    <CoinWinOverlay coins={coinsEarned} />
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', paddingTop: '0.5rem' }}>
 
       <div>
@@ -76,5 +81,6 @@ export default function SoloFinished({ rounds, onPlayAgain }: Props) {
       </button>
 
     </div>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export async function GET() {
         username: user.username!,
         portrait: user.portrait ?? null,
         streak: stats.streak.current,
-        winRate: stats.winRate,
+        precision: stats.precision,
         totalPlayed: stats.totalPlayed,
         isSelf: id === session.userId,
       };
@@ -27,6 +27,6 @@ export async function GET() {
   return Response.json(
     entries
       .filter(Boolean)
-      .sort((a, b) => b!.streak - a!.streak || b!.winRate - a!.winRate),
+      .sort((a, b) => b!.streak - a!.streak || b!.precision - a!.precision),
   );
 }
