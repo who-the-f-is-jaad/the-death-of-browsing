@@ -140,7 +140,7 @@ export default function ProfileClient({
     await handlePortraitSelect(portraitId as Portrait);
   };
 
-  const dim: React.CSSProperties = { fontSize: '0.44rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-dim)', fontFamily: 'inherit' };
+  const dim: React.CSSProperties = { fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)', fontFamily: 'inherit' };
 
   return (
     <DeadBrowserShell>
@@ -190,13 +190,20 @@ export default function ProfileClient({
           {/* Sub-links */}
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {username && (
-              <Link href={`/u/${username}`} className="font-heading" style={{ ...dim, textDecoration: 'none', color: 'var(--text-dim)' }}>
+              <Link href={`/u/${username}`} className="font-heading" style={{ ...dim, textDecoration: 'none' }}>
                 Public profile →
               </Link>
             )}
-            <Link href="/friends" className="font-heading" style={{ ...dim, textDecoration: 'none', color: 'var(--text-dim)' }}>
+            <Link href="/friends" className="font-heading" style={{ ...dim, textDecoration: 'none' }}>
               Friends ({friendCount})
             </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/coin.png" alt="" width={12} height={12} style={{ opacity: 0.8 }} />
+              <span className="font-heading" style={{ ...dim }}>
+                {coins.toFixed(1)}
+              </span>
+            </div>
             <button
               onClick={() => setEditing(e => !e)}
               className="font-heading"
@@ -217,8 +224,8 @@ export default function ProfileClient({
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/assets/coin.png" alt="" width={12} height={12} style={{ opacity: 0.75 }} />
-                  <span className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.1em', color: 'var(--text-dim)' }}>
+                  <img src="/assets/coin.png" alt="" width={13} height={13} style={{ opacity: 0.8 }} />
+                  <span className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'var(--text-mid)' }}>
                     {coins.toFixed(1)} coins
                   </span>
                 </div>
@@ -265,7 +272,7 @@ export default function ProfileClient({
                         {isLocked && (
                           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px' }}>
                             <span style={{ fontSize: '0.8rem', lineHeight: 1 }}>🔒</span>
-                            <span className="font-heading" style={{ fontSize: '0.34rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.7)' }}>
+                            <span className="font-heading" style={{ fontSize: '0.6rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.8)' }}>
                               {def.price}
                             </span>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -273,7 +280,7 @@ export default function ProfileClient({
                           </div>
                         )}
                       </button>
-                      <span className="font-heading" style={{ fontSize: '0.36rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: isSelected ? 'var(--text)' : 'var(--text-dim)' }}>
+                      <span className="font-heading" style={{ fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: isSelected ? 'var(--text)' : 'var(--text-mid)' }}>
                         {def.label}
                       </span>
                     </div>
@@ -348,7 +355,7 @@ export default function ProfileClient({
                 <p style={{ fontSize: '3.8rem', color: '#ffffff', lineHeight: 1, fontWeight: 400, letterSpacing: '-0.02em' }}>
                   {winRate}<span style={{ fontSize: '1.8rem', color: 'var(--text-mid)' }}>%</span>
                 </p>
-                <p className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
                   win rate · {totalSolved} of {totalPlayed}
                 </p>
               </div>
@@ -357,7 +364,7 @@ export default function ProfileClient({
                 <p style={{ fontSize: '3.8rem', color: '#ffffff', lineHeight: 1, fontWeight: 400, letterSpacing: '-0.02em' }}>
                   {streak.current}
                 </p>
-                <p className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <p className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
                   day streak · best {streak.longest}
                 </p>
               </div>
@@ -366,7 +373,7 @@ export default function ProfileClient({
             {/* Solo best — inline */}
             {bestSolo && (
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '0.5rem 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-                <span className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <span className="font-heading" style={{ fontSize: '0.78rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
                   Solo · best session
                 </span>
                 <span style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem' }}>
@@ -379,10 +386,10 @@ export default function ProfileClient({
             {/* Decade chart */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+                <p className="font-heading" style={{ fontSize: '0.78rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
                   Precision by decade
                 </p>
-                <p style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-mid)', fontStyle: 'italic' }}>
                   {decadeStats.reduce((s, d) => s + d.played, 0)} games tracked
                 </p>
               </div>

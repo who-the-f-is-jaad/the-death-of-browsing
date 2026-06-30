@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession, getUserById } from '@/lib/auth';
 import { getFriends, getIncomingRequests } from '@/lib/social';
-import { getUserHistory, getUserPublicStats } from '@/lib/db';
+import { getUserHistory, getUserPublicStats, getUserCoins } from '@/lib/db';
 import RequestList from './RequestList';
 
 export const metadata: Metadata = { title: 'Friends — THE DEATH OF BROWSING' };
@@ -13,6 +13,11 @@ function formatDate(d: string) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return `${day} ${months[m - 1]}`;
 }
+
+const sectionLabel: React.CSSProperties = {
+  fontSize: '0.78rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-mid)',
+  fontFamily: "'IM Fell DW Pica SC', Georgia, serif",
+};
 
 export default async function FriendsPage() {
   const session = await getSession();
@@ -49,32 +54,35 @@ export default async function FriendsPage() {
   );
   const feed = feedPerFriend.flat().sort((a, b) => b.date.localeCompare(a.date));
 
-  // Leaderboard — self + all friends
+  // Leaderboard — self + all friends, sorted by total coins (= total points earned)
   const leaderboardIds = [session.userId, ...friendIds];
   const leaderboardRaw = await Promise.all(
     leaderboardIds.map(async id => {
-      const [user, stats] = await Promise.all([getUserById(id), getUserPublicStats(id)]);
+      const [user, stats, coins] = await Promise.all([
+        getUserById(id),
+        getUserPublicStats(id),
+        getUserCoins(id),
+      ]);
       if (!user?.username) return null;
       return {
         username: user.username!,
         portrait: user.portrait ?? null,
-        streak: stats.streak.current,
-        winRate: stats.winRate,
+        coins,
         totalPlayed: stats.totalPlayed,
         isSelf: id === session.userId,
       };
     }),
   );
   const leaderboard = (leaderboardRaw.filter(Boolean) as NonNullable<typeof leaderboardRaw[0]>[])
-    .sort((a, b) => b.streak - a.streak || b.winRate - a.winRate);
+    .sort((a, b) => b.coins - a.coins);
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '2rem 1.25rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+    <div style={{ width: '100%', maxWidth: '52rem', margin: '0 auto', padding: '1.75rem 1.5rem 5rem', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
       <Link
         href="/"
         className="font-heading"
-        style={{ fontSize: '0.48rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-dim)', textDecoration: 'none' }}
+        style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-mid)', textDecoration: 'none' }}
       >
         ← The Death of Browsing
       </Link>
@@ -84,11 +92,9 @@ export default async function FriendsPage() {
 
       {/* Activity feed */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          Activity
-        </p>
+        <p style={sectionLabel}>Activity</p>
         {feed.length === 0 ? (
-          <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+          <p style={{ fontStyle: 'italic', fontSize: '0.95rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>
             {friendIds.length === 0
               ? 'Add friends to see their activity here.'
               : 'No activity in the last few days.'}
@@ -98,27 +104,27 @@ export default async function FriendsPage() {
             {feed.map((entry, i) => (
               <div
                 key={i}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 0', borderBottom: '1px solid var(--border)' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   {entry.portrait && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={`/assets/portraits/portrait-${entry.portrait}.png`}
                       alt=""
-                      style={{ width: 28, height: 28, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
+                      style={{ width: 36, height: 36, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
                     />
                   )}
                   <div>
-                    <Link href={`/u/${entry.username}`} style={{ textDecoration: 'none', color: '#ffffff', fontSize: '0.9rem' }}>
+                    <Link href={`/u/${entry.username}`} style={{ textDecoration: 'none', color: '#ffffff', fontSize: '1rem' }}>
                       @{entry.username}
                     </Link>
-                    <span className="font-heading" style={{ display: 'block', fontSize: '0.38rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-dim)', marginTop: '0.1rem' }}>
+                    <span className="font-heading" style={{ display: 'block', fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-mid)', marginTop: '0.15rem' }}>
                       {formatDate(entry.date)}
                     </span>
                   </div>
                 </div>
-                <span className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: entry.solved ? 'var(--text)' : 'var(--crimson)' }}>
+                <span className="font-heading" style={{ fontSize: '0.82rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: entry.solved ? 'var(--text)' : 'var(--crimson)' }}>
                   {entry.solved ? `✓ ${entry.attempts} ${entry.attempts === 1 ? 'try' : 'tries'}` : '† failed'}
                 </span>
               </div>
@@ -129,9 +135,7 @@ export default async function FriendsPage() {
 
       {/* Leaderboard */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
-          Leaderboard
-        </p>
+        <p style={sectionLabel}>Leaderboard · coins earned</p>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {leaderboard.map((entry, i) => (
             <div
@@ -139,35 +143,38 @@ export default async function FriendsPage() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 0.25rem',
+                gap: '1rem',
+                padding: '0.9rem 0.5rem',
                 borderBottom: '1px solid var(--border)',
                 background: entry.isSelf ? 'rgba(255,255,255,0.03)' : 'none',
               }}
             >
-              <span style={{ fontSize: '1rem', color: 'var(--text-dim)', minWidth: '1.5rem', textAlign: 'right' }}>
+              <span style={{ fontSize: '1.1rem', color: 'var(--text-mid)', minWidth: '1.5rem', textAlign: 'right', flexShrink: 0 }}>
                 {i + 1}
               </span>
-              {entry.portrait && (
+              {entry.portrait ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={`/assets/portraits/portrait-${entry.portrait}.png`}
                   alt=""
-                  style={{ width: 28, height: 28, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
+                  style={{ width: 40, height: 40, borderRadius: '3px', objectFit: 'cover', flexShrink: 0 }}
                 />
+              ) : (
+                <div style={{ width: 40, height: 40, borderRadius: '3px', background: 'var(--border)', flexShrink: 0 }} />
               )}
               <Link
                 href={`/u/${entry.username}`}
-                style={{ textDecoration: 'none', color: '#ffffff', fontSize: '0.9rem', flex: 1 }}
+                style={{ textDecoration: 'none', color: '#ffffff', fontSize: '1rem', flex: 1 }}
               >
                 @{entry.username}
                 {entry.isSelf && (
-                  <span style={{ color: 'var(--text-dim)', fontSize: '0.75rem', marginLeft: '0.5rem' }}>you</span>
+                  <span style={{ color: 'var(--text-mid)', fontSize: '0.8rem', marginLeft: '0.6rem' }}>you</span>
                 )}
               </Link>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.1rem' }}>
-                <span style={{ fontSize: '1.1rem', color: '#ffffff' }}>{entry.streak}</span>
-                <span className="font-heading" style={{ fontSize: '0.36rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>streak</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/coin.png" alt="" width={15} height={15} style={{ opacity: 0.8 }} />
+                <span style={{ fontSize: '1.15rem', color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{entry.coins.toFixed(1)}</span>
               </div>
             </div>
           ))}

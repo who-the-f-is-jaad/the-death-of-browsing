@@ -40,7 +40,7 @@ export default function RequestList({ requests: initial }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <p className="font-heading" style={{ fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+      <p className="font-heading" style={{ fontSize: '0.78rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-mid)' }}>
         Friend requests ({requests.length})
       </p>
       <div style={{ display: 'flex', flexDirection: 'column' }}>

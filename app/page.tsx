@@ -30,10 +30,10 @@ export default function HomePage() {
 
   const coinNode = coins !== null
     ? (
-      <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
+      <Link href="/profile" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', textDecoration: 'none' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/assets/coin.png" alt="" width={16} height={16} style={{ display: 'block', opacity: 0.85 }} />
-        <span className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'var(--text-mid)', lineHeight: 1 }}>
+        <img src="/assets/coin.png" alt="" width={18} height={18} style={{ display: 'block', opacity: 0.85 }} />
+        <span className="font-heading" style={{ fontSize: '0.68rem', letterSpacing: '0.08em', color: 'var(--text-mid)', lineHeight: 1 }}>
           {coins.toFixed(1)}
         </span>
       </Link>

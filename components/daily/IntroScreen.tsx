@@ -72,18 +72,29 @@ export default function IntroScreen({ onComplete }: Props) {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
-        @keyframes title-drift {
-          0%   { transform: translateY(0px) rotate(-0.3deg); }
-          35%  { transform: translateY(-6px) rotate(0.2deg); }
-          65%  { transform: translateY(-3px) rotate(-0.1deg); }
-          100% { transform: translateY(0px) rotate(-0.3deg); }
+        @keyframes title-glitch {
+          0%   { transform: translateY(0px) rotate(-0.3deg); text-shadow: none; }
+          20%  { transform: translateY(-5px) rotate(0.15deg); text-shadow: none; }
+          40%  { transform: translateY(-2px) rotate(-0.1deg); text-shadow: none; }
+          60%  { transform: translateY(0px) rotate(-0.3deg); text-shadow: none; }
+
+          70%  { transform: translateY(0px) rotate(-0.3deg); text-shadow: none; }
+          71%  { transform: translateX(-6px) skewX(-1deg) rotate(-0.3deg); text-shadow: 5px 0 rgba(255,30,60,0.8), -5px 0 rgba(0,210,255,0.8); }
+          72%  { transform: translateX(5px) skewX(0.8deg); text-shadow: -4px 0 rgba(255,30,60,0.65), 4px 0 rgba(0,210,255,0.65); }
+          73%  { transform: translateX(-3px); text-shadow: 3px 0 rgba(255,30,60,0.5), -3px 0 rgba(0,210,255,0.5); }
+          74%  { transform: translateX(0px) rotate(-0.3deg); text-shadow: none; }
+
+          76%  { transform: translateX(-2px) skewX(-0.4deg); text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(0,210,255,0.55); }
+          77%  { transform: translateX(0px) rotate(-0.3deg); text-shadow: none; }
+
+          100% { transform: translateY(0px) rotate(-0.3deg); text-shadow: none; }
         }
         @keyframes slide-up {
           from { opacity: 0; transform: translateY(14px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         .intro-title {
-          animation: title-drift 6s ease-in-out infinite;
+          animation: title-glitch 7s ease-in-out infinite;
           display: inline-block;
         }
         .intro-line1 { animation: slide-up 0.7s 0.2s ease both; }
@@ -106,9 +117,9 @@ export default function IntroScreen({ onComplete }: Props) {
       {/* Subtitle */}
       <p
         className="intro-line2"
-        style={{ fontFamily: "'IM Fell DW Pica SC', Georgia, serif", fontStyle: 'italic', fontSize: '1rem', color: 'var(--text-mid)', lineHeight: 1.6, textAlign: 'center', maxWidth: '15rem' }}
+        style={{ fontFamily: "'IM Fell DW Pica SC', Georgia, serif", fontStyle: 'italic', fontSize: '1rem', color: 'var(--text-mid)', lineHeight: 1.6, textAlign: 'center', maxWidth: '18rem' }}
       >
-        Can you save Browsing, the sheep?
+        Do you know the difference between the synth-pop of 1983 and the synth-pop of 1984?
       </p>
 
       {/* Speaker */}
