@@ -134,7 +134,7 @@ export async function addPoints(userId: string, points: number): Promise<void> {
 
 export async function getUserCoins(userId: string): Promise<number> {
   const points = (await kv.get<number>(`tdb:points:${userId}`)) ?? 0;
-  return Math.floor(points / 10000);
+  return Math.floor(points / 1000) / 10; // 1 decimal place; 10 000 pts = 1 coin
 }
 
 export async function getUnlockedPortraits(userId: string): Promise<string[]> {

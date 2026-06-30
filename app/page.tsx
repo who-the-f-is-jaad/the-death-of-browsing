@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import ObituaryHeader from '@/components/ui/ObituaryHeader';
 import IntroScreen from '@/components/daily/IntroScreen';
@@ -29,13 +30,13 @@ export default function HomePage() {
 
   const coinNode = coins !== null
     ? (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/assets/coin.png" alt="" width={16} height={16} style={{ display: 'block', opacity: 0.85 }} />
         <span className="font-heading" style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'var(--text-mid)', lineHeight: 1 }}>
-          {coins}
+          {coins.toFixed(1)}
         </span>
-      </div>
+      </Link>
     )
     : undefined;
 

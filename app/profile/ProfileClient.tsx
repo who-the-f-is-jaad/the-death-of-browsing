@@ -219,7 +219,7 @@ export default function ProfileClient({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/assets/coin.png" alt="" width={12} height={12} style={{ opacity: 0.75 }} />
                   <span className="font-heading" style={{ fontSize: '0.44rem', letterSpacing: '0.1em', color: 'var(--text-dim)' }}>
-                    {coins} coin{coins !== 1 ? 's' : ''}
+                    {coins.toFixed(1)} coins
                   </span>
                 </div>
               </div>
