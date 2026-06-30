@@ -1,16 +1,6 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
-import { playClick } from '@/lib/clickSound';
-
-interface Props {
-  onOpenRiddle: () => void;
-  plays?: number;
-  solves?: number;
-  hasFailed?: boolean;
-  hasNotPlayed?: boolean;
-  hasSolved?: boolean;
-}
 
 // Each menu item glitches at a different tempo so they never fire together
 const GLITCH_ANIMS = [
@@ -18,7 +8,6 @@ const GLITCH_ANIMS = [
   { animationName: 'text-glitch', animationDuration: '11s', animationDelay: '2.3s',  animationTimingFunction: 'steps(1)', animationIterationCount: 'infinite' },
   { animationName: 'text-glitch', animationDuration: '9s',  animationDelay: '4.7s',  animationTimingFunction: 'steps(1)', animationIterationCount: 'infinite' },
   { animationName: 'text-glitch', animationDuration: '13s', animationDelay: '1.1s',  animationTimingFunction: 'steps(1)', animationIterationCount: 'infinite' },
-  { animationName: 'text-glitch', animationDuration: '8s',  animationDelay: '6.2s',  animationTimingFunction: 'steps(1)', animationIterationCount: 'infinite' },
 ];
 
 const menuItemStyle: React.CSSProperties = {
@@ -30,7 +19,7 @@ const menuItemStyle: React.CSSProperties = {
   display: 'block',
 };
 
-export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, hasNotPlayed, hasSolved }: Props) {
+export default function SealedEntry() {
   return (
     <div className="animate-fadein" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
@@ -38,18 +27,14 @@ export default function SealedEntry({ onOpenRiddle, plays, solves, hasFailed, ha
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div
           className="photo-frame"
-          style={{
-            width: '68%',
-            cursor: 'pointer',
-            animation: 'sheep-float 5s ease-in-out infinite',
-          }}
-          onClick={() => { if (!hasFailed) new Audio('/audio/sheep.wav').play().catch(() => {}); }}
+          style={{ width: '68%', cursor: 'pointer', animation: 'sheep-float 5s ease-in-out infinite' }}
+          onClick={() => new Audio('/audio/sheep.wav').play().catch(() => {})}
           role="button"
           aria-label="Baa"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={hasSolved ? '/assets/sheep-success.png' : hasFailed ? '/assets/sheep-fail.png' : '/assets/sheep-card.jpg'}
+            src="/assets/sheep-card.jpg"
             alt="One record remains"
             style={{ width: '100%', display: 'block', filter: 'grayscale(20%) contrast(1.1)', opacity: 0.9 }}
           />

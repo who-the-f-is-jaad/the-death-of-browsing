@@ -213,7 +213,7 @@ export default function RoomLobby({ room, roomId, isHost, isJoining, myNickname,
         <p className="font-heading" style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
           Room code
         </p>
-        <p className="font-brand" style={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text)', lineHeight: 1 }}>
+        <p className="font-heading" style={{ fontSize: '2.6rem', fontWeight: 700, letterSpacing: '0.18em', color: 'var(--text)', lineHeight: 1 }}>
           {roomId}
         </p>
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
