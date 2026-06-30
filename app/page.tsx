@@ -7,6 +7,7 @@ import { loadOmenState, saveOmenState, initOmenState } from '@/lib/omenStorage';
 import { loadStreak, saveStreak } from '@/lib/localState';
 import { updateStreakOnSolve, isStreakAlive } from '@/lib/streaks';
 import { setPendingOmenAudio, markPendingOmenAudioFailed } from '@/lib/omenAudio';
+import { pauseAmbient } from '@/lib/ambientAudio';
 import type { AudioOmenEntry, OmenLocalState } from '@/lib/omenTypes';
 import type { StreakData } from '@/lib/types';
 
@@ -127,6 +128,7 @@ export default function HomePage() {
 
   const handleOpen = useCallback(() => {
     if (!omenState || !entry) return;
+    pauseAmbient();
 
     const url = entry.audioOmen.audioUrl;
     const isFirstPlay = omenState.attemptsSpent === 0;

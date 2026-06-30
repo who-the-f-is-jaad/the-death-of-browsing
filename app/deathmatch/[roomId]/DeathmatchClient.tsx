@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { pauseAmbient } from '@/lib/ambientAudio';
 import DeadBrowserShell from '@/components/ui/DeadBrowserShell';
 import ObituaryHeader from '@/components/ui/ObituaryHeader';
 import RoomLobby from '@/components/deathmatch/RoomLobby';
@@ -85,6 +86,10 @@ export default function DeathmatchClient({ roomId }: { roomId: string }) {
   useEffect(() => {
     return () => { if (revealTimerRef.current) clearInterval(revealTimerRef.current); };
   }, []);
+
+  useEffect(() => {
+    if (phase === 'playing') pauseAmbient();
+  }, [phase]);
 
   const fetchRoom = useCallback(async (): Promise<RoomState | null> => {
     const res = await fetch(`/api/rooms/${roomId}`);

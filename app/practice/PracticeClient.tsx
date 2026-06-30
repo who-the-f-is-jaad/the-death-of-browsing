@@ -7,6 +7,7 @@ import SoloRound from '@/components/practice/SoloRound';
 import SoloReveal from '@/components/practice/SoloReveal';
 import SoloFinished from '@/components/practice/SoloFinished';
 import { computeProximityScore } from '@/lib/scoring';
+import { pauseAmbient } from '@/lib/ambientAudio';
 import type { AudioOmenEntry } from '@/lib/omenTypes';
 
 const TOTAL_ROUNDS = 5;
@@ -72,6 +73,7 @@ export default function PracticeClient() {
   }, []);
 
   useEffect(() => {
+    pauseAmbient();
     fetchRound();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
